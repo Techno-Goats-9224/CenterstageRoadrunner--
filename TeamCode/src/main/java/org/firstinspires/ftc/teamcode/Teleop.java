@@ -4,24 +4,25 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 
 
 @TeleOp
     public class Teleop extends OpMode {
-    private DcMotor rightBack;
-    private DcMotor leftFront;
-    private DcMotor rightFront;
-    private DcMotor leftBack;
+    private DcMotorEx rightBack;
+    private DcMotorEx leftFront;
+    private DcMotorEx rightFront;
+    private DcMotorEx leftBack;
         DcMotor drone1;
         DcMotor drone2;
         @Override
         public void init() {
-            leftBack = hardwareMap.get(DcMotor.class,"leftBack");
-            //rightBack = hardwareMap.get(DcMotor.class,"BR");
-            leftFront = hardwareMap.get(DcMotor.class,"leftFront");
-            rightFront = hardwareMap.get(DcMotor.class,"rightFront");
-            drone1=hardwareMap.get(DcMotor.class, "motor1");
+            leftBack = hardwareMap.get(DcMotorEx.class,"leftBack");
+            rightBack = hardwareMap.get(DcMotorEx.class,"rightBack");
+            leftFront = hardwareMap.get(DcMotorEx.class,"leftFront");
+            rightFront = hardwareMap.get(DcMotorEx.class,"rightFront");
+            drone1=hardwareMap.get(DcMotor.class, "drone");
             telemetry.addData("Status", "Initialized");
             telemetry.update();
 
@@ -53,7 +54,11 @@ import com.qualcomm.robotcore.hardware.Servo;
             leftFront.setPower(ly + lx + rx);
             leftBack.setPower(ly - lx + rx);
             rightFront.setPower(-ly + lx + rx);
-            //rightBack.setPower(ly + lx - rx);
+            rightBack.setPower(ly + lx - rx);
+            telemetry.addData("leftbackEncoder",leftBack.getCurrentPosition());
+            telemetry.addData("leftrontEncoder", leftFront.getCurrentPosition());
+            telemetry.addData("rightbackEncoder", rightBack.getCurrentPosition());
+            telemetry.addData("rightfrontEncoder", rightFront.getCurrentPosition());
         }
         @Override
         public void stop() {
