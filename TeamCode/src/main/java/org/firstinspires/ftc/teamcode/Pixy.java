@@ -52,8 +52,8 @@ public class Pixy extends I2cDeviceSynchDevice<I2cDeviceSynch> {
         }
     }
 
-    protected byte[] readShort(int a, int b)
+    protected byte[] readShort(int queryAddress, int bytesToRead)
     {
-        return deviceClient.read(a, b);
+        return deviceClient.read(queryAddress, bytesToRead);
     }
 }
