@@ -22,16 +22,31 @@ import com.qualcomm.robotcore.util.ElapsedTime;
      */
 @TeleOp
 public class PixyMess extends OpMode {
+    public enum Register
+    {
+        LARGEST_BLOCK_ALL(0x50),
+        SIG_1(0x51),
+        SIG_2(0x52),
+        SIG_3(0x53),
+        SIG_4(0x54),
+        SIG_5(0x55),
+        SIG_6(0x56),
+        SIG_7(0x57);
+
+        public int bVal;
+
+        Register(int bVal)
+        {
+            this.bVal = bVal;
+        }
+    }
     ElapsedTime runtime = new ElapsedTime();
-    private I2cDeviceSynch pixy;
+    private Pixy pixy;
 
     int starterStack = 0;
     @Override
     public void init() {
-        pixy = hardwareMap.get(I2cDeviceSynch.class, "pixy");
-
-        pixy.setI2cAddress(I2cAddr.create7bit(0x01));
-        pixy.engage();
+        pixy = hardwareMap.get(Pixy.class, "pixy");
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -44,7 +59,7 @@ public class PixyMess extends OpMode {
     }
     @Override
     public void start() {
-        byte[] pixyBytes = pixy.read(0x51, 5);
+        byte[] pixyBytes = pixy.readShort(0x51, 5);
         runtime.reset();
         if (pixyBytes[0] == 0 && runtime.seconds() < 1){
             starterStack = 0;

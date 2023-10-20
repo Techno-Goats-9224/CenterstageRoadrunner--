@@ -13,16 +13,15 @@ import com.qualcomm.robotcore.hardware.Servo;
     private DcMotor leftFront;
     private DcMotor rightFront;
     private DcMotor leftBack;
+    private Servo claw;
         DcMotor drone1;
-        DcMotor drone2;
         @Override
         public void init() {
             leftBack = hardwareMap.get(DcMotor.class,"BL");
-            rightBack = hardwareMap.get(DcMotor.class,"BR");
-            leftFront = hardwareMap.get(DcMotor.class,"FL");
-            rightFront = hardwareMap.get(DcMotor.class,"FR");
+            rightBack = hardwareMap.get(DcMotor.class,"rightBack");
+            leftFront = hardwareMap.get(DcMotor.class,"leftFront");
+            rightFront = hardwareMap.get(DcMotor.class,"rightFront");
             drone1=hardwareMap.get(DcMotor.class, "motor1");
-            drone2=hardwareMap.get(DcMotor.class, "motor2");
             telemetry.addData("Status", "Initialized");
             telemetry.update();
 
@@ -37,12 +36,19 @@ import com.qualcomm.robotcore.hardware.Servo;
         }
         @Override
         public void loop() {
-            if (gamepad1.left_trigger>0.1){
+            if (gamepad1.right_bumper) {
+                claw.setPosition(1);
+            }
+            if (gamepad1.left_bumper){
+                claw.setPosition(0);
+            }
+            if (gamepad1.a){
                 drone1.setPower(1);
-                drone2.setPower(-1);
             }else {
                 drone1.setPower(0);
-                drone2.setPower(0);}
+            }
+
+
             double x=gamepad1.left_stick_x;
             double y=-gamepad1.left_stick_y;
             telemetry.addData("Gamepad x4",x);
