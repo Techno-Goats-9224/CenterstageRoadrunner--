@@ -14,10 +14,14 @@ import com.qualcomm.robotcore.hardware.Servo;
     private DcMotorEx leftFront;
     private DcMotorEx rightFront;
     private DcMotorEx leftBack;
+    private Servo clawl;
+    private Servo clawr;
         DcMotor drone1;
         DcMotor drone2;
         @Override
         public void init() {
+            clawl = hardwareMap.get(Servo.class,"clawl");
+            clawr = hardwareMap.get(Servo.class,"clawr");
             leftBack = hardwareMap.get(DcMotorEx.class,"leftBack");
             rightBack = hardwareMap.get(DcMotorEx.class,"rightBack");
             leftFront = hardwareMap.get(DcMotorEx.class,"leftFront");
@@ -41,6 +45,16 @@ import com.qualcomm.robotcore.hardware.Servo;
                 drone1.setPower(1);
             }else {
                 drone1.setPower(0);
+            }
+            if(gamepad1.b) {
+                clawl.setPosition(0);
+            }else {
+                clawl.setPosition(0.2);
+            }
+            if(gamepad1.b) {
+                clawr.setPosition(.6);
+            }else {
+                clawr.setPosition(0);
             }
             double x=gamepad1.left_stick_x;
             double y=-gamepad1.left_stick_y;
