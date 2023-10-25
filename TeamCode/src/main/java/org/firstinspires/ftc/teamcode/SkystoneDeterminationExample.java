@@ -174,6 +174,7 @@ public class SkystoneDeterminationExample extends LinearOpMode
          * This function takes the RGB frame, converts to YCrCb,
          * and extracts the Cb channel to the 'Cb' variable
          */
+        //TODO: This is the only thing you need to change to detect red and blue?
         void inputToCb(Mat input)
         {
             Imgproc.cvtColor(input, YCrCb, Imgproc.COLOR_RGB2YCrCb);
