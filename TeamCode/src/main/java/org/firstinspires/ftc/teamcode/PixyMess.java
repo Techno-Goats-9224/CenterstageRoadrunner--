@@ -72,9 +72,11 @@ public class PixyMess extends OpMode {
             }
         }*/
         byte[] pixyBytes = pixy.readShort(0x51, 5);
-        runtime.reset();
         telemetry.addData("number of Signature 1", pixyBytes[0]);
         telemetry.addData("x position of largest block", pixyBytes[1]);
+        byte[] pixyBytes2 = pixy.readShort(0x52, 2);
+        telemetry.addData("number of Signature 2", pixyBytes[0]);
+        telemetry.addData("x position of largest block", pixyBytes2[1]);
         telemetry.update();
     }
     @Override

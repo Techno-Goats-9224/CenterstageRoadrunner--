@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.I2cAddr;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynch;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynchDevice;
@@ -10,7 +11,7 @@ import com.qualcomm.robotcore.util.TypeConversion;
 public class Pixy extends I2cDeviceSynchDevice<I2cDeviceSynch> {
     @Override
     public Manufacturer getManufacturer(){
-        return Manufacturer.Other;
+        return Manufacturer.valueOf("Charmed Labs");
     }
     @Override
     protected synchronized boolean doInitialize()
@@ -18,9 +19,7 @@ public class Pixy extends I2cDeviceSynchDevice<I2cDeviceSynch> {
         return true;
     }
     @Override
-    public String getDeviceName()
-    {
-
+    public String getDeviceName() {
         return "PixyCam v1";
     }
     public Pixy(I2cDeviceSynch deviceClient)

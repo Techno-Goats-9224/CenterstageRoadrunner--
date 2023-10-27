@@ -7,13 +7,14 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 
-
+//list of controls here: https://docs.google.com/document/d/1mTPaoFG1fvQqmZDU4-IlvfgqJ6lwRfTvbBcxseAkrCM/edit?usp=sharing
 @TeleOp
     public class Teleop extends OpMode {
     private DcMotorEx rightBack;
     private DcMotorEx leftFront;
     private DcMotorEx rightFront;
     private DcMotorEx leftBack;
+    private DcMotorEx arm;
     private DcMotorEx intakel;
     private DcMotorEx intaker;
     private Servo clawl;
@@ -24,6 +25,7 @@ import com.qualcomm.robotcore.hardware.Servo;
         public void init() {
             intakel = hardwareMap.get(DcMotorEx.class,"intakel");
             intaker = hardwareMap.get(DcMotorEx.class,"intaker");
+            arm = hardwareMap.get(DcMotorEx.class,"arm");
             clawl = hardwareMap.get(Servo.class,"clawl");
             clawr = hardwareMap.get(Servo.class,"clawr");
             leftBack = hardwareMap.get(DcMotorEx.class,"leftBack");
@@ -45,6 +47,11 @@ import com.qualcomm.robotcore.hardware.Servo;
         }
         @Override
         public void loop() {
+            if (gamepad1.y) {
+                arm.setPower(1);
+            }else {
+                arm.setPower(0);
+            }
             if (gamepad1.a){
                 drone1.setPower(1);
             }else {
