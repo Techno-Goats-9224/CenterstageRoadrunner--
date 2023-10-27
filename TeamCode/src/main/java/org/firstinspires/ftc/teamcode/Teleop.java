@@ -19,8 +19,6 @@ import com.qualcomm.robotcore.hardware.Servo;
     private DcMotorEx intaker;
     private Servo clawl;
     private Servo clawr;
-        DcMotor drone1;
-        DcMotor drone2;
         @Override
         public void init() {
             intakel = hardwareMap.get(DcMotorEx.class,"intakel");
@@ -32,7 +30,9 @@ import com.qualcomm.robotcore.hardware.Servo;
             rightBack = hardwareMap.get(DcMotorEx.class,"rightBack");
             leftFront = hardwareMap.get(DcMotorEx.class,"leftFront");
             rightFront = hardwareMap.get(DcMotorEx.class,"rightFront");
-            drone1=hardwareMap.get(DcMotor.class, "drone");
+
+            clawl.setDirection(Servo.Direction.REVERSE);
+
             telemetry.addData("Status", "Initialized");
             telemetry.update();
 
@@ -47,30 +47,30 @@ import com.qualcomm.robotcore.hardware.Servo;
         }
         @Override
         public void loop() {
-            if (gamepad1.y) {
-                arm.setPower(1);
+            if (gamepad1.dpad_up) {
+                arm.setVelocity(0.5);
+            }else if(gamepad1.dpad_down){
+                arm.setVelocity(-0.5);
             }else {
-                arm.setPower(0);
+                arm.setVelocity(0);
             }
             if (gamepad1.a){
-                drone1.setPower(1);
-            }else {
-                drone1.setPower(0);
-            }
-            if (gamepad1.x){
-                intakel.setPower(1);
-            }else {
+                intakel.setPower(-1);
                 intaker.setPower(1);
+            }else {
+                intakel.setPower(0);
+                intaker.setPower(0);
+            }
+            //TODO: this servo doesn't work
+            if(gamepad1.x) {
+                clawl.setPosition(.1);
+            }else {
+                clawl.setPosition(.2);
             }
             if(gamepad1.b) {
-                clawl.setPosition(0);
+                clawr.setPosition(.2);
             }else {
-                clawl.setPosition(0.2);
-            }
-            if(gamepad1.b) {
-                clawr.setPosition(.6);
-            }else {
-                clawr.setPosition(0);
+                clawr.setPosition(.05);
             }
             double x=gamepad1.left_stick_x;
             double y=-gamepad1.left_stick_y;
@@ -85,6 +85,7 @@ import com.qualcomm.robotcore.hardware.Servo;
             leftBack.setPower(ly - lx + rx);
             rightFront.setPower(-ly + lx + rx);
             rightBack.setPower(ly + lx - rx);
+            telemetry.addData("left claw servo position", clawl.getPosition());
             telemetry.addData("leftbackEncoder",leftBack.getCurrentPosition());
             telemetry.addData("leftrontEncoder", leftFront.getCurrentPosition());
             telemetry.addData("rightbackEncoder", rightBack.getCurrentPosition());
