@@ -5,7 +5,9 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.PwmControl;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.ServoImplEx;
 
 //list of controls here: https://docs.google.com/document/d/1mTPaoFG1fvQqmZDU4-IlvfgqJ6lwRfTvbBcxseAkrCM/edit?usp=sharing
 @TeleOp
@@ -17,21 +19,25 @@ import com.qualcomm.robotcore.hardware.Servo;
     private DcMotorEx arm;
     private DcMotorEx intakel;
     private DcMotorEx intaker;
-    private Servo clawl;
-    private Servo clawr;
+    private ServoImplEx clawl;
+    private ServoImplEx clawr;
         @Override
         public void init() {
             intakel = hardwareMap.get(DcMotorEx.class,"intakel");
             intaker = hardwareMap.get(DcMotorEx.class,"intaker");
             arm = hardwareMap.get(DcMotorEx.class,"arm");
-            clawl = hardwareMap.get(Servo.class,"clawl");
-            clawr = hardwareMap.get(Servo.class,"clawr");
+            clawl = hardwareMap.get(ServoImplEx.class,"clawl");
+            clawr = hardwareMap.get(ServoImplEx.class,"clawr");
             leftBack = hardwareMap.get(DcMotorEx.class,"leftBack");
             rightBack = hardwareMap.get(DcMotorEx.class,"rightBack");
             leftFront = hardwareMap.get(DcMotorEx.class,"leftFront");
             rightFront = hardwareMap.get(DcMotorEx.class,"rightFront");
 
+
+            clawl.setPwmRange(new PwmControl.PwmRange(500, 2500));
+            clawr.setPwmRange(new PwmControl.PwmRange(500, 2500));
             clawl.setDirection(Servo.Direction.REVERSE);
+
 
             telemetry.addData("Status", "Initialized");
             telemetry.update();
@@ -63,12 +69,12 @@ import com.qualcomm.robotcore.hardware.Servo;
             }
             //TODO: this servo doesn't work
             if(gamepad1.x) {
-                clawl.setPosition(.1);
+                clawl.setPosition(.6);
             }else {
-                clawl.setPosition(.2);
+                clawl.setPosition(0.4);
             }
             if(gamepad1.b) {
-                clawr.setPosition(.2);
+                clawr.setPosition(.25);
             }else {
                 clawr.setPosition(.05);
             }
