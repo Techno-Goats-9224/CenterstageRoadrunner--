@@ -87,6 +87,8 @@ public class SampleRobotAutoDriveToAprilTagOmni extends LinearOpMode
     private AprilTagProcessor aprilTag;              // Used for managing the AprilTag detection process.
     private AprilTagDetection desiredTag = null;     // Used to hold the data for a detected AprilTag
 
+    AprilTagProcessor.Builder MitchellKindaWeirdAprilTagProcessor;
+
     @Override public void runOpMode()
     {
         boolean targetFound     = false;    // Set to true when an AprilTag target is detected
@@ -229,8 +231,12 @@ public class SampleRobotAutoDriveToAprilTagOmni extends LinearOpMode
      */
     private void initAprilTag() {
         // Create the AprilTag processor by using a builder.
-        aprilTag = new AprilTagProcessor.Builder().build();
-
+        MitchellKindaWeirdAprilTagProcessor = new AprilTagProcessor.Builder();
+        MitchellKindaWeirdAprilTagProcessor.setDrawTagID(true);       // Default: true, for all detections.
+        MitchellKindaWeirdAprilTagProcessor.setDrawTagOutline(true);  // Default: true, when tag size was provided (thus eligible for pose estimation).
+        MitchellKindaWeirdAprilTagProcessor.setDrawAxes(true);        // Default: false.
+        MitchellKindaWeirdAprilTagProcessor.setDrawCubeProjection(true);        // Default: false.
+        aprilTag = MitchellKindaWeirdAprilTagProcessor.build();
         // Adjust Image Decimation to trade-off detection-range for detection-rate.
         // eg: Some typical detection data using a Logitech C920 WebCam
         // Decimation = 1 ..  Detect 2" Tag from 10 feet away at 10 Frames per second
