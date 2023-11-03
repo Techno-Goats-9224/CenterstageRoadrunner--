@@ -21,6 +21,7 @@ import com.qualcomm.robotcore.hardware.ServoImplEx;
     private DcMotorEx intaker;
     private ServoImplEx clawl;
     private ServoImplEx clawr;
+    private Servo drone;
         @Override
         public void init() {
             intakel = hardwareMap.get(DcMotorEx.class,"intakel");
@@ -32,6 +33,7 @@ import com.qualcomm.robotcore.hardware.ServoImplEx;
             rightBack = hardwareMap.get(DcMotorEx.class,"rightBack");
             leftFront = hardwareMap.get(DcMotorEx.class,"leftFront");
             rightFront = hardwareMap.get(DcMotorEx.class,"rightFront");
+            drone = hardwareMap.get(Servo.class,"drone");
 
 
             clawl.setPwmRange(new PwmControl.PwmRange(500, 2500));
@@ -77,6 +79,11 @@ import com.qualcomm.robotcore.hardware.ServoImplEx;
                 clawr.setPosition(.25);
             }else {
                 clawr.setPosition(.05);
+            }
+            if (gamepad1.y){
+                drone.setPosition(.5);
+            }else{
+                drone.setPosition(0);
             }
             double x=gamepad1.left_stick_x;
             double y=-gamepad1.left_stick_y;
