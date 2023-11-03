@@ -44,14 +44,14 @@ import java.lang.Math;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-
+//lateral in per tick: 430.18012962026546, y-intercept: 0
 @Config
 public final class MecanumDrive {
     public static class Params {
         // drive model parameters
         public double inPerTick = -575.412587;
-        public double lateralInPerTick = 1;
-        public double trackWidthTicks = 0;
+        public double lateralInPerTick = 430.18012962026546;
+        public double trackWidthTicks = 9155.014000690478;
 
         // feedforward parameters (in tick units)
         public double kS = 0;
@@ -187,6 +187,9 @@ public final class MecanumDrive {
         leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+
+        rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
 
         imu = hardwareMap.get(IMU.class, "imu");
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
