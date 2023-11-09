@@ -55,14 +55,14 @@ import com.qualcomm.robotcore.hardware.ServoImplEx;
         }
         @Override
         public void loop() {
-            if (gamepad1.dpad_up) {
+            if (gamepad2.dpad_up) {
                 arm.setVelocity(0.5);
-            }else if(gamepad1.dpad_down){
+            }else if(gamepad2.dpad_down){
                 arm.setVelocity(-0.5);
             }else {
                 arm.setVelocity(0);
             }
-            if (gamepad1.a){
+            if (gamepad2.a){
                 intakel.setPower(-1);
                 intaker.setPower(1);
             }else {
@@ -70,20 +70,20 @@ import com.qualcomm.robotcore.hardware.ServoImplEx;
                 intaker.setPower(0);
             }
             //TODO: this servo doesn't work
-            if(gamepad1.x) {
+            if(gamepad2.x) {
                 clawl.setPosition(.6);
             }else {
                 clawl.setPosition(0.4);
             }
-            if(gamepad1.b) {
+            if(gamepad2.b) {
                 clawr.setPosition(.25);
             }else {
                 clawr.setPosition(.05);
             }
-            if (gamepad1.y){
+            if (gamepad2.y){
                 drone.setPosition(.5);
             }else{
-                drone.setPosition(0);
+                drone.setPosition(1);
             }
             double x=gamepad1.left_stick_x;
             double y=-gamepad1.left_stick_y;
