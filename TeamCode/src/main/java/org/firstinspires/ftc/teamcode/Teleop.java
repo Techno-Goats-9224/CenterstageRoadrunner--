@@ -60,11 +60,11 @@ import com.qualcomm.robotcore.hardware.ServoImplEx;
         public void loop() {
 
             if (gamepad2.dpad_up) {
-                arm.setVelocity(1);
+                arm.setPower(1);
             }else if(gamepad2.dpad_down){
-                arm.setVelocity(-1);
+                arm.setPower(-1);
             }else {
-                arm.setVelocity(0);
+                arm.setPower(0);
             }
             if (gamepad2.cross){
                 intakel.setPower(-1);
