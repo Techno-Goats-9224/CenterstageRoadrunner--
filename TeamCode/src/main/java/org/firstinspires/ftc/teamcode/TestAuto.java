@@ -1,3 +1,4 @@
+//from rr.brott.dev
 package org.firstinspires.ftc.teamcode;
 
 import static com.acmerobotics.roadrunner.ftc.Actions.runBlocking;
@@ -6,6 +7,7 @@ import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.har
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -13,6 +15,7 @@ import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+@Autonomous
 public class ShooterOpMode extends ActionOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
@@ -22,9 +25,6 @@ public class ShooterOpMode extends ActionOpMode {
 
         runBlocking(shooter.spinUp());
     }
-}
-class Drive{
-
 }
 class Shooter {
     private DcMotorEx motor;
