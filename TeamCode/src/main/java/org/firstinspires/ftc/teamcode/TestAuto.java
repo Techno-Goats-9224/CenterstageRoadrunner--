@@ -6,7 +6,8 @@ import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.har
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
-import com.acmerobotics.roadrunner.ActionOpMode;
+import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -14,26 +15,28 @@ import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-public class ShooterOpMode extends ActionOpMode {
+import java.lang.Math;
+
+public class TestAuto extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         Intake intake = new Intake();
+        MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(0,0,0));
 
         waitForStart();
 
-        MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(0,0,0));
         Action traj = drive.actionBuilder(drive.pose)
                 .splineTo(new Vector2d(0, 30), Math.PI / 2)
                 .build();
         
-        runBlocking(intakel.spinUp());
+        runBlocking(intake.spinUp());
     }
 }
 class Intake {
     private DcMotorEx intakel;
     private DcMotorEx intaker;
 
-    public Arm(String configName) {
+    public Intake() {
         intakel = hardwareMap.get(DcMotorEx.class, "intakel");
         intaker = hardwareMap.get(DcMotorEx.class, "intaker");
         
@@ -41,10 +44,6 @@ class Intake {
 
     public Action spinUp() {
         return new Action() {
-            @Override
-            public void init() {
-                
-            }
 
             @Override
             public boolean run(TelemetryPacket packet) {
@@ -57,7 +56,7 @@ class Intake {
                 packet.put("IntakeLVelocity", velL);
                 packet.put("IntakeRVelocity", velR);
 
-                return vel < 10_000.0;
+                return velL < 10_000.0;
             }
         };
     }

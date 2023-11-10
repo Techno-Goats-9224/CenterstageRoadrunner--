@@ -36,7 +36,7 @@ import com.qualcomm.robotcore.hardware.ServoImplEx;
             rightFront = hardwareMap.get(DcMotorEx.class,"rightFront");
             drone = hardwareMap.get(Servo.class,"drone");
 
-            arm.setMode(RUN_USING_ENCODER);
+            arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
             leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
