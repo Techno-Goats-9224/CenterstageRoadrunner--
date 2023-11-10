@@ -88,6 +88,8 @@ import com.qualcomm.robotcore.hardware.ServoImplEx;
                 drone.setPosition(.5);
             }else{
                 drone.setPosition(1);
+                //1 is when not pushed and .5 is when pushed
+                // 1 is holding rubberband .5 is out
             }
 
             double ly = gamepad1.left_stick_y * 0.8;
@@ -102,8 +104,8 @@ import com.qualcomm.robotcore.hardware.ServoImplEx;
             telemetry.addData("left claw servo position", clawl.getPosition());
             telemetry.addData("right claw servo position", clawr.getPosition());
             telemetry.addData("drone servo position", drone.getPosition());
-
-
+            telemetry.addData("Front Left Encoder", leftFront.getCurrentPosition());
+            telemetry.addData("Front Right Encoder", rightBack.getCurrentPosition());
         }
         @Override
         public void stop() {
