@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.hardware.PwmControl;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
 
-//list of controls here: https://docs.google.com/document/d/1mTPaoFG1fvQqmZDU4-IlvfgqJ6lwRfTvbBcxseAkrCM/edit?usp=sharing
+//list of controller function here: https://docs.google.com/document/d/1mTPaoFG1fvQqmZDU4-IlvfgqJ6lwRfTvbBcxseAkrCM/edit?usp=sharing
 @TeleOp
     public class Teleop extends OpMode {
     private DcMotorEx rightBack;
@@ -48,8 +48,6 @@ import com.qualcomm.robotcore.hardware.ServoImplEx;
 
             telemetry.addData("Status", "Initialized");
             telemetry.update();
-
-            // run until the end of the match (driver presses STOP)
 
         }
         @Override
