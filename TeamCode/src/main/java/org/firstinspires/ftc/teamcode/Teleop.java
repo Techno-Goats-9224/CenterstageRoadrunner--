@@ -36,6 +36,7 @@ import com.qualcomm.robotcore.hardware.ServoImplEx;
             rightFront = hardwareMap.get(DcMotorEx.class,"rightFront");
             drone = hardwareMap.get(Servo.class,"drone");
 
+            arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
