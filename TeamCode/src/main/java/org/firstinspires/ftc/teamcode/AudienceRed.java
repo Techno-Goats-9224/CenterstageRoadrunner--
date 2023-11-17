@@ -152,17 +152,29 @@ public class AudienceRed extends OpMode {
         //Robot needs to drive and move forward like 24in ish
         drive(24, directions.FORWARD);
         //Drop pixel at left: turn left 90 degrees then open claw then turn right to get back on track.
-        turn(90, directions.LEFT);
-        clawl.setPosition(0.4);
-        turn(90, directions.RIGHT);
+       // turn(90, directions.LEFT);
+       // clawl.setPosition(0.4);
+       // turn(90, directions.RIGHT);
         // Drop pixel at center: drive past then turn around 180 degrees and then drop pixel and then turn another 180 degrees.
+        //clawl.setPosition(0.4);
+       // drive(24, directions.FORWARD);
+        //turn(180, directions.RIGHT);
+        //clawl.setPosition(0.4);
+        //turn(180, directions.RIGHT);
         //Then turn right 90 degrees
+        //turn(90, directions.RIGHT);
         //Drive the remaining 48in
+        //drive(48, directions.FORWARD);
         //Then turn 90 degrees to the right after the 72in
+       // turn(90, directions.RIGHT);
         //After that drive forward 96in underneath the stage door
+       // drive(96, directions.FORWARD);
         //Then turn another 90 degrees to the right
+        //turn(90, directions.RIGHT);
         //Then Drive forward 24in
+       // drive(24, directions.FORWARD);
         //Then turn another 90 degrees the left
+        //turn(90, directions.LEFT);
         //Then april tag will direct robot to backdrop
     }
     @Override

@@ -6,9 +6,12 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.PwmControl;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
+
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 
 /**
@@ -32,6 +35,72 @@ public class AudienceBlue extends OpMode {
     private ServoImplEx clawl;
     private ServoImplEx clawr;
     private DcMotorEx arm;
+    private IMU imu;
+    private enum directions {
+        FORWARD,
+        BACK,
+        LEFT,
+        RIGHT
+    }
+    public static double TICKS_PER_REV = 4000;
+    public static double WHEEL_RADIUS = 1; // in
+    public static double GEAR_RATIO = 1; // output (wheel) speed / input (encoder) speed
+    public static double encoderTicksToInches(double ticks) {
+        return WHEEL_RADIUS * 2 * Math.PI * GEAR_RATIO * ticks / TICKS_PER_REV;
+    }
+    public void drive(double inches, AudienceBlue.directions dir) {
+        if (dir == AudienceBlue.directions.FORWARD) {
+            while (encoderTicksToInches(rightBack.getCurrentPosition()) < inches) {
+                leftFront.setPower(1);
+                leftBack.setPower(1);
+                rightFront.setPower(1);
+                rightBack.setPower(1);
+            }
+        }
+        if (dir == AudienceBlue.directions.BACK) {
+            while (encoderTicksToInches(rightBack.getCurrentPosition()) > -inches) {
+                leftFront.setPower(-1);
+                leftBack.setPower(-1);
+                rightFront.setPower(-1);
+                rightBack.setPower(-1);
+            }
+        }
+        if (dir == AudienceBlue.directions.LEFT) {
+            while (encoderTicksToInches(leftBack.getCurrentPosition()) < inches) {
+                leftFront.setPower(-1);
+                leftBack.setPower(1);
+                rightFront.setPower(1);
+                rightBack.setPower(-1);
+            }
+        }
+        if (dir == AudienceBlue.directions.RIGHT) {
+            while (encoderTicksToInches(leftBack.getCurrentPosition()) > -inches) {
+                leftFront.setPower(1);
+                leftBack.setPower(-1);
+                rightFront.setPower(-1);
+                rightBack.setPower(1);
+            }
+        }
+    }
+    public void turn(double degrees, AudienceBlue.directions dir) {
+        if (dir == AudienceBlue.directions.LEFT) {
+            while (imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) > -degrees) {
+                leftFront.setPower(-1);
+                leftBack.setPower(-1);
+                rightFront.setPower(1);
+                rightBack.setPower(1);
+            }
+        }
+        if (dir == AudienceBlue.directions.RIGHT) {
+            while (imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) < degrees) {
+                leftFront.setPower(1);
+                leftBack.setPower(1);
+                rightFront.setPower(-1);
+                rightBack.setPower(-1);
+
+            }
+        }
+    }
     @Override
     public void init() {
         leftBack = hardwareMap.get(DcMotorEx.class,"leftBack");
@@ -65,13 +134,24 @@ public class AudienceBlue extends OpMode {
     }
     @Override
     public void start() {
-    //Forward 24in
-    //Left: Turn left degrees then open claw and pick up pixel turn right 90 degrees
+        //Forward 24in
+        drive(24, AudienceBlue.directions.FORWARD);
+    //Left: Turn left  90 degrees then open claw and pick up pixel turn right 90 degrees
+        turn(90, AudienceBlue.directions.LEFT);
+        clawl.setPosition(0.4);
+        turn(90, AudienceBlue.directions.RIGHT);
     //Center: Open Claw pick up pixel
+        clawl.setPosition(0.4);
     //Right: Turn right 90 degrees then open claw and pick up pixel turn left 90 degrees
+        turn(90, AudienceBlue.directions.RIGHT);
+        clawl.setPosition(0.4);
+        turn(90, AudienceBlue.directions.LEFT);
     //Forward 24in
-    //Left 90 degrees
+        drive(24, AudienceBlue.directions.FORWARD);
+        //Left 90 degrees
+        turn(90, AudienceBlue.directions.LEFT);
     //Forward 72 in
+        drive(72, AudienceBlue.directions.FORWARD);
     //Then april tag will direct robot to backdrop
     }
     @Override
