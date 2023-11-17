@@ -23,6 +23,7 @@ import com.qualcomm.robotcore.hardware.ServoImplEx;
     private ServoImplEx clawl;
     private ServoImplEx clawr;
     private Servo drone;
+    private Servo rotate;
         @Override
         public void init() {
             intakel = hardwareMap.get(DcMotorEx.class,"intakel");
@@ -35,6 +36,7 @@ import com.qualcomm.robotcore.hardware.ServoImplEx;
             leftFront = hardwareMap.get(DcMotorEx.class,"leftFront");
             rightFront = hardwareMap.get(DcMotorEx.class,"rightFront");
             drone = hardwareMap.get(Servo.class,"drone");
+            rotate = hardwareMap.get(Servo.class, "rotate");
 
             arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -47,6 +49,7 @@ import com.qualcomm.robotcore.hardware.ServoImplEx;
             clawl.setPwmRange(new PwmControl.PwmRange(500, 2500));
             clawr.setPwmRange(new PwmControl.PwmRange(500, 2500));
             clawl.setDirection(Servo.Direction.REVERSE);
+            clawr.setDirection(Servo.Direction.REVERSE);
 
             telemetry.addData("Status", "Initialized");
             telemetry.update();
@@ -75,15 +78,24 @@ import com.qualcomm.robotcore.hardware.ServoImplEx;
                 intakel.setPower(0);
                 intaker.setPower(0);
             }
+            //left maybe not working, need to test
             if(gamepad2.square) {
-                clawl.setPosition(.6);
+                clawl.setPosition(0.6);
             }else {
-                clawl.setPosition(0.4);
+                //open
+                clawl.setPosition(0.45);
+            }
+            if(gamepad2.left_bumper){
+                rotate.setPosition(0.1);
+            }else{
+                rotate.setPosition(0);
             }
             if(gamepad2.circle) {
-                clawr.setPosition(.25);
-            }else {
+                //close
                 clawr.setPosition(.05);
+            }else {
+                //open
+                clawr.setPosition(.25);
             }
             if (gamepad2.triangle){
                 drone.setPosition(.5);
