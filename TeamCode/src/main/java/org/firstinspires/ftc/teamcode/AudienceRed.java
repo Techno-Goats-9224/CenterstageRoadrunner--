@@ -2,9 +2,7 @@
 package org.firstinspires.ftc.teamcode;
 
         import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-        import com.qualcomm.robotcore.eventloop.opmode.Disabled;
         import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-        import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
         import com.qualcomm.robotcore.hardware.DcMotor;
         import com.qualcomm.robotcore.hardware.DcMotorEx;
         import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -26,7 +24,7 @@ package org.firstinspires.ftc.teamcode;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 @Autonomous
-public class LeftRed extends OpMode {
+public class AudienceRed extends OpMode {
     private DcMotorEx rightBack;
     private DcMotorEx leftFront;
     private DcMotorEx rightFront;
@@ -70,7 +68,8 @@ public class LeftRed extends OpMode {
         //Pixy look for team prop
         //Robot needs to drive and move forward like 24in ish
         //Drop pixel at left: turn left 90 degrees then open claw then turn right to get back on track.
-        // Drop pixel at center: drive past then turn around 180 degrees and then drop pixel and then turn another 180 degrees.
+        //Drop pixel at center: drive past 24in then turn around 180 degrees and then drop pixel and then turn another 180 degrees.
+        //Drop pixel right: Turn right 90 degrees then open claw pick up pixel then turn left 90 degrees then drive forward 24in
         //Then turn right 90 degrees
         //Drive the remaining 48in
         //Then turn 90 degrees to the right after the 72in
