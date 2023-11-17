@@ -55,33 +55,33 @@ public class AudienceRed extends OpMode {
     public void drive(double inches, directions dir) {
         if (dir == directions.FORWARD) {
             while (encoderTicksToInches(rightBack.getCurrentPosition()) < inches) {
-                leftFront.setPower(1);
-                leftBack.setPower(1);
+                leftFront.setPower(-1);
+                leftBack.setPower(-1);
                 rightFront.setPower(1);
-                rightBack.setPower(1);
+                rightBack.setPower(-1);
             }
         }
         if (dir == directions.BACK) {
             while (encoderTicksToInches(rightBack.getCurrentPosition()) > -inches) {
-                leftFront.setPower(-1);
-                leftBack.setPower(-1);
+                leftFront.setPower(1);
+                leftBack.setPower(1);
                 rightFront.setPower(-1);
-                rightBack.setPower(-1);
+                rightBack.setPower(1);
             }
         }
         if (dir == directions.LEFT) {
             while (encoderTicksToInches(leftBack.getCurrentPosition()) < inches) {
                 leftFront.setPower(-1);
                 leftBack.setPower(1);
-                rightFront.setPower(1);
-                rightBack.setPower(-1);
+                rightFront.setPower(-1);
+                rightBack.setPower(1);
             }
         }
         if (dir == directions.RIGHT) {
             while (encoderTicksToInches(leftBack.getCurrentPosition()) > -inches) {
                 leftFront.setPower(1);
                 leftBack.setPower(-1);
-                rightFront.setPower(-1);
+                rightFront.setPower(1);
                 rightBack.setPower(1);
             }
         }
@@ -92,7 +92,7 @@ public class AudienceRed extends OpMode {
                 leftFront.setPower(-1);
                 leftBack.setPower(-1);
                 rightFront.setPower(1);
-                rightBack.setPower(1);
+                rightBack.setPower(-1);
             }
         }
         if (dir == directions.RIGHT) {
@@ -100,7 +100,7 @@ public class AudienceRed extends OpMode {
                 leftFront.setPower(1);
                 leftBack.setPower(1);
                 rightFront.setPower(-1);
-                rightBack.setPower(-1);
+                rightBack.setPower(1);
 
             }
         }
