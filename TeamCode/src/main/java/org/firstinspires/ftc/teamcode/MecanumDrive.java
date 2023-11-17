@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
-
+//kV: 0.00021188830312685435, kS: 1.3676749426467003 - short
+//kV: 0.0002136509088987492, kS: 1.4010256792197784 - long
+// 9155.014000690478 AngularRampLogger
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.canvas.Canvas;
@@ -54,14 +56,14 @@ public final class MecanumDrive {
         public double trackWidthTicks = 9155.014000690478;
 
         // feedforward parameters (in tick units)
-        public double kS = 0.7; // used to be 0
-        public double kV = 0.7; // used to be 0
-        public double kA = 0.7; // used to be 0
+        public double kS = 1.3676749426467003; // used to be 0
+        public double kV = 0.00021188830312685435; // used to be 0
+        public double kA = 0; // used to be 0
 
         // path profile parameters (in inches)
-        public double maxWheelVel = 200; // used to be 50
+        public double maxWheelVel = 50; // used to be 50
         public double minProfileAccel = -30;
-        public double maxProfileAccel = 200; //used to be 50
+        public double maxProfileAccel = 50; //used to be 50
 
         // turn profile parameters (in radians)
         public double maxAngVel = Math.PI; // shared with path
@@ -181,7 +183,7 @@ public final class MecanumDrive {
         leftBack = hardwareMap.get(DcMotorEx.class, "leftBack");
         rightBack = hardwareMap.get(DcMotorEx.class, "rightBack");
         rightFront = hardwareMap.get(DcMotorEx.class, "rightFront");
-        rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
 
         leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
