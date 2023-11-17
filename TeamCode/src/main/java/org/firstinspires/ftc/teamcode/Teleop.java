@@ -15,8 +15,8 @@ import com.qualcomm.robotcore.hardware.ServoImplEx;
     public class Teleop extends OpMode {
     private DcMotorEx rightBack;
     private DcMotorEx leftFront;
-    private DcMotorEx rightFront;
-    private DcMotorEx leftBack;
+    private DcMotor rightFront;
+    private DcMotor leftBack;
     private DcMotorEx arm;
     private DcMotorEx intakel;
     private DcMotorEx intaker;
@@ -45,6 +45,9 @@ import com.qualcomm.robotcore.hardware.ServoImplEx;
             leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
             rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
             leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
+
+            leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
             clawl.setPwmRange(new PwmControl.PwmRange(500, 2500));
             clawr.setPwmRange(new PwmControl.PwmRange(500, 2500));
@@ -118,7 +121,7 @@ import com.qualcomm.robotcore.hardware.ServoImplEx;
             telemetry.addData("right claw servo position", clawr.getPosition());
             telemetry.addData("drone servo position", drone.getPosition());
             telemetry.addData("Front Left Encoder", leftFront.getCurrentPosition());
-            telemetry.addData("Front Right Encoder", rightBack.getCurrentPosition());
+            telemetry.addData("Back Right Encoder", -rightBack.getCurrentPosition());
         }
         @Override
         public void stop() {

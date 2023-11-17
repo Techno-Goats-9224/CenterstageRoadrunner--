@@ -31,8 +31,8 @@ package org.firstinspires.ftc.teamcode;
 public class AudienceRed extends OpMode {
     private DcMotorEx rightBack;
     private DcMotorEx leftFront;
-    private DcMotorEx rightFront;
-    private DcMotorEx leftBack;
+    private DcMotor rightFront;
+    private DcMotor leftBack;
     private ServoImplEx clawl;
     private ServoImplEx clawr;
     private DcMotorEx arm;
@@ -70,7 +70,7 @@ public class AudienceRed extends OpMode {
             }
         }
         if (dir == directions.LEFT) {
-            while (encoderTicksToInches(leftBack.getCurrentPosition()) < inches) {
+            while (encoderTicksToInches(leftBack.getCurrentPosition()) > -inches) {
                 leftFront.setPower(-1);
                 leftBack.setPower(1);
                 rightFront.setPower(-1);
@@ -78,7 +78,7 @@ public class AudienceRed extends OpMode {
             }
         }
         if (dir == directions.RIGHT) {
-            while (encoderTicksToInches(leftBack.getCurrentPosition()) > -inches) {
+            while (encoderTicksToInches(leftBack.getCurrentPosition()) < inches) {
                 leftFront.setPower(1);
                 leftBack.setPower(-1);
                 rightFront.setPower(1);
@@ -116,6 +116,8 @@ public class AudienceRed extends OpMode {
         clawr = hardwareMap.get(ServoImplEx.class,"clawr");
         imu = hardwareMap.get(IMU.class, "imu");
 
+
+
         RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.FORWARD;
         RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.LEFT;
 
@@ -128,6 +130,9 @@ public class AudienceRed extends OpMode {
         leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
         rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
         leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
             arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
