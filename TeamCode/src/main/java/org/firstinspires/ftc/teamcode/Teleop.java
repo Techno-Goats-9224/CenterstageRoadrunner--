@@ -31,10 +31,10 @@ import com.qualcomm.robotcore.hardware.ServoImplEx;
             arm = hardwareMap.get(DcMotorEx.class,"arm");
             clawl = hardwareMap.get(ServoImplEx.class,"clawl");
             clawr = hardwareMap.get(ServoImplEx.class,"clawr");
-            leftBack = hardwareMap.get(DcMotorEx.class,"leftBack");
+            leftBack = hardwareMap.get(DcMotor.class,"leftBack");
             rightBack = hardwareMap.get(DcMotorEx.class,"rightBack");
             leftFront = hardwareMap.get(DcMotorEx.class,"leftFront");
-            rightFront = hardwareMap.get(DcMotorEx.class,"rightFront");
+            rightFront = hardwareMap.get(DcMotor.class,"rightFront");
             drone = hardwareMap.get(Servo.class,"drone");
             rotate = hardwareMap.get(Servo.class, "rotate");
 
@@ -42,7 +42,7 @@ import com.qualcomm.robotcore.hardware.ServoImplEx;
             arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-            leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
+            rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
             rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
             leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
 
@@ -112,10 +112,15 @@ import com.qualcomm.robotcore.hardware.ServoImplEx;
             double lx = -gamepad1.left_stick_x * 0.8;
             double rx = -gamepad1.right_stick_x * 0.8;
 
-            leftFront.setPower(ly + lx + rx);
+            leftFront.setVelocity(ly + lx + rx);
             leftBack.setPower(ly - lx + rx);
             rightFront.setPower(-ly + lx + rx);
-            rightBack.setPower(ly + lx - rx);
+            rightBack.setVelocity(ly + lx - rx);
+
+            telemetry.addData("front left power", leftFront.getPower());
+            telemetry.addData("front right power", rightFront.getPower());
+            telemetry.addData("back left power", leftBack.getPower());
+            telemetry.addData("back right power", rightBack.getPower());
 
             telemetry.addData("left claw servo position", clawl.getPosition());
             telemetry.addData("right claw servo position", clawr.getPosition());
@@ -128,5 +133,3 @@ import com.qualcomm.robotcore.hardware.ServoImplEx;
 
         }
     }
-
-
