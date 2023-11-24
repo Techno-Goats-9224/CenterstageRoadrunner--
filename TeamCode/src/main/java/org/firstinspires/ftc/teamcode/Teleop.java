@@ -128,11 +128,21 @@ public class Teleop extends OpMode {
         telemetry.addData("left claw servo position", clawl.getPosition());
         telemetry.addData("right claw servo position", clawr.getPosition());
         telemetry.addData("drone servo position", drone.getPosition());
-        telemetry.addData("Front Left Encoder (perp)", leftFront.getCurrentPosition());
-        telemetry.addData("Negative Back Right Encoder (para)", -rightBack.getCurrentPosition());
+        telemetry.addData("Front Left Encoder (perp) ticks", leftFront.getCurrentPosition());
+        telemetry.addData("Negative Back Right Encoder (para) ticks", -rightBack.getCurrentPosition());
+        telemetry.addData("Front Left Encoder (perp) inches", encoderTicksToInches(leftFront.getCurrentPosition()));
+        telemetry.addData("Negative Back Right Encoder (para) inches", encoderTicksToInches(-rightBack.getCurrentPosition()));
     }
     @Override
     public void stop() {
 
+    }
+    public static double X_MULTIPLIER = 0.9787360469; // Multiplier in the X direction: 1.005395271
+    public static double Y_MULTIPLIER = 0.982667947; // Multiplier in/ the Y direction
+    public static double TICKS_PER_REV = 4000;
+    public static double WHEEL_RADIUS = 1; // in
+    public static double GEAR_RATIO = 1; // output (wheel) speed / input (encoder) speed
+    public static double encoderTicksToInches(double ticks) {
+        return WHEEL_RADIUS * 2 * Math.PI * GEAR_RATIO * ticks / TICKS_PER_REV;
     }
 }
