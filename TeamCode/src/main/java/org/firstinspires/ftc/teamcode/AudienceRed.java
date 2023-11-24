@@ -56,44 +56,44 @@ public class AudienceRed extends LinearOpMode {
         }
         if (dir == directions.BACK) {
             while (encoderTicksToInches(rightBack.getCurrentPosition()) < inches && opModeIsActive()) {
-                leftFront.setPower(.1);
-                leftBack.setPower(.1);
-                rightFront.setPower(-.1);
-                rightBack.setPower(.1);
+                leftFront.setPower(1);
+                leftBack.setPower(1);
+                rightFront.setPower(-1);
+                rightBack.setPower(1);
             }
         }
         if (dir == directions.LEFT) {
             while (encoderTicksToInches(leftFront.getCurrentPosition()) > -inches && opModeIsActive()) {
-                leftFront.setPower(-.1);
-                leftBack.setPower(.1);
-                rightFront.setPower(-.1);
-                rightBack.setPower(.1);
+                leftFront.setPower(1);
+                leftBack.setPower(-1);
+                rightFront.setPower(1);
+                rightBack.setPower(-1);
             }
         }
         if (dir == directions.RIGHT) {
             while (encoderTicksToInches(leftFront.getCurrentPosition()) < inches && opModeIsActive()) {
-                leftFront.setPower(.1);
-                leftBack.setPower(-.1);
-                rightFront.setPower(.1);
-                rightBack.setPower(.1);
+                leftFront.setPower(-1);
+                leftBack.setPower(1);
+                rightFront.setPower(-1);
+                rightBack.setPower(1);
             }
         }
     }
     public void turn(double degrees, directions dir) {
         if (dir == directions.LEFT) {
             while (imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) > -degrees && opModeIsActive()) {
-                leftFront.setPower(-.1);
-                leftBack.setPower(-.1);
-                rightFront.setPower(.1);
-                rightBack.setPower(-.1);
+                leftFront.setPower(1);
+                leftBack.setPower(1);
+                rightFront.setPower(1);
+                rightBack.setPower(-1);
             }
         }
         if (dir == directions.RIGHT) {
             while (imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) < degrees && opModeIsActive()) {
-                leftFront.setPower(.1);
-                leftBack.setPower(.1);
-                rightFront.setPower(-.1);
-                rightBack.setPower(.1);
+                leftFront.setPower(-1);
+                leftBack.setPower(-1);
+                rightFront.setPower(-1);
+                rightBack.setPower(1);
             }
         }
     }
