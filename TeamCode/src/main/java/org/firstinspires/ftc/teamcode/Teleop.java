@@ -56,6 +56,7 @@ public class Teleop extends OpMode {
         clawr.setPwmRange(new PwmControl.PwmRange(500, 2500));
         clawl.setDirection(Servo.Direction.REVERSE);
         clawr.setDirection(Servo.Direction.REVERSE);
+        rotate.setDirection(Servo.Direction.REVERSE);
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -84,24 +85,45 @@ public class Teleop extends OpMode {
             intakel.setPower(0);
             intaker.setPower(0);
         }
-        //left maybe not working, need to test
+        //left maybe programmed CR
         if(gamepad2.square) {
-            clawl.setPosition(0.6);
+            clawl.setPosition(0.55);
         }else {
             //open
-            clawl.setPosition(0.45);
+            clawl.setPosition(0.5);
         }
         if(gamepad2.left_bumper){
-            rotate.setPosition(0.1);
+            rotate.setPosition(0.7);
         }else{
-            rotate.setPosition(0);
+            //when not reversed:
+            //.5 was all the way up and trying to go farther
+            //.1 was all the way up and trying to go farther
+            //1 was all the way  up and trying to go farther
+            //when reversed
+            //1 was all the way up and trying to go farther
+            //0 was all the way down and tryng to go farther
+            //.5 was all the way down and trying to go farther
+            //.75 was all the way down and trying to go farther
+            //.9 was all the way down and trying to go farther
+            rotate.setPosition(0.9);
         }
         if(gamepad2.circle) {
             //close
-            clawr.setPosition(.05);
+            //when reversed
+            //.55 closed too far
+            //.4 closed too far
+            //.2 closed too far
+            //.05 closed too far
+            //.9 didn't close far enough
+            //.8 is good
+            clawr.setPosition(.8);
         }else {
             //open
-            clawr.setPosition(.25);
+            //when reversed
+            //.5 closed and trying to go farther
+            //0 closed and trying to go farther
+            //1 is good
+            clawr.setPosition(1);
         }
         if (gamepad2.triangle){
             drone.setPosition(.5);
