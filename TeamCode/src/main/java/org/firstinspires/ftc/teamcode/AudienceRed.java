@@ -78,6 +78,7 @@ public class AudienceRed extends LinearOpMode {
     private Pixy pixy; // need this
     double lastParEncoder = 0;
     double lastPerpEncoder = 0;
+    boolean red = true;
     public void drive(double inches, directions dir, double power) {
         lastParEncoder = encoderTicksToInches(rightBack.getCurrentPosition());
         lastPerpEncoder = encoderTicksToInches(leftFront.getCurrentPosition());
@@ -168,7 +169,7 @@ public class AudienceRed extends LinearOpMode {
         clawr = hardwareMap.get(ServoImplEx.class,"clawr");
         imu = hardwareMap.get(IMU.class, "imu");
 
-        RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.FORWARD;
+        RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.BACKWARD;
         RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.LEFT;
         RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
 
@@ -200,21 +201,12 @@ public class AudienceRed extends LinearOpMode {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
-
-        // run until the end of the match (driver presses STOP)
-
         // Wait for driver to press start
 
         waitForStart();
-//for(Pixy.Register reg : Pixy.Register.values()){
-        /*for(int reg = 80; reg < 88; reg++){
-            byte[] data = pixy.readShort(reg, 8);
-            for(int j = 0; j < 8; j++) {
-                telemetry.addData(reg + " " + j, data[j]);
-            }
-        }*/
+
         runtime.reset();
-        while (runtime.seconds()<5) {
+        while (runtime.seconds()<5 && opModeIsActive()) {
             byte[] pixyBytes1 = pixy.readShort(0x51, 5); // need this
             telemetry.addData("number of Signature 1", pixyBytes1[0]); // need this
             telemetry.addData("x position of largest block of sig 1", pixyBytes1[1]); // need this
@@ -242,18 +234,31 @@ public class AudienceRed extends LinearOpMode {
         //turn(90, directions.RIGHT);
 
         //Drive the remaining 48in
-        drive(18, directions.FORWARD, 0.25);
+        if (red = true) {
+            drive(18, directions.FORWARD, 0.25);
+        }
+        else {
+            turn(85, directions.BACK, 0.25);
+        }
         //Then turn 90 degrees to the right after the 72in
-        turn(85, directions.LEFT, 0.25);
+
+        if (red = true) {
+            turn(85, directions.LEFT, 0.25);
+        }
+        else {
+            turn(85, directions.RIGHT, 0.25);
+        }
+        // In blue has to turn other way
         //After that drive forward 96in underneath the stage door
         drive(70,directions.BACK, 0.25);
         drive(24,directions.LEFT, 0.50);
+        // Opposite for blue
         //Then Drive forward 24in
         // drive(24, directions.FORWARD);
         //Then turn another 90 degrees the left
         //turn(90, directions.LEFT);
         runtime.reset();
-        while (runtime.seconds()<5) {
+        while (runtime.seconds()<5 && opModeIsActive()) {
             //Then april tag will direct robot to backdrop
             targetFound = false;
             desiredTag = null;
@@ -374,17 +379,17 @@ private void initAprilTag() {
 
         // Create the vision portal by using a builder.
         if (USE_WEBCAM) {
-        visionPortal = new VisionPortal.Builder()
-        .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
-        .addProcessor(aprilTag)
-        .build();
+            visionPortal = new VisionPortal.Builder()
+            .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
+            .addProcessor(aprilTag)
+            .build();
         } else {
-        visionPortal = new VisionPortal.Builder()
-        .setCamera(BuiltinCameraDirection.BACK)
-        .addProcessor(aprilTag)
-        .build();
+            visionPortal = new VisionPortal.Builder()
+            .setCamera(BuiltinCameraDirection.BACK)
+            .addProcessor(aprilTag)
+            .build();
         }
-        }
+}
 
     /*
      Manually set the camera gain and exposure.
@@ -394,13 +399,13 @@ private void    setManualExposure(int exposureMS, int gain){
         // Wait for the camera to be open, then use the controls
 
         if(visionPortal==null){
-        return;
+            return;
         }
 
         // Make sure camera is streaming before we try to set the exposure controls
         if(visionPortal.getCameraState()!=VisionPortal.CameraState.STREAMING){
-        telemetry.addData("Camera","Waiting");
-        telemetry.update();
+            telemetry.addData("Camera","Waiting");
+            telemetry.update();
         while(!isStopRequested()&&(visionPortal.getCameraState()!=VisionPortal.CameraState.STREAMING)){
         sleep(20);
         }

@@ -87,13 +87,14 @@ public class Teleop extends OpMode {
         }
         //left maybe programmed CR
         if(gamepad2.square) {
-            clawl.setPosition(0.55);
+            //should be middle
+            clawl.setPosition(0.5);
         }else {
             //open
             clawl.setPosition(0.5);
         }
         if(gamepad2.left_bumper){
-            rotate.setPosition(0.7);
+            rotate.setPosition(0.3);
         }else{
             //when not reversed:
             //.5 was all the way up and trying to go farther
@@ -105,7 +106,7 @@ public class Teleop extends OpMode {
             //.5 was all the way down and trying to go farther
             //.75 was all the way down and trying to go farther
             //.9 was all the way down and trying to go farther
-            rotate.setPosition(0.9);
+            rotate.setPosition(0.4);
         }
         if(gamepad2.circle) {
             //close
@@ -123,7 +124,7 @@ public class Teleop extends OpMode {
             //.5 closed and trying to go farther
             //0 closed and trying to go farther
             //1 is good
-            clawr.setPosition(1);
+            clawr.setPosition(.9);
         }
         if (gamepad2.triangle){
             drone.setPosition(.5);
