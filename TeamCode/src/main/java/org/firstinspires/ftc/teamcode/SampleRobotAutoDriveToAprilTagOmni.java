@@ -117,7 +117,7 @@ public class SampleRobotAutoDriveToAprilTagOmni extends LinearOpMode
         rightBack.setDirection(DcMotor.Direction.REVERSE);
 
         if (USE_WEBCAM)
-            setManualExposure(6, 250);  // Use low exposure time to reduce motion blur
+            setManualExposure(1, 255);  // Use low exposure time to reduce motion blur
 
         // Wait for driver to press start
         telemetry.addData("Camera preview on/off", "3 dots, Camera Stream");

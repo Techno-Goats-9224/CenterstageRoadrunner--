@@ -85,13 +85,12 @@ public class Teleop extends OpMode {
             intakel.setPower(0);
             intaker.setPower(0);
         }
-        //left maybe programmed CR
         if(gamepad2.square) {
             //should be middle
-            clawl.setPosition(0.5);
+            clawl.setPosition(0.7);
         }else {
             //open
-            clawl.setPosition(0.5);
+            clawl.setPosition(0.6);
         }
         if(gamepad2.left_bumper){
             rotate.setPosition(0.3);

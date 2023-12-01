@@ -194,7 +194,7 @@ public class AudienceRed extends LinearOpMode {
 
 
         if (USE_WEBCAM)
-            setManualExposure(6, 250);  // Use low exposure time to reduce motion blur
+            setManualExposure(1, 255);  // Use low exposure time to reduce motion blur
 
         pixy = hardwareMap.get(Pixy.class, "pixy"); // need this
 
