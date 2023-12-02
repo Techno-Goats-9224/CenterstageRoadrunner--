@@ -115,8 +115,10 @@ public class Teleop extends OpMode {
             clawl.setPosition(0.6);
         }
         if(gamepad2.left_bumper){
-            rotate.setPosition(0.3);
+            //down below field
+            rotate.setPosition(0.2);
         }else{
+            //flat on field
             //when not reversed:
             //.5 was all the way up and trying to go farther
             //.1 was all the way up and trying to go farther
