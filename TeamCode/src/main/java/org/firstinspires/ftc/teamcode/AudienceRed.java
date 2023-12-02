@@ -1,6 +1,7 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -15,11 +16,14 @@ import com.qualcomm.robotcore.hardware.ServoImplEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
+import org.checkerframework.checker.units.qual.degrees;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
@@ -59,10 +63,11 @@ public class AudienceRed extends LinearOpMode {
     private ServoImplEx clawl;
     private ServoImplEx clawr;
     private DcMotorEx arm;
-    private IMU imu;
+    private BNO055IMU imu;
+    private Servo rotate;
     private enum directions{
         FORWARD,
-        BACK,
+        SIDE,
         LEFT,
         RIGHT
     }
@@ -76,79 +81,101 @@ public class AudienceRed extends LinearOpMode {
     }
     ElapsedTime runtime = new ElapsedTime();
     private Pixy pixy; // need this
-    double lastParEncoder = 0;
-    double lastPerpEncoder = 0;
+    double lastParEncoder_in = 0;
+    double lastPerpEncoder_in = 0;
+    double lastHeading = 0;
+    double xPos_in;
+    double yPos_in;
+    double heading;
     boolean red = true;
+    double desiredDirection;
+    //for forward: all four motors need to be negative
     public void drive(double inches, directions dir, double power) {
-        lastParEncoder = encoderTicksToInches(rightBack.getCurrentPosition());
-        lastPerpEncoder = encoderTicksToInches(leftFront.getCurrentPosition());
-        if (dir == directions.FORWARD) {
-            while (encoderTicksToInches(rightBack.getCurrentPosition()) > -inches + lastParEncoder && opModeIsActive()) {
-                leftFront.setPower(-power);
-                leftBack.setPower(-power);
-                rightFront.setPower(power);
-                rightBack.setPower(-power);
+        lastParEncoder_in = encoderTicksToInches(rightBack.getCurrentPosition());
+        lastPerpEncoder_in = encoderTicksToInches(leftFront.getCurrentPosition());
+        xPos_in = encoderTicksToInches(rightBack.getCurrentPosition());
+        yPos_in = encoderTicksToInches(leftFront.getCurrentPosition());
+
+        if(dir == directions.FORWARD) {
+            while (((Math.abs(xPos_in - (inches + lastParEncoder_in))) > 0.5) && opModeIsActive()) {
+                xPos_in = encoderTicksToInches(rightBack.getCurrentPosition());
+                desiredDirection = (xPos_in - (inches + lastParEncoder_in)) / (Math.abs(xPos_in - (inches + lastParEncoder_in)));
+
+                leftFront.setPower(-desiredDirection * power);
+                leftBack.setPower(-desiredDirection * power);
+                rightFront.setPower(desiredDirection * power);
+                rightBack.setPower(-desiredDirection * power);
 
                 telemetry.addData("Front Left Encoder (perp) ticks", leftFront.getCurrentPosition());
                 telemetry.addData("Negative Back Right Encoder (para) ticks", -rightBack.getCurrentPosition());
                 telemetry.addData("Front Left Encoder (perp) inches", encoderTicksToInches(leftFront.getCurrentPosition()));
                 telemetry.addData("Negative Back Right Encoder (para) inches", encoderTicksToInches(-rightBack.getCurrentPosition()));
 
-                telemetry.addData("Desired position:", lastParEncoder + -inches);
+                telemetry.addData("offset from position:", xPos_in - (inches + lastParEncoder_in));
                 telemetry.update();
             }
         }
-        if (dir == directions.BACK) {
-            while (encoderTicksToInches(rightBack.getCurrentPosition()) < inches + lastParEncoder && opModeIsActive()) {
-                leftFront.setPower(power);
-                leftBack.setPower(power);
-                rightFront.setPower(-power);
-                rightBack.setPower(power);
+        //positive inches is left
+        if(dir == directions.SIDE) {
+            while (((Math.abs(yPos_in - (inches + lastPerpEncoder_in))) > 0.5) && opModeIsActive()) {
+                yPos_in = encoderTicksToInches(leftFront.getCurrentPosition());
+                desiredDirection = (yPos_in - (inches + lastPerpEncoder_in)) / (Math.abs(yPos_in - (inches + lastPerpEncoder_in)));
 
-                telemetry.addData("Negative Back Right Encoder (para) ticks", -rightBack.getCurrentPosition());
-                telemetry.addData("Negative Back Right Encoder (para) inches", encoderTicksToInches(-rightBack.getCurrentPosition()));
-            }
-        }
-        if (dir == directions.LEFT) {
-            while (encoderTicksToInches(leftFront.getCurrentPosition()) > -inches + lastPerpEncoder && opModeIsActive()) {
-                leftFront.setPower(power);
-                leftBack.setPower(-power);
-                rightFront.setPower(power);
-                rightBack.setPower(power);
-            }
-        }
-        if (dir == directions.RIGHT) {
-            while (encoderTicksToInches(leftFront.getCurrentPosition()) < inches + lastPerpEncoder && opModeIsActive()) {
-                leftFront.setPower(-power);
-                leftBack.setPower(power);
-                rightFront.setPower(-power);
-                rightBack.setPower(power);
+                leftFront.setPower(desiredDirection * power);
+                leftBack.setPower(-desiredDirection * power);
+                rightFront.setPower(desiredDirection * power);
+                rightBack.setPower(desiredDirection * power);
+
+                telemetry.addData("Front Left Encoder (perp) ticks", leftFront.getCurrentPosition());
+                telemetry.addData("Front Left Encoder (perp) inches", encoderTicksToInches(leftFront.getCurrentPosition()));
+
+                telemetry.addData("offset from position:", yPos_in - (inches + lastPerpEncoder_in));
+                telemetry.update();
             }
         }
     }
+    //to rotate counterclockwise (increasing imu) RB should be the only negative power
+    //positive degrees is clockwise
     public void turn(double degrees, directions dir, double power) {
-        if (dir == directions.LEFT) {
-            while (imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) < degrees && opModeIsActive()) {
+        heading = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).secondAngle;
+
+        while (((Math.abs(degrees - heading)) > 3) && opModeIsActive()) {
+            heading = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).secondAngle;
+            desiredDirection = (degrees - heading) / (Math.abs(degrees - heading));
+
+            leftFront.setPower(-desiredDirection * power);
+            leftBack.setPower(-desiredDirection * power);
+            rightFront.setPower(-desiredDirection * power);
+            rightBack.setPower(desiredDirection * power);
+
+            telemetry.addData("degrees:", degrees);
+            telemetry.addData("heading", imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).secondAngle);
+            telemetry.addData("desired direction", desiredDirection);
+            telemetry.addData("offset from position:", degrees - heading);
+            telemetry.update();
+        }
+        /*if (dir == directions.LEFT) {
+            while (imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).secondAngle< degrees && opModeIsActive()) {
                 leftFront.setPower(power);
                 leftBack.setPower(power);
                 rightFront.setPower(power);
                 rightBack.setPower(-power);
 
-                telemetry.addData("Yaw degrees: ", imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
+                telemetry.addData("Yaw degrees: ",  imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).secondAngle);
                 telemetry.update();
             }
         }
         if (dir == directions.RIGHT) {
-            while (imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) > -degrees && opModeIsActive()) {
+            while (imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).secondAngle > -degrees && opModeIsActive()) {
                 leftFront.setPower(-power);
                 leftBack.setPower(-power);
                 rightFront.setPower(-power);
                 rightBack.setPower(power);
 
-                telemetry.addData("Yaw degrees: ", imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
+                telemetry.addData("Yaw degrees: ",imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).secondAngle);
                 telemetry.update();
             }
-        }
+        }*/
     }
     @Override
     public void runOpMode() {
@@ -167,22 +194,21 @@ public class AudienceRed extends LinearOpMode {
         arm = hardwareMap.get(DcMotorEx.class,"arm");
         clawl = hardwareMap.get(ServoImplEx.class,"clawl");
         clawr = hardwareMap.get(ServoImplEx.class,"clawr");
-        imu = hardwareMap.get(IMU.class, "imu");
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        rotate = hardwareMap.get(Servo.class, "rotate");
 
-        RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.BACKWARD;
-        RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.LEFT;
-        RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
-
-        imu.initialize(new IMU.Parameters(orientationOnRobot));
-
-        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
-        rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
-        leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.loggingEnabled = true;
+        parameters.loggingTag     = "IMU";
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        imu.initialize(parameters);
 
         leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
 
         arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -191,14 +217,31 @@ public class AudienceRed extends LinearOpMode {
         clawl.setPwmRange(new PwmControl.PwmRange(500, 2500));
         clawr.setPwmRange(new PwmControl.PwmRange(500, 2500));
         clawl.setDirection(Servo.Direction.REVERSE);
+        clawr.setDirection(Servo.Direction.REVERSE);
+        rotate.setDirection(Servo.Direction.REVERSE);
 
+        //close
+        clawr.setPosition(0.8);
 
         if (USE_WEBCAM)
             setManualExposure(1, 255);  // Use low exposure time to reduce motion blur
 
         pixy = hardwareMap.get(Pixy.class, "pixy"); // need this
 
+
+        while(gamepad1.left_bumper) {
+            telemetry.addData("x or square: ", "blue");
+            telemetry.addData("b or circle: ", "red");
+            telemetry.update();
+            if (gamepad1.x) {
+                red = false;
+            }
+            if (gamepad1.b) {
+                red = true;
+            }
+        }
         telemetry.addData("Status", "Initialized");
+        telemetry.addData("red side? ", red);
         telemetry.update();
 
         // Wait for driver to press start
@@ -206,7 +249,7 @@ public class AudienceRed extends LinearOpMode {
         waitForStart();
 
         runtime.reset();
-        while (runtime.seconds()<5 && opModeIsActive()) {
+        while (runtime.seconds()<1 && opModeIsActive()) {
             byte[] pixyBytes1 = pixy.readShort(0x51, 5); // need this
             telemetry.addData("number of Signature 1", pixyBytes1[0]); // need this
             telemetry.addData("x position of largest block of sig 1", pixyBytes1[1]); // need this
@@ -215,32 +258,40 @@ public class AudienceRed extends LinearOpMode {
             telemetry.addData("x position of largest block of sig 2", pixyBytes2[1]); // need this
             telemetry.update();
         }
+
         //Pixy look for team prop
         //Robot needs to drive and move forward like 24in ish
         drive(30, directions.FORWARD, 0.25);
 
-        //Drop pixel at left: turn left 90 degrees then open claw then turn right to get back on track.
+        //If Drop pixel at left: turn left 90 degrees then open claw then turn right to get back on track.
         turn(70, directions.LEFT, 0.25);
-        // clawl.setPosition(0.4);
+        drive(2, directions.FORWARD, 0.25);
+        clawr.setPosition(0.9);
+        drive(-2, directions.FORWARD, 0.25);
         turn(0, directions.RIGHT, 0.25);
+        //Drive the remaining 48in
+        drive(20, directions.FORWARD, 0.25);
 
         // Drop pixel at center: drive past then turn around 180 degrees and then drop pixel and then turn another 180 degrees.
-        //clawl.setPosition(0.4);
-        // drive(24, directions.FORWARD);
-        //turn(180, directions.RIGHT);
-        //clawl.setPosition(0.4);
-        //turn(180, directions.RIGHT);
-        //Then turn right 90 degrees
-        //turn(90, directions.RIGHT);
+        //drive(16, directions.FORWARD, 0.25);
+        //turn(175, directions.LEFT,.25);
+        //open
+        //clawr.setPosition(0.9);
+        //drive(-3, directions.FORWARD, 0.25);
+        //turn(85, directions.LEFT,.25);
 
+        //Then turn right 90 degrees drop pixel at right
+        //turn(-90, directions.RIGHT, .25);
+        //drive(3, directions.FORWARD, .25);
+        //clawr.setPosition(0.9);
+        //drive(-3, directions.FORWARD, .25);
+        //turn(0, directions.LEFT, .25);
         //Drive the remaining 48in
-        if (red = true) {
-            drive(18, directions.FORWARD, 0.25);
-        }
-        else {
-            turn(85, directions.BACK, 0.25);
-        }
+        //drive(18, directions.FORWARD, 0.25);
+
+
         //Then turn 90 degrees to the right after the 72in
+        turn(85, directions.RIGHT, 0.25);
 
         if (red = true) {
             turn(85, directions.LEFT, 0.25);
@@ -248,15 +299,15 @@ public class AudienceRed extends LinearOpMode {
         else {
             turn(85, directions.RIGHT, 0.25);
         }
-        // In blue has to turn other way
         //After that drive forward 96in underneath the stage door
-        drive(70,directions.BACK, 0.25);
-        drive(24,directions.LEFT, 0.50);
-        // Opposite for blue
-        //Then Drive forward 24in
-        // drive(24, directions.FORWARD);
-        //Then turn another 90 degrees the left
-        //turn(90, directions.LEFT);
+        drive(-70,directions.FORWARD, 0.25);
+        //then move to in front of backboard
+        if(red = true) {
+            drive(24, directions.SIDE, 0.50);
+        } else{
+            drive(-24, directions.SIDE, .5);
+        }
+
         runtime.reset();
         while (runtime.seconds()<5 && opModeIsActive()) {
             //Then april tag will direct robot to backdrop
@@ -286,17 +337,16 @@ public class AudienceRed extends LinearOpMode {
 
             // Tell the driver what we see, and what to do.
             if (targetFound) {
-                telemetry.addData("\n>", "HOLD Left-Bumper to Drive to Target\n");
                 telemetry.addData("Found", "ID %d (%s)", desiredTag.id, desiredTag.metadata.name);
                 telemetry.addData("Range", "%5.1f inches", desiredTag.ftcPose.range);
                 telemetry.addData("Bearing", "%3.0f degrees", desiredTag.ftcPose.bearing);
                 telemetry.addData("Yaw", "%3.0f degrees", desiredTag.ftcPose.yaw);
             } else {
-                telemetry.addData("\n>", "Drive using joysticks to find valid target\n");
+                telemetry.addData("\n>", "no target found\n");
             }
 
             // If Left Bumper is being pressed, AND we have found the desired target, Drive to target Automatically .
-            if (gamepad1.left_bumper && targetFound) {
+            if (targetFound) {
 
                 // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
                 double rangeError = (desiredTag.ftcPose.range - DESIRED_DISTANCE);
@@ -310,18 +360,13 @@ public class AudienceRed extends LinearOpMode {
 
                 telemetry.addData("Auto", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
             } else {
-
-                // drive using manual POV Joystick mode.  Slow things down to make the robot more controlable.
-                drive = -gamepad1.left_stick_y / 2.0;  // Reduce drive rate to 50%.
-                strafe = -gamepad1.left_stick_x / 2.0;  // Reduce strafe rate to 50%.
-                turn = -gamepad1.right_stick_x / 3.0;  // Reduce turn rate to 33%.
+                //TODO:decide best course of action if can't find tag
                 telemetry.addData("Manual", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
             }
             telemetry.update();
 
             // Apply desired axes motions to the drivetrain.
             moveRobot(drive, strafe, turn);
-            sleep(10);
         }
 
 
@@ -329,6 +374,7 @@ public class AudienceRed extends LinearOpMode {
         rightFront.setPower(0);
         leftBack.setPower(0);
         rightBack.setPower(0);
+
     }
 
 public void moveRobot(double x, double y, double yaw) {
