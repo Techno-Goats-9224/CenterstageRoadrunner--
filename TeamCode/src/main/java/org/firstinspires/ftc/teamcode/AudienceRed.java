@@ -50,7 +50,7 @@ public class AudienceRed extends LinearOpMode {
 
 
     private static final boolean USE_WEBCAM = true;  // Set true to use a webcam, or false for a phone camera
-    private static final int DESIRED_TAG_ID = -1;     // Choose the tag you want to approach or set to -1 for ANY tag.
+    private static int DESIRED_TAG_ID = -1;     // Choose the tag you want to approach or set to -1 for ANY tag.
     private VisionPortal visionPortal;               // Used to manage the video source.
     private AprilTagProcessor aprilTag;              // Used for managing the AprilTag detection process.
     private AprilTagDetection desiredTag = null;     // Used to hold the data for a detected AprilTag
@@ -79,6 +79,7 @@ public class AudienceRed extends LinearOpMode {
     public static double encoderTicksToInches(double ticks) {
         return WHEEL_RADIUS * 2 * Math.PI * GEAR_RATIO * ticks / TICKS_PER_REV;
     }
+    char position;
     ElapsedTime runtime = new ElapsedTime();
     private Pixy pixy; // need this
     double lastParEncoder_in = 0;
@@ -249,7 +250,7 @@ public class AudienceRed extends LinearOpMode {
         waitForStart();
 
         runtime.reset();
-        while (runtime.seconds()<1 && opModeIsActive()) {
+        while (runtime.seconds()<5 && opModeIsActive()) {
             byte[] pixyBytes1 = pixy.readShort(0x51, 5); // need this
             telemetry.addData("number of Signature 1", pixyBytes1[0]); // need this
             telemetry.addData("x position of largest block of sig 1", pixyBytes1[1]); // need this
@@ -257,44 +258,53 @@ public class AudienceRed extends LinearOpMode {
             telemetry.addData("number of Signature 2", pixyBytes2[0]); // need this
             telemetry.addData("x position of largest block of sig 2", pixyBytes2[1]); // need this
             telemetry.update();
+            if (pixyBytes1[1] < 90 && pixyBytes1[1] != 0) {
+                position = 'C';
+            } else if (pixyBytes1[1] > 90) {
+                position = 'L';
+            } else if (pixyBytes1[0] == 0) {
+                position = 'R';
+            }
         }
 
-        //Pixy look for team prop
+            //Pixy look for team prop
         //Robot needs to drive and move forward like 24in ish
         drive(30, directions.FORWARD, 0.25);
 
         //If Drop pixel at left: turn left 90 degrees then open claw then turn right to get back on track.
-        turn(70, directions.LEFT, 0.25);
-        drive(2, directions.FORWARD, 0.25);
-        clawr.setPosition(0.9);
-        drive(-2, directions.FORWARD, 0.25);
-        turn(0, directions.RIGHT, 0.25);
-        //Drive the remaining 48in
-        drive(20, directions.FORWARD, 0.25);
-
-        // Drop pixel at center: drive past then turn around 180 degrees and then drop pixel and then turn another 180 degrees.
-        //drive(16, directions.FORWARD, 0.25);
-        //turn(175, directions.LEFT,.25);
-        //open
-        //clawr.setPosition(0.9);
-        //drive(-3, directions.FORWARD, 0.25);
-        //turn(85, directions.LEFT,.25);
-
-        //Then turn right 90 degrees drop pixel at right
-        //turn(-90, directions.RIGHT, .25);
-        //drive(3, directions.FORWARD, .25);
-        //clawr.setPosition(0.9);
-        //drive(-3, directions.FORWARD, .25);
-        //turn(0, directions.LEFT, .25);
-        //Drive the remaining 48in
-        //drive(18, directions.FORWARD, 0.25);
-
-
-        //Then turn 90 degrees to the right after the 72in
-        turn(85, directions.RIGHT, 0.25);
+            if (position == 'L'){
+                turn(70, directions.LEFT, 0.25);
+                drive(2, directions.FORWARD, 0.25);
+                clawr.setPosition(0.9);
+                drive(-2, directions.FORWARD, 0.25);
+                turn(0, directions.RIGHT, 0.25);
+                //Drive the remaining 48in
+                drive(20, directions.FORWARD, 0.25);
+            }
+            else if (position == 'C'){
+                // Drop pixel at center: drive past then turn around 180 degrees and then drop pixel and then turn another 180 degrees.
+                drive(16, directions.FORWARD, 0.25);
+                turn(175, directions.LEFT,.25);
+                //open
+                clawr.setPosition(0.9);
+                drive(-3, directions.FORWARD, 0.25);
+                turn(85, directions.LEFT,.25);
+            }
+            else if(position== 'R'){
+                //Then turn right 90 degrees drop pixel at right
+                turn(-90, directions.RIGHT, .25);
+                drive(3, directions.FORWARD, .25);
+                clawr.setPosition(0.9);
+                drive(-3, directions.FORWARD, .25);
+                turn(0, directions.LEFT, .25);
+                //Drive the remaining 48in
+                drive(18, directions.FORWARD, 0.25);
+                //Then turn 90 degrees to the right after the 72in
+                turn(85, directions.RIGHT, 0.25);
+            }
 
         if (red = true) {
-            turn(85, directions.LEFT, 0.25);
+            turn(95, directions.LEFT, 0.25);
         }
         else {
             turn(85, directions.RIGHT, 0.25);
@@ -313,7 +323,13 @@ public class AudienceRed extends LinearOpMode {
             //Then april tag will direct robot to backdrop
             targetFound = false;
             desiredTag = null;
-
+            if (red==true && position == 'L'){
+                DESIRED_TAG_ID= 4;
+            } else if (red==true && position == 'R') {
+                DESIRED_TAG_ID= 6;
+            } else if (red==true && position == 'C') {
+                DESIRED_TAG_ID = 5;
+            }
             // Step through the list of detected tags and look for a matching tag
             List<AprilTagDetection> currentDetections = aprilTag.getDetections();
             for (AprilTagDetection detection : currentDetections) {
@@ -376,6 +392,7 @@ public class AudienceRed extends LinearOpMode {
         rightBack.setPower(0);
 
     }
+
 
 public void moveRobot(double x, double y, double yaw) {
         // Calculate wheel powers.

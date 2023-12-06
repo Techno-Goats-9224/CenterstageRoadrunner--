@@ -61,6 +61,7 @@ public class Teleop extends OpMode {
 
         arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -91,28 +92,63 @@ public class Teleop extends OpMode {
     }
     @Override
     public void loop() {
-
         if (gamepad2.dpad_up) {
-            arm.setPower(1);
-        }else if(gamepad2.dpad_down){
+            arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            /*arm.setTargetPosition(-5000);
             arm.setPower(-1);
-        }else {
+            arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            arm.setTargetPosition(-5000);*/
+            while(arm.getCurrentPosition() < 4000) {
+                arm.setPower(-1);
+            }
+            arm.setPower(0);
+        }else if(gamepad2.dpad_down){
+            arm.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+            /*arm.setTargetPosition(0);
+            arm.setPower(1);
+            arm.setTargetPosition(0);
+            arm.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+             */
+            while(arm.getCurrentPosition() > 100) {
+                arm.setPower(0.75);
+            }
+            arm.setPower(0);
+        } else if(gamepad2.dpad_right){
+            //arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            //arm.setTargetPosition(-2500);
+            //arm.setPower(-1);
+            //arm.setTargetPosition(-2500);
+            //arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            while(arm.getCurrentPosition() < 2500) {
+                arm.setPower(-1);
+            }
+            while(arm.getCurrentPosition() > 3000){
+                arm.setPower(0.75);
+            }
+            arm.setPower(0);
+        }else if(gamepad2.right_bumper){
+            arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            arm.setPower(1);
+        } else if (gamepad2.right_trigger > 0.1) {
+            arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            arm.setPower(-1);
+        } else {
+            arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             arm.setPower(0);
         }
-        if (gamepad2.cross){
+        /*if (gamepad2.cross){
             intakel.setPower(-1);
             intaker.setPower(1);
         }else {
             intakel.setPower(0);
             intaker.setPower(0);
-        }
+        }*/
         if(gamepad2.square) {
-            //should be middle
-            //close
-            clawl.setPosition(0.7);
-        }else {
             //open
             clawl.setPosition(0.6);
+        }else {
+            //close
+            clawl.setPosition(0.75);
         }
         if(gamepad2.left_bumper){
             //down below field
@@ -132,7 +168,7 @@ public class Teleop extends OpMode {
             rotate.setPosition(0.4);
         }
         if(gamepad2.circle) {
-            //close
+            //open
             //when reversed
             //.55 closed too far
             //.4 closed too far
@@ -140,14 +176,14 @@ public class Teleop extends OpMode {
             //.05 closed too far
             //.9 didn't close far enough
             //.8 is good
-            clawr.setPosition(.8);
+            clawr.setPosition(.9);
         }else {
-            //open
+            //close
             //when reversed
             //.5 closed and trying to go farther
             //0 closed and trying to go farther
             //1 is good
-            clawr.setPosition(.9);
+            clawr.setPosition(.8);
         }
         if (gamepad2.triangle){
             drone.setPosition(.5);
@@ -181,6 +217,7 @@ public class Teleop extends OpMode {
         telemetry.addData("imu first",imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).firstAngle);
         telemetry.addData("imu second", imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).secondAngle);
         telemetry.addData("imu third", imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).thirdAngle);
+        telemetry.addData("arm encoder", arm.getCurrentPosition());
 
     }
     @Override
