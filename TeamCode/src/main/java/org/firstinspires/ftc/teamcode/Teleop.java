@@ -92,40 +92,35 @@ public class Teleop extends OpMode {
     }
     @Override
     public void loop() {
-        if (gamepad2.dpad_up) {
+        if (gamepad2.dpad_up && arm.getCurrentPosition() < 1800) {
             arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             /*arm.setTargetPosition(-5000);
             arm.setPower(-1);
             arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             arm.setTargetPosition(-5000);*/
-            while(arm.getCurrentPosition() < 4000) {
-                arm.setPower(-1);
-            }
-            arm.setPower(0);
-        }else if(gamepad2.dpad_down){
+            arm.setPower(-1);
+        }else if(gamepad2.dpad_down && arm.getCurrentPosition() > 50){
             arm.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
             /*arm.setTargetPosition(0);
             arm.setPower(1);
             arm.setTargetPosition(0);
             arm.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
              */
-            while(arm.getCurrentPosition() > 100) {
                 arm.setPower(0.75);
-            }
-            arm.setPower(0);
-        } else if(gamepad2.dpad_right){
+        } else if(gamepad2.dpad_right && arm.getCurrentPosition() > 700){
             //arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             //arm.setTargetPosition(-2500);
             //arm.setPower(-1);
             //arm.setTargetPosition(-2500);
             //arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            while(arm.getCurrentPosition() < 2500) {
                 arm.setPower(-1);
-            }
-            while(arm.getCurrentPosition() > 3000){
+        }else if(gamepad2.dpad_right && arm.getCurrentPosition() < 600) {
+            //arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            //arm.setTargetPosition(-2500);
+            //arm.setPower(-1);
+            //arm.setTargetPosition(-2500);
+            //arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 arm.setPower(0.75);
-            }
-            arm.setPower(0);
         }else if(gamepad2.right_bumper){
             arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             arm.setPower(1);
@@ -133,7 +128,7 @@ public class Teleop extends OpMode {
             arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             arm.setPower(-1);
         } else {
-            arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             arm.setPower(0);
         }
         /*if (gamepad2.cross){
