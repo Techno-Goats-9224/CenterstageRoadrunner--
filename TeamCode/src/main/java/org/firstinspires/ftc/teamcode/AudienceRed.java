@@ -419,10 +419,11 @@ public void moveRobot(double x, double y, double yaw) {
         }
 
         // Send powers to the wheels.
-        leftFront.setPower(leftFrontPower);
+        // in our centerstage robot with RB reversed, LF, LB, and RB and negative to go forward
+        leftFront.setPower(-leftFrontPower);
         rightFront.setPower(rightFrontPower);
-        leftBack.setPower(leftBackPower);
-        rightBack.setPower(rightBackPower);
+        leftBack.setPower(-leftBackPower);
+        rightBack.setPower(-rightBackPower);
         }
 
 /**
