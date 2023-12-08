@@ -220,7 +220,7 @@ public class AudienceRed extends LinearOpMode {
         clawl.setDirection(Servo.Direction.REVERSE);
         clawr.setDirection(Servo.Direction.REVERSE);
         rotate.setDirection(Servo.Direction.REVERSE);
-
+        clawl.setPosition(.75);
         //close
         clawr.setPosition(0.8);
 
@@ -250,7 +250,7 @@ public class AudienceRed extends LinearOpMode {
         waitForStart();
 
         runtime.reset();
-        while (runtime.seconds()<5 && opModeIsActive()) {
+        while (runtime.seconds()<1 && opModeIsActive()) {
             byte[] pixyBytes1 = pixy.readShort(0x51, 5); // need this
             telemetry.addData("number of Signature 1", pixyBytes1[0]); // need this
             telemetry.addData("x position of largest block of sig 1", pixyBytes1[1]); // need this
@@ -269,7 +269,7 @@ public class AudienceRed extends LinearOpMode {
 
             //Pixy look for team prop
         //Robot needs to drive and move forward like 24in ish
-        drive(30, directions.FORWARD, 0.25);
+        drive(34, directions.FORWARD, 0.25);
 
         //If Drop pixel at left: turn left 90 degrees then open claw then turn right to get back on track.
             if (position == 'L'){
@@ -279,11 +279,11 @@ public class AudienceRed extends LinearOpMode {
                 drive(-2, directions.FORWARD, 0.25);
                 turn(0, directions.RIGHT, 0.25);
                 //Drive the remaining 48in
-                drive(20, directions.FORWARD, 0.25);
+                drive(16, directions.FORWARD, 0.25);
             }
             else if (position == 'C'){
                 // Drop pixel at center: drive past then turn around 180 degrees and then drop pixel and then turn another 180 degrees.
-                drive(16, directions.FORWARD, 0.25);
+                drive(12, directions.FORWARD, 0.25);
                 turn(175, directions.LEFT,.25);
                 //open
                 clawr.setPosition(0.9);
@@ -298,16 +298,16 @@ public class AudienceRed extends LinearOpMode {
                 drive(-3, directions.FORWARD, .25);
                 turn(0, directions.LEFT, .25);
                 //Drive the remaining 48in
-                drive(18, directions.FORWARD, 0.25);
+                drive(14, directions.FORWARD, 0.25);
                 //Then turn 90 degrees to the right after the 72in
                 turn(85, directions.RIGHT, 0.25);
             }
 
         if (red = true) {
-            turn(95, directions.LEFT, 0.25);
+            turn(90, directions.LEFT, 0.25);
         }
         else {
-            turn(85, directions.RIGHT, 0.25);
+            turn(90, directions.RIGHT, 0.25);
         }
         //After that drive forward 96in underneath the stage door
         drive(-70,directions.FORWARD, 0.25);
@@ -319,7 +319,7 @@ public class AudienceRed extends LinearOpMode {
         }
 
         runtime.reset();
-        while (runtime.seconds()<5 && opModeIsActive()) {
+
             //Then april tag will direct robot to backdrop
             targetFound = false;
             desiredTag = null;
@@ -338,7 +338,7 @@ public class AudienceRed extends LinearOpMode {
                     //  Check to see if we want to track towards this tag.
                     if ((DESIRED_TAG_ID < 0) || (detection.id == DESIRED_TAG_ID)) {
                         // Yes, we want to use this tag.
-                        targetFound = true;
+                        targetFound = false;
                         desiredTag = detection;
                         break;  // don't look any further.
                     } else {
@@ -377,13 +377,18 @@ public class AudienceRed extends LinearOpMode {
                 telemetry.addData("Auto", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
             } else {
                 //TODO:decide best course of action if can't find tag
+               while (desiredTag==null&& opModeIsActive()){
+                   leftFront.setPower(-0.25);
+                   leftBack.setPower(0.35);
+                   rightFront.setPower(-0.25);
+                   rightBack.setPower(-0.25);
+               }
                 telemetry.addData("Manual", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
             }
             telemetry.update();
 
             // Apply desired axes motions to the drivetrain.
             moveRobot(drive, strafe, turn);
-        }
 
 
         leftFront.setPower(0);

@@ -98,7 +98,7 @@ public class Teleop extends OpMode {
             arm.setPower(-1);
             arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             arm.setTargetPosition(-5000);*/
-            while(arm.getCurrentPosition() < 4000) {
+            while(arm.getCurrentPosition() > -4000) {
                 arm.setPower(-1);
             }
             arm.setPower(0);
@@ -109,7 +109,7 @@ public class Teleop extends OpMode {
             arm.setTargetPosition(0);
             arm.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
              */
-            while(arm.getCurrentPosition() > 100) {
+            while(arm.getCurrentPosition() < -100) {
                 arm.setPower(0.75);
             }
             arm.setPower(0);
@@ -119,10 +119,10 @@ public class Teleop extends OpMode {
             //arm.setPower(-1);
             //arm.setTargetPosition(-2500);
             //arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            while(arm.getCurrentPosition() < 2500) {
+            while(arm.getCurrentPosition() > -2500) {
                 arm.setPower(-1);
             }
-            while(arm.getCurrentPosition() > 3000){
+            while(arm.getCurrentPosition() < -3000){
                 arm.setPower(0.75);
             }
             arm.setPower(0);
