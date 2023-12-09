@@ -33,6 +33,7 @@ public class Teleop extends OpMode {
     private Servo drone;
     private Servo rotate;
     private BNO055IMU imu;
+    private Pixy pixy;
     @Override
     public void init() {
         intakel = hardwareMap.get(DcMotorEx.class,"intakel");
@@ -47,6 +48,7 @@ public class Teleop extends OpMode {
         drone = hardwareMap.get(Servo.class,"drone");
         rotate = hardwareMap.get(Servo.class, "rotate");
         imu = hardwareMap.get(BNO055IMU.class, "imu");
+        pixy = hardwareMap.get(Pixy.class, "pixy");
 
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
@@ -58,10 +60,8 @@ public class Teleop extends OpMode {
 
         imu.initialize(parameters);
 
-
         arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -98,10 +98,11 @@ public class Teleop extends OpMode {
             arm.setPower(-1);
             arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             arm.setTargetPosition(-5000);*/
-            while(arm.getCurrentPosition() > -4000) {
+            if(arm.getCurrentPosition() < 2000) {
                 arm.setPower(-1);
+            } else{
+                arm.setPower(0);
             }
-            arm.setPower(0);
         }else if(gamepad2.dpad_down){
             arm.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
             /*arm.setTargetPosition(0);
@@ -109,23 +110,24 @@ public class Teleop extends OpMode {
             arm.setTargetPosition(0);
             arm.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
              */
-            while(arm.getCurrentPosition() < -100) {
+            if(arm.getCurrentPosition() > 100) {
                 arm.setPower(0.75);
+            } else{
+                arm.setPower(0);
             }
-            arm.setPower(0);
         } else if(gamepad2.dpad_right){
             //arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             //arm.setTargetPosition(-2500);
             //arm.setPower(-1);
             //arm.setTargetPosition(-2500);
             //arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            while(arm.getCurrentPosition() > -2500) {
+            if(arm.getCurrentPosition() < 1200) {
                 arm.setPower(-1);
-            }
-            while(arm.getCurrentPosition() < -3000){
+            } else if(arm.getCurrentPosition() > 1500){
                 arm.setPower(0.75);
+            } else{
+                arm.setPower(0);
             }
-            arm.setPower(0);
         }else if(gamepad2.right_bumper){
             arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             arm.setPower(1);
@@ -133,23 +135,28 @@ public class Teleop extends OpMode {
             arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             arm.setPower(-1);
         } else {
-            arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             arm.setPower(0);
         }
-        /*if (gamepad2.cross){
-            intakel.setPower(-1);
-            intaker.setPower(1);
-        }else {
-            intakel.setPower(0);
-            intaker.setPower(0);
-        }*/
+        if(gamepad1.cross){
+            arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        }
         if(gamepad2.square) {
             //open
             clawl.setPosition(0.6);
+        }else if(gamepad2.circle) {
+            //open
+            clawr.setPosition(.9);
+        }else if (gamepad2.cross){
+            //open
+            clawl.setPosition(0.6);
+            clawr.setPosition(.9);
         }else {
             //close
             clawl.setPosition(0.75);
+            clawr.setPosition(.8);
         }
+
         if(gamepad2.left_bumper){
             //down below field
             rotate.setPosition(0.2);
@@ -166,24 +173,6 @@ public class Teleop extends OpMode {
             //.75 was all the way down and trying to go farther
             //.9 was all the way down and trying to go farther
             rotate.setPosition(0.4);
-        }
-        if(gamepad2.circle) {
-            //open
-            //when reversed
-            //.55 closed too far
-            //.4 closed too far
-            //.2 closed too far
-            //.05 closed too far
-            //.9 didn't close far enough
-            //.8 is good
-            clawr.setPosition(.9);
-        }else {
-            //close
-            //when reversed
-            //.5 closed and trying to go farther
-            //0 closed and trying to go farther
-            //1 is good
-            clawr.setPosition(.8);
         }
         if (gamepad2.triangle){
             drone.setPosition(.5);
@@ -218,7 +207,13 @@ public class Teleop extends OpMode {
         telemetry.addData("imu second", imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).secondAngle);
         telemetry.addData("imu third", imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).thirdAngle);
         telemetry.addData("arm encoder", arm.getCurrentPosition());
-
+        byte[] pixyBytes1 = pixy.readShort(0x51, 5); // need this
+        telemetry.addData("number of Signature 1", pixyBytes1[0]); // need this
+        telemetry.addData("x position of largest block of sig 1", pixyBytes1[1]); // need this
+        byte[] pixyBytes2 = pixy.readShort(0x52, 2); // need this
+        telemetry.addData("number of Signature 2", pixyBytes2[0]); // need this
+        telemetry.addData("x position of largest block of sig 2", pixyBytes2[1]); // need this
+        telemetry.update();
     }
     @Override
     public void stop() {
