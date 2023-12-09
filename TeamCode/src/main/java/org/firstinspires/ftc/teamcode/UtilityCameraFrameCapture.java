@@ -26,6 +26,7 @@ package org.firstinspires.ftc.teamcode;
  */
 
 @TeleOp(name = "Utility: Camera Frame Capture", group = "Utility")
+@Disabled
 public class UtilityCameraFrameCapture extends LinearOpMode
 {
     /*

@@ -21,6 +21,7 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -36,6 +37,7 @@ import org.openftc.easyopencv.OpenCvWebcam;
  * command is issued. The pipeline is re-used from SkystoneDeterminationExample
  */
 @TeleOp
+@Disabled
 public class EOCVAutoExample extends LinearOpMode
 {
     OpenCvWebcam webcam;
