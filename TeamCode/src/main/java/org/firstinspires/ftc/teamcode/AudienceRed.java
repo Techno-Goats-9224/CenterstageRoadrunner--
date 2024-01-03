@@ -405,6 +405,9 @@ public class AudienceRed extends LinearOpMode {
         leftBack.setPower(0);
         rightBack.setPower(0);
 
+        // Transfer the current pose to PoseStorage so we can use it in TeleOp
+        //PoseStorage.currentPose = drive.getPoseEstimate();
+
     }
 
 
