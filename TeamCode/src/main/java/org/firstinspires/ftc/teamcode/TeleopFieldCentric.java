@@ -225,27 +225,20 @@ public class TeleopFieldCentric extends OpMode {
             clawr.setPosition(.8);
         }
 
-        if(gamepad2.left_bumper){
+        if(gamepad2.left_trigger > 0.1){
+          //up
+            rotate.setPosition(0.4);
+        } else if(gamepad2.left_bumper){
             //down below field
-            rotate.setPosition(-0.1);
-        }else{
+            rotate.setPosition(0.2);
+        } else{
             //flat on field
-            //when not reversed:
-            //.5 was all the way up and trying to go farther
-            //.1 was all the way up and trying to go farther
-            //1 was all the way  up and trying to go farther
-            //when reversed
-            //1 was all the way up and trying to go farther
-            //0 was all the way down and tryng to go farther
-            //.5 was all the way down and trying to go farther
-            //.75 was all the way down and trying to go farther
-            //.9 was all the way down and trying to go farther
-            rotate.setPosition(0.1);
+            rotate.setPosition(0.3);
         }
         if (gamepad2.triangle){
             drone.setPosition(.5);
         }else{
-            drone.setPosition(0);
+            drone.setPosition(1);
             //1 is when not pushed and .5 is when pushed
             // 1 is holding rubberband .5 is out
         }
