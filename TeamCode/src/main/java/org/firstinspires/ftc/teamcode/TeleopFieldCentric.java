@@ -245,7 +245,7 @@ public class TeleopFieldCentric extends OpMode {
         if (gamepad2.triangle){
             drone.setPosition(.5);
         }else{
-            drone.setPosition(1);
+            drone.setPosition(0);
             //1 is when not pushed and .5 is when pushed
             // 1 is holding rubberband .5 is out
         }
