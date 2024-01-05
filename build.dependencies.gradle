@@ -3,7 +3,7 @@ repositories {
     google() // Needed for androidx
     maven {
         url = 'https://maven.brott.dev/'
-        //url = 'https://www.matthewo.tech/maven/'
+        url = 'https://www.matthewo.tech/maven/'
     }
 }
 
@@ -23,6 +23,6 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'com.acmerobotics.dashboard:dashboard:0.4.5'
 
-    //implementation 'org.team11260:fast-load:0.1.2'
+    implementation 'org.team11260:fast-load:0.1.2'
 }
 
