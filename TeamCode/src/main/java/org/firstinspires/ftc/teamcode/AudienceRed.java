@@ -247,17 +247,17 @@ public class AudienceRed extends LinearOpMode {
         telemetry.update();
 
         // Wait for driver to press start
-
         waitForStart();
 
+        //Pixy look for team prop
         runtime.reset();
         while (runtime.seconds()<1 && opModeIsActive()) {
-            byte[] pixyBytes1 = pixy.readShort(0x51, 5); // need this
-            telemetry.addData("number of Signature 1", pixyBytes1[0]); // need this
-            telemetry.addData("x position of largest block of sig 1", pixyBytes1[1]); // need this
-            byte[] pixyBytes2 = pixy.readShort(0x52, 2); // need this
-            telemetry.addData("number of Signature 2", pixyBytes2[0]); // need this
-            telemetry.addData("x position of largest block of sig 2", pixyBytes2[1]); // need this
+            byte[] pixyBytes1 = pixy.readShort(0x51, 5);
+            telemetry.addData("number of Signature 1", pixyBytes1[0]);
+            telemetry.addData("x position of largest block of sig 1", pixyBytes1[1]);
+            byte[] pixyBytes2 = pixy.readShort(0x52, 2);
+            telemetry.addData("number of Signature 2", pixyBytes2[0]);
+            telemetry.addData("x position of largest block of sig 2", pixyBytes2[1]);
             telemetry.update();
             if(red == true){
                 if (pixyBytes1[1] < 90 && pixyBytes1[1] != 0) {
@@ -269,7 +269,7 @@ public class AudienceRed extends LinearOpMode {
                 }
             }
             if(red == false){
-                if(pixyBytes2[1] > 0 ){
+                if(pixyBytes2[1] > 0){
                     position = 'L';
                 } else if (pixyBytes2[1] < 0){
                     position = 'C';
@@ -277,45 +277,47 @@ public class AudienceRed extends LinearOpMode {
                     position = 'R';
                 }
             }
-        }
+        } //close pixy detection time-based while loop
 
-            //Pixy look for team prop
         //Robot needs to drive and move forward like 24in ish
         drive(34, directions.FORWARD, 0.25);
 
         //If Drop pixel at left: turn left 90 degrees then open claw then turn right to get back on track.
-            if (position == 'L'){
-                turn(90, directions.LEFT, 0.25);
-                drive(3, directions.FORWARD, 0.25);
-                clawr.setPosition(0.9);
-                drive(-3, directions.FORWARD, 0.25);
-                turn(0, directions.RIGHT, 0.25);
-                //Drive the remaining 48in
-                drive(16, directions.FORWARD, 0.25);
-            }
-            else if (position == 'C'){
-                // Drop pixel at center: drive past then turn around 180 degrees and then drop pixel and then turn another 180 degrees.
-                drive(12, directions.FORWARD, 0.25);
-                turn(175, directions.LEFT,.25);
-                //open
-                clawr.setPosition(0.9);
-                drive(-3, directions.FORWARD, 0.25);
-                turn(85, directions.LEFT,.25);
-            }
-            else if(position== 'R'){
-                //Then turn right 90 degrees drop pixel at right
-                turn(-90, directions.RIGHT, .25);
-                drive(3, directions.FORWARD, .25);
-                clawr.setPosition(0.9);
-                drive(-3, directions.FORWARD, .25);
-                turn(0, directions.LEFT, .25);
-                //Drive the remaining 48in
-                drive(14, directions.FORWARD, 0.25);
-                //Then turn 90 degrees to the right after the 72in
-                turn(85, directions.RIGHT, 0.25);
-            }
-            //TODO: is this good for both sides
+        if (position == 'L'){
+            turn(90, directions.LEFT, 0.25);
+            drive(3, directions.FORWARD, 0.25);
+            clawr.setPosition(0.9);
+            drive(-3, directions.FORWARD, 0.25);
+            turn(0, directions.RIGHT, 0.25);
+            //Drive the remaining 48in
+            drive(16, directions.FORWARD, 0.25);
+        }
+        else if (position == 'C'){
+            // Drop pixel at center: drive past then turn around 180 degrees and then drop pixel and then turn another 180 degrees.
+            drive(12, directions.FORWARD, 0.25);
+            turn(175, directions.LEFT,.25);
+            //open
+            clawr.setPosition(0.9);
+            drive(-4, directions.FORWARD, 0.25);
+            turn(85, directions.LEFT,.25);
+        }
+        else if(position== 'R'){
+            //Then turn right 90 degrees drop pixel at right
+            turn(-90, directions.RIGHT, .25);
+            drive(3, directions.FORWARD, .25);
+            clawr.setPosition(0.9);
+            drive(-3, directions.FORWARD, .25);
+            turn(0, directions.LEFT, .25);
+            //Drive the remaining 48in
+            drive(14, directions.FORWARD, 0.25);
+            //Then turn 90 degrees to the right after the 72in
+            turn(85, directions.RIGHT, 0.25);
+        }
+        if(red == true){
             turn(90, directions.SIDE, 0.25);
+        } else if (red == false){
+            turn(-90, directions.SIDE, 0.25);
+        }
         //After that drive forward 96in underneath the stage door
         drive(-70,directions.FORWARD, 0.25);
         //then move to in front of backboard
@@ -334,7 +336,7 @@ public class AudienceRed extends LinearOpMode {
         runtime.reset();
 
         //Then april tag will direct robot to backdrop
-       /* targetFound = false;
+        targetFound = false;
         desiredTag = null;
         if (red==true && position == 'L'){
             DESIRED_TAG_ID= 4;
@@ -399,7 +401,7 @@ public class AudienceRed extends LinearOpMode {
 
         // Apply desired axes motions to the drivetrain.
         moveRobot(drive, strafe, turn);
-        */
+
         leftFront.setPower(0);
         rightFront.setPower(0);
         leftBack.setPower(0);

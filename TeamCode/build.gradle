@@ -10,15 +10,17 @@
 
 
 // Custom definitions may go here
+
+//Fast Load stuff from https://gist.github.com/MatthewOates36/1e38452236dc9f145c3a6b2addfb418f
 buildscript {
     repositories {
-       mavenCentral()
-        //maven {
-           // url = 'https://www.matthewo.tech/maven/'
-       //}
+        mavenCentral()
+        maven {
+            url = 'https://www.matthewo.tech/maven/'
+        }
     }
     dependencies {
-        //classpath 'org.team11260:fast-load-plugin:{version}'
+        //classpath 'org.team11260:fast-load-plugin:0.1.2'
     }
 }
 // Include common definitions from above.
@@ -37,13 +39,14 @@ android {
 repositories {
     maven {
         url = 'https://maven.brott.dev/'
+        url = 'https://www.matthewo.tech/maven/'
     }
 }
 
 dependencies {
     implementation project(':FtcRobotController')
     annotationProcessor files('lib/OpModeAnnotationProcessor.jar')
-    //implementation 'org.team11260:fast-load:{version}'
+
 
     implementation "com.acmerobotics.roadrunner:ftc:0.1.6"
     implementation "com.acmerobotics.dashboard:dashboard:0.4.13"
