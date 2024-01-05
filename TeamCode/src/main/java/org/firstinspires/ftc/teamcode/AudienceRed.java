@@ -180,27 +180,27 @@ public class AudienceRed extends LinearOpMode {
     }
     @Override
     public void runOpMode() {
-        boolean targetFound     = false;    // Set to true when an AprilTag target is detected
-        double  drive           = 0;        // Desired forward power/speed (-1 to +1)
-        double  strafe          = 0;        // Desired strafe power/speed (-1 to +1)
-        double  turn            = 0;        // Desired turning power/speed (-1 to +1)
+        boolean targetFound = false;    // Set to true when an AprilTag target is detected
+        double drive = 0;        // Desired forward power/speed (-1 to +1)
+        double strafe = 0;        // Desired strafe power/speed (-1 to +1)
+        double turn = 0;        // Desired turning power/speed (-1 to +1)
 
         // Initialize the Apriltag Detection process
-        //initAprilTag();
+        initAprilTag();
 
-        leftBack = hardwareMap.get(DcMotorEx.class,"leftBack");
-        rightBack = hardwareMap.get(DcMotorEx.class,"rightBack");
-        leftFront = hardwareMap.get(DcMotorEx.class,"leftFront");
-        rightFront = hardwareMap.get(DcMotorEx.class,"rightFront");
-        arm = hardwareMap.get(DcMotorEx.class,"arm");
-        clawl = hardwareMap.get(ServoImplEx.class,"clawl");
-        clawr = hardwareMap.get(ServoImplEx.class,"clawr");
+        leftBack = hardwareMap.get(DcMotorEx.class, "leftBack");
+        rightBack = hardwareMap.get(DcMotorEx.class, "rightBack");
+        leftFront = hardwareMap.get(DcMotorEx.class, "leftFront");
+        rightFront = hardwareMap.get(DcMotorEx.class, "rightFront");
+        arm = hardwareMap.get(DcMotorEx.class, "arm");
+        clawl = hardwareMap.get(ServoImplEx.class, "clawl");
+        clawr = hardwareMap.get(ServoImplEx.class, "clawr");
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         rotate = hardwareMap.get(Servo.class, "rotate");
 
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.loggingEnabled = true;
-        parameters.loggingTag     = "IMU";
+        parameters.loggingTag = "IMU";
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
 
@@ -225,13 +225,13 @@ public class AudienceRed extends LinearOpMode {
         clawr.setPosition(0.8);
         rotate.setPosition(0.1);
 
-        /*if (USE_WEBCAM)
+        if (USE_WEBCAM)
             setManualExposure(1, 255);  // Use low exposure time to reduce motion blur
-*/
+
         pixy = hardwareMap.get(Pixy.class, "pixy"); // need this
 
 
-        while(gamepad1.left_bumper) {
+        while (gamepad1.left_bumper) {
             telemetry.addData("x or square: ", "blue");
             telemetry.addData("b or circle: ", "red");
             telemetry.update();
@@ -251,7 +251,7 @@ public class AudienceRed extends LinearOpMode {
 
         //Pixy look for team prop
         runtime.reset();
-        while (runtime.seconds()<1 && opModeIsActive()) {
+        while (runtime.seconds() < 1 && opModeIsActive()) {
             byte[] pixyBytes1 = pixy.readShort(0x51, 5);
             telemetry.addData("number of Signature 1", pixyBytes1[0]);
             telemetry.addData("x position of largest block of sig 1", pixyBytes1[1]);
@@ -259,7 +259,7 @@ public class AudienceRed extends LinearOpMode {
             telemetry.addData("number of Signature 2", pixyBytes2[0]);
             telemetry.addData("x position of largest block of sig 2", pixyBytes2[1]);
             telemetry.update();
-            if(red == true){
+            if (red == true) {
                 if (pixyBytes1[1] < 90 && pixyBytes1[1] != 0) {
                     position = 'C';
                 } else if (pixyBytes1[1] > 90) {
@@ -268,10 +268,10 @@ public class AudienceRed extends LinearOpMode {
                     position = 'R';
                 }
             }
-            if(red == false){
-                if(pixyBytes2[1] > 0){
+            if (red == false) {
+                if (pixyBytes2[1] > 0) {
                     position = 'L';
-                } else if (pixyBytes2[1] < 0){
+                } else if (pixyBytes2[1] < 0) {
                     position = 'C';
                 } else if (pixyBytes2[0] == 0) {
                     position = 'R';
@@ -283,25 +283,23 @@ public class AudienceRed extends LinearOpMode {
         drive(34, directions.FORWARD, 0.25);
 
         //If Drop pixel at left: turn left 90 degrees then open claw then turn right to get back on track.
-        if (position == 'L'){
+        if (position == 'L') {
             turn(90, directions.LEFT, 0.25);
             drive(3, directions.FORWARD, 0.25);
+            //TODO make claw open
             clawr.setPosition(0.9);
             drive(-3, directions.FORWARD, 0.25);
             turn(0, directions.RIGHT, 0.25);
             //Drive the remaining 48in
             drive(16, directions.FORWARD, 0.25);
-        }
-        else if (position == 'C'){
+        } else if (position == 'C') {
             // Drop pixel at center: drive past then turn around 180 degrees and then drop pixel and then turn another 180 degrees.
             drive(12, directions.FORWARD, 0.25);
-            turn(175, directions.LEFT,.25);
+            turn(175, directions.LEFT, .25);
             //open
             clawr.setPosition(0.9);
             drive(-4, directions.FORWARD, 0.25);
-            turn(85, directions.LEFT,.25);
-        }
-        else if(position== 'R'){
+        } else if (position == 'R') {
             //Then turn right 90 degrees drop pixel at right
             turn(-90, directions.RIGHT, .25);
             drive(3, directions.FORWARD, .25);
@@ -310,97 +308,84 @@ public class AudienceRed extends LinearOpMode {
             turn(0, directions.LEFT, .25);
             //Drive the remaining 48in
             drive(14, directions.FORWARD, 0.25);
-            //Then turn 90 degrees to the right after the 72in
-            turn(85, directions.RIGHT, 0.25);
         }
-        if(red == true){
+        if (red == true) {
+            //Then turn 90 degrees to the right after the 72in
             turn(90, directions.SIDE, 0.25);
-        } else if (red == false){
+        } else if (red == false) {
             turn(-90, directions.SIDE, 0.25);
         }
         //After that drive forward 96in underneath the stage door
-        drive(-70,directions.FORWARD, 0.25);
-        //then move to in front of backboard
-        if(red = true) {
-            drive(24, directions.SIDE, 0.50);
-        } else{
-            drive(-24, directions.SIDE, .5);
+        drive(-70, directions.FORWARD, 0.25);
+        //turn to see tags
+        if (red == true) {
+            turn(10, directions.RIGHT, .25);
+        } else {
+            turn(-10, directions.RIGHT, .25);
         }
-        turn(175, directions.LEFT, .5 );
-        if (red = true) {
-            drive(24,directions.FORWARD, .25 );
-        } else{
-            drive(24, directions.FORWARD, .5);
-        }
-        clawl.setPosition(.6);
-        runtime.reset();
-
         //Then april tag will direct robot to backdrop
         targetFound = false;
         desiredTag = null;
-        if (red==true && position == 'L'){
-            DESIRED_TAG_ID= 4;
-        } else if (red==true && position == 'R') {
-            DESIRED_TAG_ID= 6;
-        } else if (red==true && position == 'C') {
+        if (red == true && position == 'L') {
+            DESIRED_TAG_ID = 4;
+        } else if (red == true && position == 'R') {
+            DESIRED_TAG_ID = 6;
+        } else if (red == true && position == 'C') {
             DESIRED_TAG_ID = 5;
         }
-        // Step through the list of detected tags and look for a matching tag
-        List<AprilTagDetection> currentDetections = aprilTag.getDetections();
-        for (AprilTagDetection detection : currentDetections) {
-            // Look to see if we have size info on this tag.
-            if (detection.metadata != null) {
-                //  Check to see if we want to track towards this tag.
-                if ((DESIRED_TAG_ID < 0) || (detection.id == DESIRED_TAG_ID)) {
-                    // Yes, we want to use this tag.
-                    targetFound = false;
-                    desiredTag = detection;
-                    break;  // don't look any further.
+        while (opModeIsActive()) {
+            // Step through the list of detected tags and look for a matching tag
+            List<AprilTagDetection> currentDetections = aprilTag.getDetections();
+            for (AprilTagDetection detection : currentDetections) {
+                // Look to see if we have size info on this tag.
+                if (detection.metadata != null) {
+                    //  Check to see if we want to track towards this tag.
+                    if ((DESIRED_TAG_ID < 0) || (detection.id == DESIRED_TAG_ID)) {
+                        // Yes, we want to use this tag.
+                        targetFound = false;
+                        desiredTag = detection;
+                        break;  // don't look any further.
+                    } else {
+                        // This tag is in the library, but we do not want to track it right now.
+                        telemetry.addData("Skipping", "Tag ID %d is not desired", detection.id);
+                    }
                 } else {
-                    // This tag is in the library, but we do not want to track it right now.
-                    telemetry.addData("Skipping", "Tag ID %d is not desired", detection.id);
+                    // This tag is NOT in the library, so we don't have enough information to track to it.
+                    telemetry.addData("Unknown", "Tag ID %d is not in TagLibrary", detection.id);
                 }
+            }
+            //Mitchell not just kinda weird he is weird
+            // If Left Bumper is being pressed, AND we have found the desired target, Drive to target Automatically .
+            if (targetFound) {
+                // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
+                double rangeError = (desiredTag.ftcPose.range - DESIRED_DISTANCE);
+                double headingError = desiredTag.ftcPose.bearing;
+                double yawError = desiredTag.ftcPose.yaw;
+
+                // Use the speed and turn "gains" to calculate how we want the robot to move.
+                drive = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
+                turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
+                strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
+
+                telemetry.addData("Auto", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", -drive, -strafe, turn);
+                telemetry.addData("Found", "ID %d (%s)", desiredTag.id, desiredTag.metadata.name);
+                telemetry.addData("Range", "%5.1f inches", desiredTag.ftcPose.range);
+                telemetry.addData("Bearing", "%3.0f degrees", desiredTag.ftcPose.bearing);
+                telemetry.addData("Yaw", "%3.0f degrees", desiredTag.ftcPose.yaw);
+                break;
             } else {
-                // This tag is NOT in the library, so we don't have enough information to track to it.
-                telemetry.addData("Unknown", "Tag ID %d is not in TagLibrary", detection.id);
+                if (red == true) {
+                    drive(-2, directions.SIDE, .25);
+                } else {
+                    drive(2, directions.SIDE, .25);
+                }
+                telemetry.addData("\n>", "no target found\n");
+                telemetry.addData("Manual", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", -drive, -strafe, turn);
             }
+            telemetry.update();
         }
-        // Tell the driver what we see, and what to do.
-        if (targetFound) {
-            telemetry.addData("Found", "ID %d (%s)", desiredTag.id, desiredTag.metadata.name);
-            telemetry.addData("Range", "%5.1f inches", desiredTag.ftcPose.range);
-            telemetry.addData("Bearing", "%3.0f degrees", desiredTag.ftcPose.bearing);
-            telemetry.addData("Yaw", "%3.0f degrees", desiredTag.ftcPose.yaw);
-        } else {
-            telemetry.addData("\n>", "no target found\n");
-        }
-
-        // If Left Bumper is being pressed, AND we have found the desired target, Drive to target Automatically .
-        if (targetFound) {
-            // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
-            double rangeError = (desiredTag.ftcPose.range - DESIRED_DISTANCE);
-            double headingError = desiredTag.ftcPose.bearing;
-            double yawError = desiredTag.ftcPose.yaw;
-
-            // Use the speed and turn "gains" to calculate how we want the robot to move.
-            drive = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
-            turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
-            strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
-
-            telemetry.addData("Auto", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
-        } else {
-            while (desiredTag==null&& opModeIsActive()){
-                leftFront.setPower(-0.25);
-                leftBack.setPower(0.35);
-                rightFront.setPower(-0.25);
-                rightBack.setPower(-0.25);
-            }
-            telemetry.addData("Manual", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
-        }
-        telemetry.update();
-
-        // Apply desired axes motions to the drivetrain.
-        moveRobot(drive, strafe, turn);
+            // Apply desired axes motions to the drivetrain.
+            moveRobot(-drive, -strafe, turn);
 
         leftFront.setPower(0);
         rightFront.setPower(0);
@@ -415,10 +400,10 @@ public class AudienceRed extends LinearOpMode {
 
 public void moveRobot(double x, double y, double yaw) {
         // Calculate wheel powers.
-        double leftFrontPower    =  x -y -yaw;
-        double rightFrontPower   =  x +y +yaw;
-        double leftBackPower     =  x +y -yaw;
-        double rightBackPower    =  x -y +yaw;
+        double leftFrontPower    =  x +y +yaw;
+        double rightFrontPower   =  -x +y +yaw;
+        double leftBackPower     =  x -y +yaw;
+        double rightBackPower    =  x +y -yaw;
 
         // Normalize wheel powers to be less than 1.0
         double max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
