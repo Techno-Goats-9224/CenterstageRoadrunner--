@@ -93,17 +93,25 @@ public class Teleop extends OpMode {
     @Override
     public void loop() {
         if (gamepad2.dpad_up) {
+            //outtake
             arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             /*arm.setTargetPosition(-5000);
             arm.setPower(-1);
             arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             arm.setTargetPosition(-5000);*/
-            if(arm.getCurrentPosition() < 2000) {
-                arm.setPower(-1);
-            } else{
+
                 arm.setPower(0);
-            }
+                if (1500>arm.getCurrentPosition()&& arm.getCurrentPosition()>0) {
+                    arm.setPower(-1);
+
+                } else if(1500<arm.getCurrentPosition() && arm.getCurrentPosition()<2000) {
+                    arm.setPower(-.5);
+                }
+                if (arm.getCurrentPosition()> 2000){
+                    arm.setPower(0);
+                }
         }else if(gamepad2.dpad_down){
+            //intake
             arm.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
             /*arm.setTargetPosition(0);
             arm.setPower(1);
@@ -116,6 +124,7 @@ public class Teleop extends OpMode {
                 arm.setPower(0);
             }
         } else if(gamepad2.dpad_right){
+            //transport
             //arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             //arm.setTargetPosition(-2500);
             //arm.setPower(-1);
@@ -129,9 +138,11 @@ public class Teleop extends OpMode {
                 arm.setPower(0);
             }
         }else if(gamepad2.right_bumper){
+            //manual up
             arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             arm.setPower(1);
         } else if (gamepad2.right_trigger > 0.1) {
+            //manual down
             arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             arm.setPower(-1);
         } else {
@@ -150,29 +161,22 @@ public class Teleop extends OpMode {
         }else if (gamepad2.cross){
             //open
             clawl.setPosition(0.6);
-            clawr.setPosition(.9);
+            clawr.setPosition(.7);
         }else {
             //close
             clawl.setPosition(0.75);
-            clawr.setPosition(.8);
+            clawr.setPosition(.6);
         }
 
-        if(gamepad2.left_bumper){
+        if(gamepad2.left_trigger>.1) {
             //down below field
-            rotate.setPosition(-0.1);
+            rotate.setPosition(0.1);
+        }else if(gamepad2.left_bumper){
+            //up above field
+            rotate.setPosition(.3);
         }else{
             //flat on field
-            //when not reversed:
-            //.5 was all the way up and trying to go farther
-            //.1 was all the way up and trying to go farther
-            //1 was all the way  up and trying to go farther
-            //when reversed
-            //1 was all the way up and trying to go farther
-            //0 was all the way down and tryng to go farther
-            //.5 was all the way down and trying to go farther
-            //.75 was all the way down and trying to go farther
-            //.9 was all the way down and trying to go farther
-            rotate.setPosition(0.1);
+            rotate.setPosition(0.2);
         }
         if (gamepad2.triangle){
             drone.setPosition(.5);
