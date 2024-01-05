@@ -2,25 +2,16 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.PwmControl;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
 
-import org.checkerframework.checker.units.qual.degrees;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
@@ -28,34 +19,9 @@ import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
 @Autonomous
-public class Audience2 extends LinearOpMode {
+public class Backstage extends LinearOpMode {
     // Adjust these numbers to suit your robot.
-    final double DESIRED_DISTANCE = 12.0; //  this is how close the camera should get to the target (inches)
-
-    //  Set the GAIN constants to control the relationship between the measured position error, and how much power is
-    //  applied to the drive motors to correct the error.
-    //  Drive = Error * Gain    Make these values smaller for smoother control, or larger for a more aggressive response.
-    final double SPEED_GAIN  =  0.03  ;   //  Forward Speed Control "Gain". eg: Ramp up to 75% power at a 25 inch error.   (0.75 / 25.0)
-    final double STRAFE_GAIN =  0.02 ;   //  Strafe Speed Control "Gain".  eg: Ramp up to 50% power at a 25 degree Yaw error.   (0.50 / 25.0)
-    final double TURN_GAIN   =  0.01  ;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
-
-    final double MAX_AUTO_SPEED = 0.75;   //  Clip the approach speed to this max value (adjust for your robot)
-    final double MAX_AUTO_STRAFE= 0.75;   //  Clip the approach speed to this max value (adjust for your robot)
-    final double MAX_AUTO_TURN  = 0.3;   //  Clip the turn speed to this max value (adjust for your robot)
-
-
-
-    private static final boolean USE_WEBCAM = true;  // Set true to use a webcam, or false for a phone camera
-    private static int DESIRED_TAG_ID = -1;     // Choose the tag you want to approach or set to -1 for ANY tag.
-    private VisionPortal visionPortal;               // Used to manage the video source.
-    private AprilTagProcessor aprilTag;              // Used for managing the AprilTag detection process.
-    private AprilTagDetection desiredTag = null;     // Used to hold the data for a detected AprilTag
-
-    AprilTagProcessor.Builder MitchellKindaWeirdAprilTagProcessor;
     private DcMotorEx rightBack;
     private DcMotorEx leftFront;
     private DcMotor rightFront;
@@ -185,8 +151,6 @@ public class Audience2 extends LinearOpMode {
         double  strafe          = 0;        // Desired strafe power/speed (-1 to +1)
         double  turn            = 0;        // Desired turning power/speed (-1 to +1)
 
-        // Initialize the Apriltag Detection process
-        //initAprilTag();
 
         leftBack = hardwareMap.get(DcMotorEx.class,"leftBack");
         rightBack = hardwareMap.get(DcMotorEx.class,"rightBack");
@@ -225,9 +189,6 @@ public class Audience2 extends LinearOpMode {
         clawr.setPosition(0.8);
         rotate.setPosition(0.1);
 
-        /*if (USE_WEBCAM)
-            setManualExposure(1, 255);  // Use low exposure time to reduce motion blur
-*/
         pixy = hardwareMap.get(Pixy.class, "pixy"); // need this
 
 
@@ -291,18 +252,13 @@ public class Audience2 extends LinearOpMode {
                 drive(3, directions.FORWARD, 0.25);
                 clawr.setPosition(0.9);
                 drive(-3, directions.FORWARD, 0.25);
-                //turn(0, directions.RIGHT, 0.25);
-                //Drive the remaining 48in
-                //drive(16, directions.FORWARD, 0.25);
             }
             else if (position == 'C'){
                 // Drop pixel at center: drive past then turn around 180 degrees and then drop pixel and then turn another 180 degrees.
                 drive(0, directions.FORWARD, 0.25);
-                //turn(175, directions.LEFT,.25);
                 //open
                 clawr.setPosition(0.9);
                 drive(-3, directions.FORWARD, 0.25);
-                //turn(85, directions.LEFT,.25);
             }
             else if(position== 'R'){
                 //Then turn right 90 degrees drop pixel at right
@@ -310,34 +266,8 @@ public class Audience2 extends LinearOpMode {
                 drive(3, directions.FORWARD, .25);
                 clawr.setPosition(0.9);
                 drive(-3, directions.FORWARD, .25);
-                //turn(0, directions.LEFT, .25);
-                //Drive the remaining 48in
-                //drive(14, directions.FORWARD, 0.25);
-                //Then turn 90 degrees to the right after the 72in
-                //turn(85, directions.RIGHT, 0.25);
             }
-            //TODO: is this good for both sides
-            /*if (red == true){
-                turn(90, directions.SIDE, 0.25);
-            } else {
-                turn(-90, directions.SIDE, 0.25);
-            }
-        //After that drive forward 96in underneath the stage door
-        drive(-48, directions.FORWARD, 0.25);
-            if(red == true){
-                turn(-90, directions.SIDE, 0.25);
-            } else{
-                turn(90, directions.SIDE, 0.25);
-            }
-        while(runtime.seconds() < 5){
-            drive(48 ,directions.FORWARD, 0.25);
-        }
-        
-        //open
-        clawl.setPosition(.6);
 
-        drive(-3, directions.FORWARD, 0.25);
-        */
         leftFront.setPower(0);
         rightFront.setPower(0);
         leftBack.setPower(0);
