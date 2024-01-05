@@ -186,8 +186,8 @@ public class Backstage extends LinearOpMode {
         rotate.setDirection(Servo.Direction.REVERSE);
         clawl.setPosition(.75);
         //close
-        clawr.setPosition(0.8);
-        rotate.setPosition(0.1);
+        clawr.setPosition(0.6);
+        rotate.setPosition(0.3);
 
         pixy = hardwareMap.get(Pixy.class, "pixy"); // need this
 
@@ -212,7 +212,7 @@ public class Backstage extends LinearOpMode {
         waitForStart();
 
         runtime.reset();
-        while (runtime.seconds()<1 && opModeIsActive()) {
+        while (runtime.seconds()<25 && opModeIsActive()) {
             byte[] pixyBytes1 = pixy.readShort(0x51, 5); // need this
             telemetry.addData("number of Signature 1", pixyBytes1[0]); // need this
             telemetry.addData("x position of largest block of sig 1", pixyBytes1[1]); // need this
@@ -221,9 +221,9 @@ public class Backstage extends LinearOpMode {
             telemetry.addData("x position of largest block of sig 2", pixyBytes2[1]); // need this
             telemetry.update();
             if(red == true){
-                if (pixyBytes1[1] < 90 && pixyBytes1[1] != 0) {
+                if (pixyBytes1[1] < 0 && pixyBytes1[1] != 0) {
                     position = 'C';
-                } else if (pixyBytes1[1] > 90) {
+                } else if (pixyBytes1[1] > 0) {
                     position = 'L';
                 } else if (pixyBytes1[0] == 0) {
                     position = 'R';
@@ -243,28 +243,28 @@ public class Backstage extends LinearOpMode {
             //Pixy look for team prop
         //Robot needs to drive and move forward like 24in ish
 
-        drive(34, directions.FORWARD, 0.25);
+        drive(30, directions.FORWARD, 0.25);
 
         //If Drop pixel at left: turn left 90 degrees then open claw then turn right to get back on track.
             if (position == 'L'){
 
                 turn(90, directions.LEFT, 0.25);
                 drive(3, directions.FORWARD, 0.25);
-                clawr.setPosition(0.9);
+                clawr.setPosition(0.7);
                 drive(-3, directions.FORWARD, 0.25);
             }
             else if (position == 'C'){
                 // Drop pixel at center: drive past then turn around 180 degrees and then drop pixel and then turn another 180 degrees.
-                drive(0, directions.FORWARD, 0.25);
+                drive(2, directions.FORWARD, 0.25);
                 //open
-                clawr.setPosition(0.9);
+                clawr.setPosition(0.7);
                 drive(-3, directions.FORWARD, 0.25);
             }
             else if(position== 'R'){
                 //Then turn right 90 degrees drop pixel at right
                 turn(-90, directions.RIGHT, .25);
-                drive(3, directions.FORWARD, .25);
-                clawr.setPosition(0.9);
+                drive(1, directions.FORWARD, .25);
+                clawr.setPosition(0.7);
                 drive(-3, directions.FORWARD, .25);
             }
 
