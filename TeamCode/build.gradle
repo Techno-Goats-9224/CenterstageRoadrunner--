@@ -14,11 +14,12 @@
 //Fast Load stuff from https://gist.github.com/MatthewOates36/1e38452236dc9f145c3a6b2addfb418f
 buildscript {
     repositories {
-        //replaced mavenCentral() with url = "repo.maven..." and allowInsecure...
+        //replaced mavenCentral() with url = "repo.maven..." and allowInsecure... from
+        mavenCentral()
         maven {
             url = 'https://www.matthewo.tech/maven/'
-            url = "https://repo.maven.apache.org/maven2"
-            allowInsecureProtocol = true
+            //url = "https://repo.maven.apache.org/maven2"
+            //allowInsecureProtocol = true
         }
     }
     dependencies {
@@ -40,7 +41,6 @@ android {
 
 repositories {
     maven {
-        url = 'https://maven.brott.dev/'
         url = 'https://www.matthewo.tech/maven/'
     }
 }
@@ -49,12 +49,7 @@ dependencies {
     implementation project(':FtcRobotController')
     annotationProcessor files('lib/OpModeAnnotationProcessor.jar')
 
-
-    implementation "com.acmerobotics.roadrunner:ftc:0.1.6"
-    implementation "com.acmerobotics.dashboard:dashboard:0.4.13"
-
-    implementation 'org.apache.commons:commons-math3:3.6.1'
-    implementation 'com.acmerobotics.roadrunner:core:0.5.5'
-
     implementation 'org.openftc:easyopencv:1.7.0'
+
+    implementation 'org.team11260:fast-load:0.1.2'
 }
