@@ -96,7 +96,7 @@ public class Teleop extends OpMode {
             //outtake
             arm.setTargetPosition(2000);
             arm.setPower(1);
-            arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            arm.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
             /*
             arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 arm.setPower(0);

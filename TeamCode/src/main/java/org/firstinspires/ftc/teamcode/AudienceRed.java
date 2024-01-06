@@ -67,9 +67,7 @@ public class AudienceRed extends LinearOpMode {
     private Servo rotate;
     private enum directions{
         FORWARD,
-        SIDE,
-        LEFT,
-        RIGHT
+        SIDE
     }
     public static double X_MULTIPLIER = 0.9787360469; // Multiplier in the X direction: 1.005395271
     public static double Y_MULTIPLIER = 0.982667947; // Multiplier in/ the Y direction
@@ -284,28 +282,28 @@ public class AudienceRed extends LinearOpMode {
 
         //If Drop pixel at left: turn left 90 degrees then open claw then turn right to get back on track.
         if (position == 'L') {
-            turn(90, directions.LEFT, 0.25);
+            turn(90, directions.SIDE, 0.25);
             drive(3, directions.FORWARD, 0.25);
             //TODO make claw open
             clawr.setPosition(0.9);
             drive(-3, directions.FORWARD, 0.25);
-            turn(0, directions.RIGHT, 0.25);
+            turn(0, directions.SIDE, 0.25);
             //Drive the remaining 48in
             drive(16, directions.FORWARD, 0.25);
         } else if (position == 'C') {
             // Drop pixel at center: drive past then turn around 180 degrees and then drop pixel and then turn another 180 degrees.
             drive(12, directions.FORWARD, 0.25);
-            turn(175, directions.LEFT, .25);
+            turn(175, directions.SIDE, .25);
             //open
             clawr.setPosition(0.9);
             drive(-4, directions.FORWARD, 0.25);
         } else if (position == 'R') {
             //Then turn right 90 degrees drop pixel at right
-            turn(-90, directions.RIGHT, .25);
+            turn(-90, directions.SIDE, .25);
             drive(3, directions.FORWARD, .25);
             clawr.setPosition(0.9);
             drive(-3, directions.FORWARD, .25);
-            turn(0, directions.LEFT, .25);
+            turn(0, directions.SIDE, .25);
             //Drive the remaining 48in
             drive(14, directions.FORWARD, 0.25);
         }
@@ -319,9 +317,9 @@ public class AudienceRed extends LinearOpMode {
         drive(-70, directions.FORWARD, 0.25);
         //turn to see tags
         if (red == true) {
-            turn(10, directions.RIGHT, .25);
+            turn(10, directions.SIDE, .25);
         } else {
-            turn(-10, directions.RIGHT, .25);
+            turn(-10, directions.SIDE, .25);
         }
         //Then april tag will direct robot to backdrop
         targetFound = false;
