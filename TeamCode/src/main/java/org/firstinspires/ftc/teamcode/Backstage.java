@@ -211,28 +211,34 @@ public class Backstage extends LinearOpMode {
 
         waitForStart();
 
+        byte[] pixyBytes1 = pixy.readShort(0x51, 5); // need this
+        int byte1Avg = 0;
+        byte[] pixyBytes2 = pixy.readShort(0x52, 2); // need this
+        int byte2Avg = 0;
         runtime.reset();
         while (runtime.seconds()<25 && opModeIsActive()) {
-            byte[] pixyBytes1 = pixy.readShort(0x51, 5); // need this
+            pixyBytes1 = pixy.readShort(0x51, 5); // need this
+            byte1Avg = byte1Avg + pixyBytes1[1];
             telemetry.addData("number of Signature 1", pixyBytes1[0]); // need this
             telemetry.addData("x position of largest block of sig 1", pixyBytes1[1]); // need this
-            byte[] pixyBytes2 = pixy.readShort(0x52, 2); // need this
+            pixyBytes2 = pixy.readShort(0x52, 2);
+            byte2Avg = byte2Avg + pixyBytes2[1];
             telemetry.addData("number of Signature 2", pixyBytes2[0]); // need this
             telemetry.addData("x position of largest block of sig 2", pixyBytes2[1]); // need this
             telemetry.update();
             if(red == true){
-                if (pixyBytes1[1] < 0 && pixyBytes1[1] != 0) {
+                if (byte1Avg < 0) {
                     position = 'C';
-                } else if (pixyBytes1[1] > 0) {
+                } else if (byte1Avg > 0) {
                     position = 'L';
                 } else if (pixyBytes1[0] == 0) {
                     position = 'R';
                 }
             }
             if(red == false){
-                if(pixyBytes2[1] > 0 ){
+                if(byte2Avg > 0 ){
                     position = 'L';
-                } else if (pixyBytes2[1] < 0){
+                } else if (byte2Avg < 0){
                     position = 'C';
                 } else if (pixyBytes2[0] == 0) {
                     position = 'R';

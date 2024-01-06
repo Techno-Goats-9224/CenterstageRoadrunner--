@@ -94,12 +94,11 @@ public class Teleop extends OpMode {
     public void loop() {
         if (gamepad2.dpad_up) {
             //outtake
-            arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            /*arm.setTargetPosition(-5000);
-            arm.setPower(-1);
+            arm.setTargetPosition(2000);
+            arm.setPower(1);
             arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            arm.setTargetPosition(-5000);*/
-
+            /*
+            arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 arm.setPower(0);
                 if (1500>arm.getCurrentPosition()&& arm.getCurrentPosition()>0) {
                     arm.setPower(-1);
@@ -110,6 +109,8 @@ public class Teleop extends OpMode {
                 if (arm.getCurrentPosition()> 2000){
                     arm.setPower(0);
                 }
+
+             */
         }else if(gamepad2.dpad_down){
             //intake
             arm.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
