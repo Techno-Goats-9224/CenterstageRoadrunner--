@@ -1,11 +1,15 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
+
 import com.qualcomm.robotcore.hardware.I2cAddr;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynch;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynchDevice;
 import com.qualcomm.robotcore.hardware.configuration.I2cSensor;
-import com.qualcomm.robotcore.util.TypeConversion;
+
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+
 
 @I2cSensor(name = "PixyCam", description = "v1 camera from PixyCam", xmlTag = "Pixy")
 public class Pixy extends I2cDeviceSynchDevice<I2cDeviceSynch> {
@@ -54,5 +58,18 @@ public class Pixy extends I2cDeviceSynchDevice<I2cDeviceSynch> {
     protected byte[] readShort(int queryAddress, int bytesToRead)
     {
         return deviceClient.read(queryAddress, bytesToRead);
+    }
+
+    public int readAvg(int queryAddress, int bytesToRead, int index, Telemetry telemetry){
+        int retTotal = 0;
+        for(int i = 1; i <= 25; i++){
+            byte[] data = readShort(queryAddress, bytesToRead);
+            retTotal += data[index];
+            telemetry.addData("number of Signature", data[0]); // need this
+            telemetry.addData("x position of largest block of that sig", data[1]);
+            telemetry.addData("average signature 1 position", retTotal / i);
+            telemetry.update();
+        }
+        return retTotal / 25;
     }
 }

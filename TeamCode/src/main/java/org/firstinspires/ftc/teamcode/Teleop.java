@@ -94,23 +94,19 @@ public class Teleop extends OpMode {
     public void loop() {
         if (gamepad2.dpad_up) {
             //outtake
-            arm.setTargetPosition(2000);
+            /*arm.setTargetPosition(300);
             arm.setPower(1);
             arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            /*
-            arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                arm.setPower(0);
-                if (1500>arm.getCurrentPosition()&& arm.getCurrentPosition()>0) {
-                    arm.setPower(-1);
-
-                } else if(1500<arm.getCurrentPosition() && arm.getCurrentPosition()<2000) {
-                    arm.setPower(-.5);
-                }
-                if (arm.getCurrentPosition()> 2000){
-                    arm.setPower(0);
-                }
-
              */
+            arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            if (1500>arm.getCurrentPosition()&& arm.getCurrentPosition()>0) {
+                arm.setPower(-1);
+            } else if(1500<arm.getCurrentPosition() && arm.getCurrentPosition()<2000) {
+                arm.setPower(-.5);
+            }else if (arm.getCurrentPosition()> 2000){
+                arm.setPower(0);
+            }
+
         }else if(gamepad2.dpad_down){
             //intake
             arm.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
@@ -187,6 +183,7 @@ public class Teleop extends OpMode {
             // 1 is holding rubberband .5 is out
         }
 
+        //driving code from gm0.org
         double ly = gamepad1.left_stick_y * 0.8;
         double lx = -gamepad1.left_stick_x * 0.8;
         double rx = -gamepad1.right_stick_x * 0.8;
@@ -195,6 +192,36 @@ public class Teleop extends OpMode {
         leftBack.setPower(ly - lx + rx);
         rightFront.setPower(-ly + lx + rx);
         rightBack.setPower(ly + lx - rx);
+
+        /*
+        //field centric code from gm0.org
+        double y = -gamepad1.left_stick_y;
+        double x = gamepad1.left_stick_x;
+        double rx = gamepad1.right_stick_x;
+
+
+        double botHeading = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.RADIANS).secondAngle;
+
+        // Rotate the movement direction counter to the bot's rotation
+        double rotX = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
+        double rotY = x * Math.sin(-botHeading) + y * Math.cos(-botHeading);
+
+        rotX = rotX * 1.1;  // Counteract imperfect strafing
+
+        // Denominator is the largest motor power (absolute value) or 1
+        // This ensures all the powers maintain the same ratio,
+        // but only if at least one is out of the range [-1, 1]
+        double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rx), 1);
+        double frontLeftPower = (rotY + rotX + rx) / denominator;
+        double backLeftPower = (rotY - rotX + rx) / denominator;
+        double frontRightPower = (rotY - rotX - rx) / denominator;
+        double backRightPower = (rotY + rotX - rx) / denominator;
+
+        leftFront.setPower(frontLeftPower);
+        leftBack.setPower(backLeftPower);
+        rightFront.setPower(frontRightPower);
+        rightBack.setPower(backRightPower);
+         */
 
         telemetry.addData("front left power", leftFront.getPower());
         telemetry.addData("front right power", rightFront.getPower());

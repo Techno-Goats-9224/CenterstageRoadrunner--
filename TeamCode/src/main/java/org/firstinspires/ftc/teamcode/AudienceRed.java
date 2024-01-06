@@ -222,8 +222,8 @@ public class AudienceRed extends LinearOpMode {
         rotate.setDirection(Servo.Direction.REVERSE);
         clawl.setPosition(.75);
         //close
-        clawr.setPosition(0.8);
-        rotate.setPosition(0.1);
+        clawr.setPosition(0.6);
+        rotate.setPosition(0.3);
 
         if (USE_WEBCAM)
             setManualExposure(1, 255);  // Use low exposure time to reduce motion blur
@@ -250,51 +250,55 @@ public class AudienceRed extends LinearOpMode {
         waitForStart();
 
         //Pixy look for team prop
-        runtime.reset();
-        while (runtime.seconds() < 1 && opModeIsActive()) {
-            byte[] pixyBytes1 = pixy.readShort(0x51, 5);
-            telemetry.addData("number of Signature 1", pixyBytes1[0]);
-            telemetry.addData("x position of largest block of sig 1", pixyBytes1[1]);
-            byte[] pixyBytes2 = pixy.readShort(0x52, 2);
-            telemetry.addData("number of Signature 2", pixyBytes2[0]);
-            telemetry.addData("x position of largest block of sig 2", pixyBytes2[1]);
+        byte[] pixyBytes1 = pixy.readShort(0x51, 5); // need this
+        int byte1Avg = 0;
+        byte[] pixyBytes2 = pixy.readShort(0x52, 2); // need this
+        int byte2Avg = 0;
+        for (int i = 0; i < 20; i++) {
+            pixyBytes1 = pixy.readShort(0x51, 5); // need this
+            byte1Avg = byte1Avg + pixyBytes1[1];
+            telemetry.addData("number of Signature 1", pixyBytes1[0]); // need this
+            telemetry.addData("x position of largest block of sig 1", pixyBytes1[1]); // need this
+            pixyBytes2 = pixy.readShort(0x52, 2);
+            byte2Avg = byte2Avg + pixyBytes2[1];
+            telemetry.addData("number of Signature 2", pixyBytes2[0]); // need this
+            telemetry.addData("x position of largest block of sig 2", pixyBytes2[1]); // need this
             telemetry.update();
-            if (red == true) {
-                if (pixyBytes1[1] < 90 && pixyBytes1[1] != 0) {
+            if(red == true){
+                if (byte1Avg < 0) {
                     position = 'C';
-                } else if (pixyBytes1[1] > 90) {
+                } else if (byte1Avg > 0) {
                     position = 'L';
-                } else if (pixyBytes1[0] == 0) {
+                } else {
                     position = 'R';
                 }
             }
-            if (red == false) {
-                if (pixyBytes2[1] > 0) {
+            if(red == false){
+                if(byte2Avg > 0 ){
                     position = 'L';
-                } else if (pixyBytes2[1] < 0) {
+                } else if (byte2Avg < 0){
                     position = 'C';
-                } else if (pixyBytes2[0] == 0) {
+                } else {
                     position = 'R';
                 }
             }
-        } //close pixy detection time-based while loop
+        } //close pixy detection for loop
 
         //Robot needs to drive and move forward like 24in ish
-        drive(34, directions.FORWARD, 0.25);
+        drive(30, directions.FORWARD, 0.25);
 
         //If Drop pixel at left: turn left 90 degrees then open claw then turn right to get back on track.
         if (position == 'L') {
             turn(90, directions.LEFT, 0.25);
-            drive(3, directions.FORWARD, 0.25);
-            //TODO make claw open
-            clawr.setPosition(0.9);
-            drive(-3, directions.FORWARD, 0.25);
+            drive(2.5, directions.FORWARD, 0.25);
+            clawr.setPosition(0.7);
+            drive(-2.5, directions.FORWARD, 0.25);
             turn(0, directions.RIGHT, 0.25);
             //Drive the remaining 48in
-            drive(16, directions.FORWARD, 0.25);
+            drive(20, directions.FORWARD, 0.25);
         } else if (position == 'C') {
             // Drop pixel at center: drive past then turn around 180 degrees and then drop pixel and then turn another 180 degrees.
-            drive(12, directions.FORWARD, 0.25);
+            drive(16, directions.FORWARD, 0.25);
             turn(175, directions.LEFT, .25);
             //open
             clawr.setPosition(0.9);
@@ -302,13 +306,12 @@ public class AudienceRed extends LinearOpMode {
         } else if (position == 'R') {
             //Then turn right 90 degrees drop pixel at right
             turn(-90, directions.RIGHT, .25);
-            drive(3, directions.FORWARD, .25);
-            clawr.setPosition(0.9);
-            drive(-3, directions.FORWARD, .25);
+            drive(1.5, directions.FORWARD, .25);
+            clawr.setPosition(0.7);
+            drive(-1.5, directions.FORWARD, .25);
             turn(0, directions.LEFT, .25);
             //Drive the remaining 48in
-            drive(14, directions.FORWARD, 0.25);
-        }
+            drive(20, directions.FORWARD, 0.25);}
         if (red == true) {
             //Then turn 90 degrees to the right after the 72in
             turn(90, directions.SIDE, 0.25);
@@ -319,19 +322,19 @@ public class AudienceRed extends LinearOpMode {
         drive(-70, directions.FORWARD, 0.25);
         //turn to see tags
         if (red == true) {
-            turn(10, directions.RIGHT, .25);
+            turn(-80, directions.RIGHT, .25);
         } else {
-            turn(-10, directions.RIGHT, .25);
+            turn(80, directions.RIGHT, .25);
         }
         //Then april tag will direct robot to backdrop
         targetFound = false;
         desiredTag = null;
         if (red == true && position == 'L') {
             DESIRED_TAG_ID = 4;
-        } else if (red == true && position == 'R') {
-            DESIRED_TAG_ID = 6;
         } else if (red == true && position == 'C') {
             DESIRED_TAG_ID = 5;
+        } else if (red == true && position == 'R') {
+            DESIRED_TAG_ID = 6;
         }
         while (opModeIsActive()) {
             // Step through the list of detected tags and look for a matching tag
