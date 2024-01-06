@@ -16,20 +16,19 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 
 public class Robot {
-    private DcMotorEx rightBack;
-    private DcMotorEx leftFront;
-    private DcMotor rightFront;
-    private DcMotor leftBack;
-    private Servo drone;
-    private ServoImplEx clawl;
-    private ServoImplEx clawr;
-    private DcMotorEx arm;
-    private BNO055IMU imu;
-    private Servo rotate;
-    private Pixy pixy;
-    private Telemetry telemetry;
+    public DcMotorEx rightBack;
+    public DcMotorEx leftFront;
+    public DcMotor rightFront;
+    public DcMotor leftBack;
+    public Servo drone;
+    public ServoImplEx clawl;
+    public ServoImplEx clawr;
+    public DcMotorEx arm;
+    public BNO055IMU imu;
+    public Servo rotate;
+    public Pixy pixy;
 
-    private enum directions{
+    public enum directions{
         FORWARD,
         SIDE
     }
@@ -99,14 +98,6 @@ public class Robot {
                 leftBack.setPower(-desiredDirection * power);
                 rightFront.setPower(desiredDirection * power);
                 rightBack.setPower(-desiredDirection * power);
-
-                telemetry.addData("Front Left Encoder (perp) ticks", leftFront.getCurrentPosition());
-                telemetry.addData("Negative Back Right Encoder (para) ticks", -rightBack.getCurrentPosition());
-                telemetry.addData("Front Left Encoder (perp) inches", encoderTicksToInches(leftFront.getCurrentPosition()));
-                telemetry.addData("Negative Back Right Encoder (para) inches", encoderTicksToInches(-rightBack.getCurrentPosition()));
-
-                telemetry.addData("offset from position:", xPos_in - (inches + lastParEncoder_in));
-                telemetry.update();
             }
         }
         //positive inches is left
@@ -119,12 +110,6 @@ public class Robot {
                 leftBack.setPower(-desiredDirection * power);
                 rightFront.setPower(desiredDirection * power);
                 rightBack.setPower(desiredDirection * power);
-
-                telemetry.addData("Front Left Encoder (perp) ticks", leftFront.getCurrentPosition());
-                telemetry.addData("Front Left Encoder (perp) inches", encoderTicksToInches(leftFront.getCurrentPosition()));
-
-                telemetry.addData("offset from position:", yPos_in - (inches + lastPerpEncoder_in));
-                telemetry.update();
             }
         }
     }
@@ -141,12 +126,6 @@ public class Robot {
             leftBack.setPower(-desiredDirection * power);
             rightFront.setPower(-desiredDirection * power);
             rightBack.setPower(desiredDirection * power);
-
-            telemetry.addData("degrees:", degrees);
-            telemetry.addData("heading", imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).secondAngle);
-            telemetry.addData("desired direction", desiredDirection);
-            telemetry.addData("offset from position:", degrees - heading);
-            telemetry.update();
         }
     }
     public void launchDrone(){
@@ -173,5 +152,8 @@ public class Robot {
         arm.setTargetPosition(0);
         arm.setPower(0.5);
         arm.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+    }
+    public void armPower(double power){
+        arm.setPower(power);
     }
 }
