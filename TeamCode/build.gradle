@@ -14,9 +14,11 @@
 //Fast Load stuff from https://gist.github.com/MatthewOates36/1e38452236dc9f145c3a6b2addfb418f
 buildscript {
     repositories {
-        mavenCentral()
+        //replaced mavenCentral() with url = "repo.maven..." and allowInsecure...
         maven {
             url = 'https://www.matthewo.tech/maven/'
+            url = "https://repo.maven.apache.org/maven2"
+            allowInsecureProtocol = true
         }
     }
     dependencies {
