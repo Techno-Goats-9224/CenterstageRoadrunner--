@@ -191,8 +191,8 @@ public class Backstage extends LinearOpMode {
 
         pixy = hardwareMap.get(Pixy.class, "pixy"); // need this
 
-
-        while(gamepad1.left_bumper && opModeIsActive()) {
+        //voodoo
+        while(gamepad1.left_bumper && !isStopRequested()) {
             telemetry.addData("x or square: ", "blue");
             telemetry.addData("b or circle: ", "red");
             telemetry.update();

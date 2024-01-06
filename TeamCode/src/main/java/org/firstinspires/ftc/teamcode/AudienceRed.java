@@ -264,7 +264,7 @@ public class AudienceRed extends LinearOpMode {
             telemetry.addData("number of Signature 2", pixyBytes2[0]); // need this
             telemetry.addData("x position of largest block of sig 2", pixyBytes2[1]); // need this
             telemetry.update();
-            if(red == true){
+            if (red == true) {
                 if (byte1Avg < 0) {
                     position = 'C';
                 } else if (byte1Avg > 0) {
@@ -273,10 +273,10 @@ public class AudienceRed extends LinearOpMode {
                     position = 'R';
                 }
             }
-            if(red == false){
-                if(byte2Avg > 0 ){
+            if (red == false) {
+                if (byte2Avg > 0) {
                     position = 'L';
-                } else if (byte2Avg < 0){
+                } else if (byte2Avg < 0) {
                     position = 'C';
                 } else {
                     position = 'R';
@@ -311,7 +311,8 @@ public class AudienceRed extends LinearOpMode {
             drive(-1.5, directions.FORWARD, .25);
             turn(0, directions.LEFT, .25);
             //Drive the remaining 48in
-            drive(20, directions.FORWARD, 0.25);}
+            drive(20, directions.FORWARD, 0.25);
+        }
         if (red == true) {
             //Then turn 90 degrees to the right after the 72in
             turn(90, directions.SIDE, 0.25);
@@ -336,69 +337,77 @@ public class AudienceRed extends LinearOpMode {
         } else if (red == true && position == 'R') {
             DESIRED_TAG_ID = 6;
         }
-        while (opModeIsActive()) {
-            // Step through the list of detected tags and look for a matching tag
-            List<AprilTagDetection> currentDetections = aprilTag.getDetections();
-            for (AprilTagDetection detection : currentDetections) {
-                // Look to see if we have size info on this tag.
-                if (detection.metadata != null) {
-                    //  Check to see if we want to track towards this tag.
-                    if ((DESIRED_TAG_ID < 0) || (detection.id == DESIRED_TAG_ID)) {
-                        // Yes, we want to use this tag.
-                        targetFound = false;
-                        desiredTag = detection;
-                        break;  // don't look any further.
-                    } else {
-                        // This tag is in the library, but we do not want to track it right now.
-                        telemetry.addData("Skipping", "Tag ID %d is not desired", detection.id);
-                    }
-                } else {
-                    // This tag is NOT in the library, so we don't have enough information to track to it.
-                    telemetry.addData("Unknown", "Tag ID %d is not in TagLibrary", detection.id);
-                }
-            }
-            //Mitchell not just kinda weird he is weird
-            // If Left Bumper is being pressed, AND we have found the desired target, Drive to target Automatically .
-            if (targetFound) {
-                // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
-                double rangeError = (desiredTag.ftcPose.range - DESIRED_DISTANCE);
-                double headingError = desiredTag.ftcPose.bearing;
-                double yawError = desiredTag.ftcPose.yaw;
-
-                // Use the speed and turn "gains" to calculate how we want the robot to move.
-                drive = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
-                turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
-                strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
-
-                telemetry.addData("Auto", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", -drive, -strafe, turn);
-                telemetry.addData("Found", "ID %d (%s)", desiredTag.id, desiredTag.metadata.name);
-                telemetry.addData("Range", "%5.1f inches", desiredTag.ftcPose.range);
-                telemetry.addData("Bearing", "%3.0f degrees", desiredTag.ftcPose.bearing);
-                telemetry.addData("Yaw", "%3.0f degrees", desiredTag.ftcPose.yaw);
-                break;
-            } else {
-                if (red == true) {
-                    drive(-2, directions.SIDE, .25);
-                } else {
-                    drive(2, directions.SIDE, .25);
-                }
-                telemetry.addData("\n>", "no target found\n");
-                telemetry.addData("Manual", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", -drive, -strafe, turn);
-            }
-            telemetry.update();
+        if (red == false && position == 'L') {
+            DESIRED_TAG_ID = 1;
+        } else if (red == false && position == 'C') {
+            DESIRED_TAG_ID = 2;
+        } else if (red == false && position == 'R') {
+            DESIRED_TAG_ID = 3;
         }
+            while (opModeIsActive()) {
+                // Step through the list of detected tags and look for a matching tag
+                List<AprilTagDetection> currentDetections = aprilTag.getDetections();
+                for (AprilTagDetection detection : currentDetections) {
+                    // Look to see if we have size info on this tag.
+                    if (detection.metadata != null) {
+                        //  Check to see if we want to track towards this tag.
+                        if ((DESIRED_TAG_ID < 0) || (detection.id == DESIRED_TAG_ID)) {
+                            // Yes, we want to use this tag.
+                            targetFound = false;
+                            desiredTag = detection;
+                            break;  // don't look any further.
+                        } else {
+                            // This tag is in the library, but we do not want to track it right now.
+                            telemetry.addData("Skipping", "Tag ID %d is not desired", detection.id);
+                        }
+                    } else {
+                        // This tag is NOT in the library, so we don't have enough information to track to it.
+                        telemetry.addData("Unknown", "Tag ID %d is not in TagLibrary", detection.id);
+                    }
+                }
+                //Mitchell not just kinda weird he is weird
+                // If Left Bumper is being pressed, AND we have found the desired target, Drive to target Automatically .
+                if (targetFound) {
+                    // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
+                    double rangeError = (desiredTag.ftcPose.range - DESIRED_DISTANCE);
+                    double headingError = desiredTag.ftcPose.bearing;
+                    double yawError = desiredTag.ftcPose.yaw;
+
+                    // Use the speed and turn "gains" to calculate how we want the robot to move.
+                    drive = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
+                    turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
+                    strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
+
+                    telemetry.addData("Auto", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", -drive, -strafe, turn);
+                    telemetry.addData("Found", "ID %d (%s)", desiredTag.id, desiredTag.metadata.name);
+                    telemetry.addData("Range", "%5.1f inches", desiredTag.ftcPose.range);
+                    telemetry.addData("Bearing", "%3.0f degrees", desiredTag.ftcPose.bearing);
+                    telemetry.addData("Yaw", "%3.0f degrees", desiredTag.ftcPose.yaw);
+                    break;
+                } else {
+                    if (red == true) {
+                        drive(-2, directions.SIDE, .25);
+                    } else {
+                        drive(2, directions.SIDE, .25);
+                    }
+                    telemetry.addData("\n>", "no target found\n");
+                    telemetry.addData("Manual", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", -drive, -strafe, turn);
+                }
+                telemetry.update();
+            }
             // Apply desired axes motions to the drivetrain.
             moveRobot(-drive, -strafe, turn);
 
-        leftFront.setPower(0);
-        rightFront.setPower(0);
-        leftBack.setPower(0);
-        rightBack.setPower(0);
+            leftFront.setPower(0);
+            rightFront.setPower(0);
+            leftBack.setPower(0);
+            rightBack.setPower(0);
 
-        // Transfer the current pose to PoseStorage so we can use it in TeleOp
-        //PoseStorage.currentPose = drive.getPoseEstimate();
+            // Transfer the current pose to PoseStorage so we can use it in field centric TeleOp
+            //PoseStorage.currentPose = drive.getPoseEstimate();
 
-    }
+        }
+
 
 
 public void moveRobot(double x, double y, double yaw) {

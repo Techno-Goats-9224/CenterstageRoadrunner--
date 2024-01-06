@@ -84,19 +84,19 @@ public class SampleRobotAutoDriveToAprilTagOmni extends LinearOpMode
     private DcMotor rightBack   = null;  //  Used to control the right back drive wheel
 
     private static final boolean USE_WEBCAM = true;  // Set true to use a webcam, or false for a phone camera
-    private static final int DESIRED_TAG_ID = -1;     // Choose the tag you want to approach or set to -1 for ANY tag.
+    private static int desiredTagID = 4;     // Choose the tag you want to approach or set to -1 for ANY tag.
+    boolean red = true;
     private VisionPortal visionPortal;               // Used to manage the video source.
     private AprilTagProcessor aprilTag;              // Used for managing the AprilTag detection process.
     private AprilTagDetection desiredTag = null;     // Used to hold the data for a detected AprilTag
 
     AprilTagProcessor.Builder MitchellKindaWeirdAprilTagProcessor;
 
-    @Override public void runOpMode()
-    {
-        boolean targetFound     = false;    // Set to true when an AprilTag target is detected
-        double  drive           = 0;        // Desired forward power/speed (-1 to +1)
-        double  strafe          = 0;        // Desired strafe power/speed (-1 to +1)
-        double  turn            = 0;        // Desired turning power/speed (-1 to +1)
+    @Override public void runOpMode() {
+        boolean targetFound = false;    // Set to true when an AprilTag target is detected
+        double drive = 0;        // Desired forward power/speed (-1 to +1)
+        double strafe = 0;        // Desired strafe power/speed (-1 to +1)
+        double turn = 0;        // Desired turning power/speed (-1 to +1)
 
         // Initialize the Apriltag Detection process
         initAprilTag();
@@ -104,9 +104,9 @@ public class SampleRobotAutoDriveToAprilTagOmni extends LinearOpMode
         // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must match the names assigned during the robot configuration.
         // step (using the FTC Robot Controller app on the phone).
-        leftFront  = hardwareMap.get(DcMotor.class, "leftFront");
+        leftFront = hardwareMap.get(DcMotor.class, "leftFront");
         rightFront = hardwareMap.get(DcMotor.class, "rightFront");
-        leftBack  = hardwareMap.get(DcMotor.class, "leftBack");
+        leftBack = hardwareMap.get(DcMotor.class, "leftBack");
         rightBack = hardwareMap.get(DcMotor.class, "rightBack");
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
@@ -126,20 +126,19 @@ public class SampleRobotAutoDriveToAprilTagOmni extends LinearOpMode
         telemetry.update();
         waitForStart();
 
-        while (opModeIsActive())
-        {
-            targetFound = false;
-            desiredTag  = null;
-
+        //Then april tag will direct robot to backdrop
+        targetFound = false;
+        desiredTag = null;
+        while (opModeIsActive()) {
             // Step through the list of detected tags and look for a matching tag
             List<AprilTagDetection> currentDetections = aprilTag.getDetections();
             for (AprilTagDetection detection : currentDetections) {
                 // Look to see if we have size info on this tag.
                 if (detection.metadata != null) {
                     //  Check to see if we want to track towards this tag.
-                    if ((DESIRED_TAG_ID < 0) || (detection.id == DESIRED_TAG_ID)) {
+                    if ((desiredTagID < 0) || (detection.id == desiredTagID)) {
                         // Yes, we want to use this tag.
-                        targetFound = true;
+                        targetFound = false;
                         desiredTag = detection;
                         break;  // don't look any further.
                     } else {
@@ -151,63 +150,71 @@ public class SampleRobotAutoDriveToAprilTagOmni extends LinearOpMode
                     telemetry.addData("Unknown", "Tag ID %d is not in TagLibrary", detection.id);
                 }
             }
-
-            // Tell the driver what we see, and what to do.
-            if (targetFound) {
-                telemetry.addData("\n>","HOLD Left-Bumper to Drive to Target\n");
-                telemetry.addData("Found", "ID %d (%s)", desiredTag.id, desiredTag.metadata.name);
-                telemetry.addData("Range",  "%5.1f inches", desiredTag.ftcPose.range);
-                telemetry.addData("Bearing","%3.0f degrees", desiredTag.ftcPose.bearing);
-                telemetry.addData("Yaw","%3.0f degrees", desiredTag.ftcPose.yaw);
-            } else {
-                telemetry.addData("\n>","Drive using joysticks to find valid target\n");
-            }
-
+            //Mitchell not just kinda weird he is weird
             // If Left Bumper is being pressed, AND we have found the desired target, Drive to target Automatically .
-            if (gamepad1.left_bumper && targetFound) {
-
+            if (targetFound) {
                 // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
-                double  rangeError      = (desiredTag.ftcPose.range - DESIRED_DISTANCE);
-                double  headingError    = desiredTag.ftcPose.bearing;
-                double  yawError        = desiredTag.ftcPose.yaw;
+                double rangeError = (desiredTag.ftcPose.range - DESIRED_DISTANCE);
+                double headingError = desiredTag.ftcPose.bearing;
+                double yawError = desiredTag.ftcPose.yaw;
 
                 // Use the speed and turn "gains" to calculate how we want the robot to move.
-                drive  = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
-                turn   = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN) ;
+                drive = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
+                turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
                 strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
 
-                telemetry.addData("Auto","Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
+                telemetry.addData("Auto", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", -drive, -strafe, turn);
+                telemetry.addData("Found", "ID %d (%s)", desiredTag.id, desiredTag.metadata.name);
+                telemetry.addData("Range", "%5.1f inches", desiredTag.ftcPose.range);
+                telemetry.addData("Bearing", "%3.0f degrees", desiredTag.ftcPose.bearing);
+                telemetry.addData("Yaw", "%3.0f degrees", desiredTag.ftcPose.yaw);
+                break;
             } else {
+                if (red == true) {
+                    //drive left
+                    leftFront.setPower(.25);
+                    leftBack.setPower(0.25);
+                    rightFront.setPower(0.25);
+                    rightBack.setPower(-0.25);
 
-                // drive using manual POV Joystick mode.  Slow things down to make the robot more controlable.
-                drive  = -gamepad1.left_stick_y  / 2.0;  // Reduce drive rate to 50%.
-                strafe = -gamepad1.left_stick_x  / 2.0;  // Reduce strafe rate to 50%.
-                turn   = -gamepad1.right_stick_x / 3.0;  // Reduce turn rate to 33%.
-                telemetry.addData("Manual","Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
+                } else {
+                    //drive right
+                    leftFront.setPower(-0.25);
+                    leftBack.setPower(-0.25);
+                    rightFront.setPower(-0.25);
+                    rightBack.setPower(0.25);
+                }
+                telemetry.addData("\n>", "no target found\n");
+                telemetry.addData("Manual", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", -drive, -strafe, turn);
             }
             telemetry.update();
 
             // Apply desired axes motions to the drivetrain.
-            moveRobot(drive, strafe, turn);
-            sleep(10);
+            moveRobot(-drive, -strafe, turn);
+
+            leftFront.setPower(0);
+            rightFront.setPower(0);
+            leftBack.setPower(0);
+            rightBack.setPower(0);
         }
     }
+
 
     /**
      * Move robot according to desired axes motions
      * <p>
      * Positive X is forward
      * <p>
-     * Positive Y is strafe left
+     * Positive Y is strafe left - hannah doesn't believe this
      * <p>
      * Positive Yaw is counter-clockwise
      */
     public void moveRobot(double x, double y, double yaw) {
         // Calculate wheel powers.
-        double leftFrontPower    =  x -y -yaw;
-        double rightFrontPower   =  x +y +yaw;
-        double leftBackPower     =  x +y -yaw;
-        double rightBackPower    =  x -y +yaw;
+        double leftFrontPower    =  x +y +yaw;
+        double rightFrontPower   =  -x +y +yaw;
+        double leftBackPower     =  x -y +yaw;
+        double rightBackPower    =  x +y -yaw;
 
         // Normalize wheel powers to be less than 1.0
         double max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
@@ -222,10 +229,11 @@ public class SampleRobotAutoDriveToAprilTagOmni extends LinearOpMode
         }
 
         // Send powers to the wheels.
-        leftFront.setPower(leftFrontPower);
+        // in our centerstage robot with RB reversed, LF, LB, and RB and negative to go forward
+        leftFront.setPower(-leftFrontPower);
         rightFront.setPower(rightFrontPower);
-        leftBack.setPower(leftBackPower);
-        rightBack.setPower(rightBackPower);
+        leftBack.setPower(-leftBackPower);
+        rightBack.setPower(-rightBackPower);
     }
 
     /**
@@ -266,35 +274,35 @@ public class SampleRobotAutoDriveToAprilTagOmni extends LinearOpMode
      Manually set the camera gain and exposure.
      This can only be called AFTER calling initAprilTag(), and only works for Webcams;
     */
-    private void    setManualExposure(int exposureMS, int gain) {
+    private void    setManualExposure(int exposureMS, int gain){
         // Wait for the camera to be open, then use the controls
 
-        if (visionPortal == null) {
+        if(visionPortal==null){
             return;
         }
 
         // Make sure camera is streaming before we try to set the exposure controls
-        if (visionPortal.getCameraState() != VisionPortal.CameraState.STREAMING) {
-            telemetry.addData("Camera", "Waiting");
+        if(visionPortal.getCameraState()!=VisionPortal.CameraState.STREAMING){
+            telemetry.addData("Camera","Waiting");
             telemetry.update();
-            while (!isStopRequested() && (visionPortal.getCameraState() != VisionPortal.CameraState.STREAMING)) {
+            while(!isStopRequested()&&(visionPortal.getCameraState()!=VisionPortal.CameraState.STREAMING)){
                 sleep(20);
             }
-            telemetry.addData("Camera", "Ready");
+            telemetry.addData("Camera","Ready");
             telemetry.update();
         }
 
         // Set camera controls unless we are stopping.
-        if (!isStopRequested())
+        if(!isStopRequested())
         {
-            ExposureControl exposureControl = visionPortal.getCameraControl(ExposureControl.class);
-            if (exposureControl.getMode() != ExposureControl.Mode.Manual) {
+            ExposureControl exposureControl=visionPortal.getCameraControl(ExposureControl.class);
+            if(exposureControl.getMode()!=ExposureControl.Mode.Manual){
                 exposureControl.setMode(ExposureControl.Mode.Manual);
                 sleep(50);
             }
             exposureControl.setExposure((long)exposureMS, TimeUnit.MILLISECONDS);
             sleep(20);
-            GainControl gainControl = visionPortal.getCameraControl(GainControl.class);
+            GainControl gainControl=visionPortal.getCameraControl(GainControl.class);
             gainControl.setGain(gain);
             sleep(20);
         }
