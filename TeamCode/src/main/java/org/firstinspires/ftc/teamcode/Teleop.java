@@ -176,7 +176,7 @@ public class Teleop extends OpMode {
         }
 
         //normal driving code from gm0.org
-        double ly = gamepad1.left_stick_y * 0.8;
+        /*double ly = gamepad1.left_stick_y * 0.8;
         double lx = -gamepad1.left_stick_x * 0.8;
         double rx = -gamepad1.right_stick_x * 0.8;
 
@@ -184,8 +184,8 @@ public class Teleop extends OpMode {
         leftBack.setPower(ly - lx + rx);
         rightFront.setPower(-ly + lx + rx);
         rightBack.setPower(ly + lx - rx);
+*/
 
-        /*
         //gm0.org field centric
         double y = gamepad1.left_stick_y;
         double x = -gamepad1.left_stick_x;
@@ -201,7 +201,7 @@ public class Teleop extends OpMode {
         leftBack.setPower((rotY - rotX + rx) / denominator);
         rightFront.setPower((-rotY + rotX + rx) / denominator);
         rightBack.setPower((rotY + rotX - rx) / denominator);
-        */
+
         /*
         //DYSFUNCTIONAL - field centric driving code from learnroadrunner.com
         // Read pose
