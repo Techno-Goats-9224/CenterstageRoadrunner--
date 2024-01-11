@@ -131,6 +131,9 @@ public class Robot {
     public void launchDrone(){
         drone.setPosition(.5);
     }
+    public void dontlaunchDrone(){
+        drone.setPosition(.1);
+    }
     public void openClawl(){
         clawl.setPosition(.6);
     }
@@ -154,6 +157,18 @@ public class Robot {
         arm.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
     }
     public void armPower(double power){
+
         arm.setPower(power);
+    }
+    public void rotateAustralia(){
+        //Cuz their down under
+        rotate.setPosition(.1);
+    }
+    public void rotateTysensPersonality(){
+        //Mid
+        rotate.setPosition(.3);
+    }public void rotateAlaska(){
+        //up place
+        rotate.setPosition(.2);
     }
 }
