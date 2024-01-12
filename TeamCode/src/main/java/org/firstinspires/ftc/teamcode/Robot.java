@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.PwmControl;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
@@ -24,7 +26,7 @@ public class Robot {
     public ServoImplEx clawl;
     public ServoImplEx clawr;
     public DcMotorEx arm;
-    public BNO055IMU imu;
+    public IMU imu;
     public Servo rotate;
     public Pixy pixy;
 
@@ -42,15 +44,19 @@ public class Robot {
         arm = hardwareMap.get(DcMotorEx.class, "arm");
         clawl = hardwareMap.get(ServoImplEx.class, "clawl");
         clawr = hardwareMap.get(ServoImplEx.class, "clawr");
-        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        imu = hardwareMap.get(IMU.class, "imu");
         rotate = hardwareMap.get(Servo.class, "rotate");
         pixy = hardwareMap.get(Pixy.class, "pixy");
 
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.loggingEnabled = true;
-        parameters.loggingTag = "IMU";
-        imu = hardwareMap.get(BNO055IMU.class, "imu");
-        imu.initialize(parameters);
+        RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.UP;
+        RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
+
+        RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
+
+        // Now initialize the IMU with this mounting orientation
+        // Note: if you choose two conflicting directions, this initialization will cause a code exception.
+        imu.initialize(new IMU.Parameters(orientationOnRobot));
+
 
         leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -115,10 +121,10 @@ public class Robot {
     }
     double heading;
     double desiredDirection;
-    public void turn(double degrees, double power) {
+    /*public void turn(double degrees, double power) {
         heading = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).secondAngle;
 
-        while (((Math.abs(degrees - heading)) > 3) /*&& opModeIsActive()*/) {
+        while (((Math.abs(degrees - heading)) > 3) && opModeIsActive()) {
             heading = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).secondAngle;
             desiredDirection = (degrees - heading) / (Math.abs(degrees - heading));
 
@@ -127,7 +133,7 @@ public class Robot {
             rightFront.setPower(-desiredDirection * power);
             rightBack.setPower(desiredDirection * power);
         }
-    }
+    }*/
     public void launchDrone(){
         drone.setPosition(.5);
     }
@@ -147,7 +153,7 @@ public class Robot {
         clawr.setPosition(.6);
     }
     public void armUp(){
-        arm.setTargetPosition(2000);
+        arm.setTargetPosition(-500);
         arm.setPower(1);
         arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
@@ -157,7 +163,6 @@ public class Robot {
         arm.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
     }
     public void armPower(double power){
-
         arm.setPower(power);
     }
     public void rotateAustralia(){

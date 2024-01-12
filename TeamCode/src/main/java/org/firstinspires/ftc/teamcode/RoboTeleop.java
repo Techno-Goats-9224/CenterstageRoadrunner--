@@ -19,45 +19,47 @@ public class RoboTeleop extends OpMode {
     public void loop() {
         if(gamepad2.dpad_up){
            piracyWii.armUp();
+            telemetry.addData("target in up: ", piracyWii.arm.getTargetPosition());
+            telemetry.addData("current in up: ", piracyWii.arm.getCurrentPosition());
         }
         else if(gamepad2.dpad_down){
             piracyWii.armDown();
+            telemetry.addData("target in down: ", piracyWii.arm.getTargetPosition());
+            telemetry.addData("current in down: ", piracyWii.arm.getCurrentPosition());
         } else {
-            piracyWii.armPower(0);
-            telemetry.addData("in zero: ", piracyWii.arm.getTargetPosition());
-         if(gamepad2.square){
+            piracyWii.arm.setPower(0);
+            telemetry.addData("target in zero: ", piracyWii.arm.getTargetPosition());
+            telemetry.addData("current in zero: ", piracyWii.arm.getCurrentPosition());
+        }
+        if(gamepad2.square){
                 piracyWii.openClawl();
             }
-         else if(gamepad2.circle){
+        else if(gamepad2.circle){
              piracyWii.openClawr();
-         }
-         else if(gamepad2.cross){
+        }
+        else if(gamepad2.cross){
              piracyWii.openClawr();
              piracyWii.openClawl();
-         } else{
+        } else{
              piracyWii.closeClawl();
              piracyWii.closeClawr();
-         }
-            if(gamepad2.left_trigger>.1) {
+        }
+        if(gamepad2.left_trigger>.1) {
                 //down below field
                 piracyWii.rotateAustralia();
-            }else if(gamepad2.left_bumper){
+        }else if(gamepad2.left_bumper){
                 //up above field
                piracyWii.rotateTysensPersonality();
-            }else{
-                //flat on field
+        }else{
+            //flat on field
                 piracyWii.rotateAlaska();
-            }
-            if (gamepad2.triangle){
-                piracyWii.launchDrone();
-            }else {
-               piracyWii.dontlaunchDrone();
-            }
-
-
         }
-        telemetry.addData("arm encoder", piracyWii.arm.getCurrentPosition());
-        telemetry.update();
+        if (gamepad2.triangle){
+                piracyWii.launchDrone();
+        }else {
+               piracyWii.dontlaunchDrone();
+        }
 
-    }
+        telemetry.update();
+        }
 }
