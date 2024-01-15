@@ -121,11 +121,11 @@ public class Robot {
     }
     double heading;
     double desiredDirection;
-    /*public void turn(double degrees, double power) {
-        heading = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).secondAngle;
+    public void turn(double degrees, double power) {
+        heading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
 
-        while (((Math.abs(degrees - heading)) > 3) && opModeIsActive()) {
-            heading = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).secondAngle;
+        while (((Math.abs(degrees - heading)) > 3)) {
+            heading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
             desiredDirection = (degrees - heading) / (Math.abs(degrees - heading));
 
             leftFront.setPower(-desiredDirection * power);
@@ -133,7 +133,7 @@ public class Robot {
             rightFront.setPower(-desiredDirection * power);
             rightBack.setPower(desiredDirection * power);
         }
-    }*/
+    }
     public void launchDrone(){
         drone.setPosition(.5);
     }
@@ -150,7 +150,7 @@ public class Robot {
         clawr.setPosition(.7);
     }
     public void closeClawr() {
-        clawr.setPosition(.6);
+        clawr.setPosition(.3);
     }
     public void armUp(){
         arm.setTargetPosition(-500);
