@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -60,10 +61,10 @@ import java.util.concurrent.TimeUnit;
  */
 
 @TeleOp(name="Omni Drive To AprilTag", group = "Concept")
-@Disabled
 
 public class SampleRobotAutoDriveToAprilTagOmni extends LinearOpMode
 {
+    ElapsedTime runtime = new ElapsedTime();
     // Adjust these numbers to suit your robot.
     final double DESIRED_DISTANCE = 12.0; //  this is how close the camera should get to the target (inches)
 
@@ -84,7 +85,7 @@ public class SampleRobotAutoDriveToAprilTagOmni extends LinearOpMode
     private DcMotor rightBack   = null;  //  Used to control the right back drive wheel
 
     private static final boolean USE_WEBCAM = true;  // Set true to use a webcam, or false for a phone camera
-    private static int desiredTagID = 4;     // Choose the tag you want to approach or set to -1 for ANY tag.
+    private static int desiredTagID = -1;     // Choose the tag you want to approach or set to -1 for ANY tag.
     boolean red = true;
     private VisionPortal visionPortal;               // Used to manage the video source.
     private AprilTagProcessor aprilTag;              // Used for managing the AprilTag detection process.
@@ -93,7 +94,7 @@ public class SampleRobotAutoDriveToAprilTagOmni extends LinearOpMode
     AprilTagProcessor.Builder MitchellKindaWeirdAprilTagProcessor;
 
     @Override public void runOpMode() {
-        boolean targetFound = false;    // Set to true when an AprilTag target is detected
+        boolean targetFound;    // Set to true when an AprilTag target is detected
         double drive = 0;        // Desired forward power/speed (-1 to +1)
         double strafe = 0;        // Desired strafe power/speed (-1 to +1)
         double turn = 0;        // Desired turning power/speed (-1 to +1)
@@ -112,9 +113,6 @@ public class SampleRobotAutoDriveToAprilTagOmni extends LinearOpMode
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // When run, this OpMode should start both motors driving forward. So adjust these two lines based on your first test drive.
         // Note: The settings here assume direct drive on left and right wheels.  Gear Reduction or 90 Deg drives may require direction flips
-        leftFront.setDirection(DcMotor.Direction.FORWARD);
-        leftBack.setDirection(DcMotor.Direction.FORWARD);
-        rightFront.setDirection(DcMotor.Direction.REVERSE);
         rightBack.setDirection(DcMotor.Direction.REVERSE);
 
         if (USE_WEBCAM)
@@ -128,7 +126,8 @@ public class SampleRobotAutoDriveToAprilTagOmni extends LinearOpMode
 
         //Then april tag will direct robot to backdrop
         targetFound = false;
-        desiredTag = null;
+        desiredTag = aprilTag.getDetections().get(0);
+        double rangeError;
         while (opModeIsActive()) {
             // Step through the list of detected tags and look for a matching tag
             List<AprilTagDetection> currentDetections = aprilTag.getDetections();
@@ -138,23 +137,25 @@ public class SampleRobotAutoDriveToAprilTagOmni extends LinearOpMode
                     //  Check to see if we want to track towards this tag.
                     if ((desiredTagID < 0) || (detection.id == desiredTagID)) {
                         // Yes, we want to use this tag.
-                        targetFound = false;
+                        targetFound = true;
                         desiredTag = detection;
                         break;  // don't look any further.
                     } else {
                         // This tag is in the library, but we do not want to track it right now.
                         telemetry.addData("Skipping", "Tag ID %d is not desired", detection.id);
+                        telemetry.update();
                     }
                 } else {
                     // This tag is NOT in the library, so we don't have enough information to track to it.
                     telemetry.addData("Unknown", "Tag ID %d is not in TagLibrary", detection.id);
+                    telemetry.update();
                 }
             }
             //Mitchell not just kinda weird he is weird
-            // If Left Bumper is being pressed, AND we have found the desired target, Drive to target Automatically .
+            // If we have found the desired target, Drive to target Automatically .
             if (targetFound) {
                 // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
-                double rangeError = (desiredTag.ftcPose.range - DESIRED_DISTANCE);
+                rangeError = (desiredTag.ftcPose.range - DESIRED_DISTANCE);
                 double headingError = desiredTag.ftcPose.bearing;
                 double yawError = desiredTag.ftcPose.yaw;
 
@@ -168,34 +169,52 @@ public class SampleRobotAutoDriveToAprilTagOmni extends LinearOpMode
                 telemetry.addData("Range", "%5.1f inches", desiredTag.ftcPose.range);
                 telemetry.addData("Bearing", "%3.0f degrees", desiredTag.ftcPose.bearing);
                 telemetry.addData("Yaw", "%3.0f degrees", desiredTag.ftcPose.yaw);
+
+                //show telemetry for 5 seconds before moving anywhere
+                runtime.reset();
+                while(runtime.seconds() < 5){
+                    telemetry.addData("Auto", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", -drive, -strafe, turn);
+                    telemetry.addData("Found", "ID %d (%s)", desiredTag.id, desiredTag.metadata.name);
+                    telemetry.addData("Range", "%5.1f inches", desiredTag.ftcPose.range);
+                    telemetry.addData("Bearing", "%3.0f degrees", desiredTag.ftcPose.bearing);
+                    telemetry.addData("Yaw", "%3.0f degrees", desiredTag.ftcPose.yaw);
+                    telemetry.update();
+                }
                 break;
             } else {
                 if (red == true) {
                     //drive left
-                    leftFront.setPower(.25);
-                    leftBack.setPower(0.25);
-                    rightFront.setPower(0.25);
-                    rightBack.setPower(-0.25);
-
+                    leftFront.setPower(-0.4);
+                    leftBack.setPower(0.4);
+                    rightFront.setPower(-0.4);
+                    rightBack.setPower(-0.4);
                 } else {
                     //drive right
-                    leftFront.setPower(-0.25);
-                    leftBack.setPower(-0.25);
-                    rightFront.setPower(-0.25);
-                    rightBack.setPower(0.25);
+                    leftFront.setPower(0.4);
+                    leftBack.setPower(-0.4);
+                    rightFront.setPower(0.4);
+                    rightBack.setPower(0.4);
                 }
                 telemetry.addData("\n>", "no target found\n");
                 telemetry.addData("Manual", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", -drive, -strafe, turn);
+                telemetry.update();
             }
-            telemetry.update();
-
             // Apply desired axes motions to the drivetrain.
             moveRobot(-drive, -strafe, turn);
 
-            leftFront.setPower(0);
+            while(desiredTag.ftcPose.range > DESIRED_DISTANCE){
+                telemetry.addData("range", desiredTag.ftcPose.range);
+                telemetry.addData("front left power", leftFront.getPower());
+                telemetry.addData("front right power", rightFront.getPower());
+                telemetry.addData("back left power", leftBack.getPower());
+                telemetry.addData("back right power", rightBack.getPower());
+                telemetry.update();
+            }
+
+            /*leftFront.setPower(0);
             rightFront.setPower(0);
             leftBack.setPower(0);
-            rightBack.setPower(0);
+            rightBack.setPower(0);*/
         }
     }
 

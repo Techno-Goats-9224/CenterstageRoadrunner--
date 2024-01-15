@@ -31,8 +31,8 @@ public class Teleop extends OpMode {
     private ServoImplEx clawl;
     private ServoImplEx clawr;
     private Servo drone;
-    private Servo rotate;
-    private BNO055IMU imu;
+    private ServoImplEx rotate;
+    private IMU imu;
     private Pixy pixy;
     @Override
     public void init() {
@@ -46,19 +46,18 @@ public class Teleop extends OpMode {
         leftFront = hardwareMap.get(DcMotorEx.class,"leftFront");
         rightFront = hardwareMap.get(DcMotorEx.class,"rightFront");
         drone = hardwareMap.get(Servo.class,"drone");
-        rotate = hardwareMap.get(Servo.class, "rotate");
-        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        rotate = hardwareMap.get(ServoImplEx.class, "rotate");
+        imu = hardwareMap.get(IMU.class, "imu");
         pixy = hardwareMap.get(Pixy.class, "pixy");
 
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
-        parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-        parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample OpMode
-        parameters.loggingEnabled      = true;
-        parameters.loggingTag          = "IMU";
-        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+        RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.UP;
+        RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
 
-        imu.initialize(parameters);
+        RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
+
+        // Now initialize the IMU with this mounting orientation
+        // Note: if you choose two conflicting directions, this initialization will cause a code exception.
+        imu.initialize(new IMU.Parameters(orientationOnRobot));
 
         arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -76,6 +75,7 @@ public class Teleop extends OpMode {
 
         clawl.setPwmRange(new PwmControl.PwmRange(500, 2500));
         clawr.setPwmRange(new PwmControl.PwmRange(500, 2500));
+        //rotate.setPwmRange(new PwmControl.PwmRange(500, 2500));
         clawl.setDirection(Servo.Direction.REVERSE);
         clawr.setDirection(Servo.Direction.REVERSE);
         rotate.setDirection(Servo.Direction.REVERSE);
@@ -154,7 +154,7 @@ public class Teleop extends OpMode {
             clawl.setPosition(0.6);
         }else if(gamepad2.circle) {
             //open
-            clawr.setPosition(.9);
+            clawr.setPosition(.7);
         }else if (gamepad2.cross){
             //open
             clawl.setPosition(0.6);
@@ -170,7 +170,7 @@ public class Teleop extends OpMode {
             rotate.setPosition(0.1);
         }else if(gamepad2.left_bumper){
             //up above field
-            rotate.setPosition(.3);
+            rotate.setPosition(.6);
         }else{
             //flat on field
             rotate.setPosition(0.2);
@@ -235,9 +235,7 @@ public class Teleop extends OpMode {
         telemetry.addData("Negative Back Right Encoder (para) ticks", -rightBack.getCurrentPosition());
         telemetry.addData("Front Left Encoder (perp) inches", encoderTicksToInches(leftFront.getCurrentPosition()));
         telemetry.addData("Negative Back Right Encoder (para) inches", encoderTicksToInches(-rightBack.getCurrentPosition()));
-        telemetry.addData("imu first",imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).firstAngle);
-        telemetry.addData("imu second", imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).secondAngle);
-        telemetry.addData("imu third", imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).thirdAngle);
+        telemetry.addData("imu yaw",imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
         telemetry.addData("arm encoder", arm.getCurrentPosition());
         byte[] pixyBytes1 = pixy.readShort(0x51, 5); // need this
         telemetry.addData("number of Signature 1", pixyBytes1[0]); // need this
