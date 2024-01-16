@@ -2,11 +2,13 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.PwmControl;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
@@ -29,7 +31,7 @@ public class Backstage extends LinearOpMode {
     private ServoImplEx clawl;
     private ServoImplEx clawr;
     private DcMotorEx arm;
-    private BNO055IMU imu;
+    private IMU imu;
     private Servo rotate;
     private enum directions{
         FORWARD,
@@ -104,10 +106,10 @@ public class Backstage extends LinearOpMode {
     //to rotate counterclockwise (increasing imu) RB should be the only negative power
     //positive degrees is clockwise
     public void turn(double degrees, directions dir, double power) {
-        heading = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).secondAngle;
+        heading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
 
         while (((Math.abs(degrees - heading)) > 3) && opModeIsActive()) {
-            heading = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).secondAngle;
+            heading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
             desiredDirection = (degrees - heading) / (Math.abs(degrees - heading));
 
             leftFront.setPower(-desiredDirection * power);
@@ -116,7 +118,7 @@ public class Backstage extends LinearOpMode {
             rightBack.setPower(desiredDirection * power);
 
             telemetry.addData("degrees:", degrees);
-            telemetry.addData("heading", imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).secondAngle);
+            telemetry.addData("heading", heading);
             telemetry.addData("desired direction", desiredDirection);
             telemetry.addData("offset from position:", degrees - heading);
             telemetry.update();
@@ -159,14 +161,18 @@ public class Backstage extends LinearOpMode {
         arm = hardwareMap.get(DcMotorEx.class,"arm");
         clawl = hardwareMap.get(ServoImplEx.class,"clawl");
         clawr = hardwareMap.get(ServoImplEx.class,"clawr");
-        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        imu = hardwareMap.get(IMU.class, "imu");
         rotate = hardwareMap.get(Servo.class, "rotate");
 
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.loggingEnabled = true;
-        parameters.loggingTag     = "IMU";
-        imu = hardwareMap.get(BNO055IMU.class, "imu");
-        imu.initialize(parameters);
+        RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.UP;
+        RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
+
+        RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
+
+        // Now initialize the IMU with this mounting orientation
+        // Note: if you choose two conflicting directions, this initialization will cause a code exception.
+        imu.initialize(new IMU.Parameters(orientationOnRobot));
+
 
         leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
