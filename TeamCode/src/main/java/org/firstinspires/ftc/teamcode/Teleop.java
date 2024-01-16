@@ -146,33 +146,26 @@ public class Teleop extends OpMode {
             clawl.setPosition(0.6);
         }else if(gamepad2.circle) {
             //open
-            clawr.setPosition(.9);
+            clawr.setPosition(.7);
         }else if (gamepad2.cross){
             //open
             clawl.setPosition(0.6);
-            clawr.setPosition(.9);
+            clawr.setPosition(.7);
         }else {
             //close
             clawl.setPosition(0.75);
-            clawr.setPosition(.8);
+            clawr.setPosition(.6);
         }
 
-        if(gamepad2.left_bumper){
+        if(gamepad2.left_trigger > 0.1){
+            //up
+            rotate.setPosition(0.4);
+        } else if(gamepad2.left_bumper){
             //down below field
-            rotate.setPosition(-0.1);
-        }else{
+            rotate.setPosition(0.2);
+        } else{
             //flat on field
-            //when not reversed:
-            //.5 was all the way up and trying to go farther
-            //.1 was all the way up and trying to go farther
-            //1 was all the way  up and trying to go farther
-            //when reversed
-            //1 was all the way up and trying to go farther
-            //0 was all the way down and tryng to go farther
-            //.5 was all the way down and trying to go farther
-            //.75 was all the way down and trying to go farther
-            //.9 was all the way down and trying to go farther
-            rotate.setPosition(0.1);
+            rotate.setPosition(0.3);
         }
         if (gamepad2.triangle){
             drone.setPosition(.5);
@@ -182,7 +175,8 @@ public class Teleop extends OpMode {
             // 1 is holding rubberband .5 is out
         }
 
-        double ly = gamepad1.left_stick_y * 0.8;
+        //normal driving code from gm0.org
+        /*double ly = gamepad1.left_stick_y * 0.8;
         double lx = -gamepad1.left_stick_x * 0.8;
         double rx = -gamepad1.right_stick_x * 0.8;
 
@@ -190,6 +184,46 @@ public class Teleop extends OpMode {
         leftBack.setPower(ly - lx + rx);
         rightFront.setPower(-ly + lx + rx);
         rightBack.setPower(ly + lx - rx);
+*/
+
+        //gm0.org field centric
+        double y = gamepad1.left_stick_y;
+        double x = -gamepad1.left_stick_x;
+        double rx = -gamepad1.right_stick_x;
+
+        double heading = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.RADIANS).secondAngle;
+        double rotX = x * Math.cos(-heading) - y * Math.sin(-heading);
+        double rotY = x * Math.sin(-heading) + y * Math.cos(-heading);
+        rotX = rotX * 1.1;
+        double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rx), 1);
+
+        leftFront.setPower((rotY + rotX + rx) / denominator);
+        leftBack.setPower((rotY - rotX + rx) / denominator);
+        rightFront.setPower((-rotY + rotX + rx) / denominator);
+        rightBack.setPower((rotY + rotX - rx) / denominator);
+
+        /*
+        //DYSFUNCTIONAL - field centric driving code from learnroadrunner.com
+        // Read pose
+        Pose2d poseEstimate = drive.getPoseEstimate();
+
+        // Create a vector from the gamepad x/y inputs
+        // Then, rotate that vector by the inverse of that heading
+        Vector2d input = new Vector2d(
+                -(gamepad1.left_stick_y * 0.75),
+                -(gamepad1.left_stick_x * 0.75)
+        ).rotated(-poseEstimate.getHeading());
+
+        // Pass in the rotated input + right stick value for rotation
+        // Rotation is not part of the rotated input thus must be passed in separately
+        drive.setWeightedDrivePower(
+                new Pose2d(
+                        input.getX(),
+                        input.getY(),
+                        -gamepad1.right_stick_x
+                )
+        );
+         */
 
         telemetry.addData("front left power", leftFront.getPower());
         telemetry.addData("front right power", rightFront.getPower());

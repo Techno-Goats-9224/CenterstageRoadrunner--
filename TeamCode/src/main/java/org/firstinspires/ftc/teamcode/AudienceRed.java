@@ -186,7 +186,7 @@ public class AudienceRed extends LinearOpMode {
         double  turn            = 0;        // Desired turning power/speed (-1 to +1)
 
         // Initialize the Apriltag Detection process
-        //initAprilTag();
+        initAprilTag();
 
         leftBack = hardwareMap.get(DcMotorEx.class,"leftBack");
         rightBack = hardwareMap.get(DcMotorEx.class,"rightBack");
@@ -223,11 +223,11 @@ public class AudienceRed extends LinearOpMode {
         clawl.setPosition(.75);
         //close
         clawr.setPosition(0.8);
-        rotate.setPosition(0.1);
+        rotate.setPosition(0.3);
 
-        /*if (USE_WEBCAM)
+        if (USE_WEBCAM)
             setManualExposure(1, 255);  // Use low exposure time to reduce motion blur
-*/
+
         pixy = hardwareMap.get(Pixy.class, "pixy"); // need this
 
 
@@ -277,7 +277,7 @@ public class AudienceRed extends LinearOpMode {
                     position = 'R';
                 }
             }
-        } //close pixy detection time-based while loop
+        } //close pixy detection time-based while loop (Mitchell is kinda weird)
 
         //Robot needs to drive and move forward like 24in ish
         drive(34, directions.FORWARD, 0.25);
