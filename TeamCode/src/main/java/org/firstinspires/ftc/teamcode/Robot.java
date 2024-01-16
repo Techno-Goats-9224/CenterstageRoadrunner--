@@ -167,13 +167,21 @@ public class Robot {
     }
     public void rotateAustralia(){
         //Cuz their down under
-        rotate.setPosition(.1);
+        rotate.setPosition(.4);
     }
     public void rotateTysensPersonality(){
         //Mid
-        rotate.setPosition(.3);
+        rotate.setPosition(.5);
     }public void rotateAlaska(){
         //up place
-        rotate.setPosition(.2);
+        rotate.setPosition(.6);
+    }
+
+    public void stop(){
+        leftFront.setPower(0);
+        leftBack.setPower(0);
+        rightBack.setPower(0);
+        rightFront.setPower(0);
+        arm.setPower(0);
     }
 }

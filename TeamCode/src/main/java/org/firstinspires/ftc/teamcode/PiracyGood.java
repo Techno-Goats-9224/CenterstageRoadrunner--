@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PwmControl;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
@@ -83,15 +84,6 @@ public class PiracyGood extends LinearOpMode {
     private AprilTagDetection desiredTag = null;     // Used to hold the data for a detected AprilTag
 
     AprilTagProcessor.Builder MitchellKindaWeirdAprilTagProcessor;
-    private DcMotorEx rightBack;
-    private DcMotorEx leftFront;
-    private DcMotor rightFront;
-    private DcMotor leftBack;
-    private ServoImplEx clawl;
-    private ServoImplEx clawr;
-    private DcMotorEx arm;
-    private IMU imu;
-    private Servo rotate;
     public static double X_MULTIPLIER = 0.9787360469; // Multiplier in the X direction: 1.005395271
     public static double Y_MULTIPLIER = 0.982667947; // Multiplier in/ the Y direction
     public static double TICKS_PER_REV = 4000;
@@ -103,12 +95,6 @@ public class PiracyGood extends LinearOpMode {
     char position;
     ElapsedTime runtime = new ElapsedTime();
     private Pixy pixy; // need this
-    double lastParEncoder_in = 0;
-    double lastPerpEncoder_in = 0;
-    double lastHeading = 0;
-    double xPos_in;
-    double yPos_in;
-    double heading;
     boolean red = true;
     double desiredDirection;
     //for forward: all four motors need to be negative
@@ -123,47 +109,9 @@ public class PiracyGood extends LinearOpMode {
         // Initialize the Apriltag Detection process
         initAprilTag();
 
-        leftBack = hardwareMap.get(DcMotorEx.class, "leftBack");
-        rightBack = hardwareMap.get(DcMotorEx.class, "rightBack");
-        leftFront = hardwareMap.get(DcMotorEx.class, "leftFront");
-        rightFront = hardwareMap.get(DcMotorEx.class, "rightFront");
-        arm = hardwareMap.get(DcMotorEx.class, "arm");
-        clawl = hardwareMap.get(ServoImplEx.class, "clawl");
-        clawr = hardwareMap.get(ServoImplEx.class, "clawr");
-        imu = hardwareMap.get(IMU.class, "imu");
-        rotate = hardwareMap.get(Servo.class, "rotate");
-
-        RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.UP;
-        RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
-
-        RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
-
-        // Now initialize the IMU with this mounting orientation
-        // Note: if you choose two conflicting directions, this initialization will cause a code exception.
-        imu.initialize(new IMU.Parameters(orientationOnRobot));
-
-
-        leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
-
-        arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        clawl.setPwmRange(new PwmControl.PwmRange(500, 2500));
-        clawr.setPwmRange(new PwmControl.PwmRange(500, 2500));
-        clawl.setDirection(Servo.Direction.REVERSE);
-        clawr.setDirection(Servo.Direction.REVERSE);
-        rotate.setDirection(Servo.Direction.REVERSE);
-        clawl.setPosition(.75);
-        //close
-        clawr.setPosition(0.8);
-        rotate.setPosition(0.1);
-
+        piracyWii.init(hardwareMap);
+        piracyWii.closeClawl();
+        piracyWii.closeClawr();
         if (USE_WEBCAM)
             setManualExposure(1, 255);  // Use low exposure time to reduce motion blur
 
@@ -225,8 +173,8 @@ public class PiracyGood extends LinearOpMode {
         if (position == 'L') {
             piracyWii.turn(90, 0.25);
             piracyWii.drive(3, Robot.directions.FORWARD, 0.25);
-            //TODO make claw open
-            clawr.setPosition(0.9);
+            // claw open
+            piracyWii.openClawr();
             piracyWii.drive(-3, Robot.directions.FORWARD, 0.25);
             piracyWii.turn(0, 0.25);
             //Drive the remaining 48in
@@ -236,13 +184,13 @@ public class PiracyGood extends LinearOpMode {
             piracyWii.drive(12, Robot.directions.FORWARD, 0.25);
             piracyWii.turn(175, .25);
             //open
-            clawr.setPosition(0.9);
+            piracyWii.openClawr();
             piracyWii.drive(-4, Robot.directions.FORWARD, 0.25);
         } else if (position == 'R') {
             //Then turn right 90 degrees drop pixel at right
             piracyWii.turn(-90,.25);
             piracyWii.drive(3, Robot.directions.FORWARD, .25);
-            clawr.setPosition(0.9);
+            piracyWii.openClawr();
             piracyWii.drive (-3, Robot.directions.FORWARD, .25);
             piracyWii.turn(0,.25);
             //Drive the remaining 48in
@@ -326,10 +274,7 @@ public class PiracyGood extends LinearOpMode {
         // Apply desired axes motions to the drivetrain.
         moveRobot(-drive, -strafe, turn);
 
-        leftFront.setPower(0);
-        rightFront.setPower(0);
-        leftBack.setPower(0);
-        rightBack.setPower(0);
+        piracyWii.stop();
 
         // Transfer the current pose to PoseStorage so we can use it in TeleOp
         //PoseStorage.currentPose = drive.getPoseEstimate();
@@ -358,10 +303,10 @@ public class PiracyGood extends LinearOpMode {
 
         // Send powers to the wheels.
         // in our centerstage robot with RB reversed, LF, LB, and RB and negative to go forward
-        leftFront.setPower(-leftFrontPower);
-        rightFront.setPower(rightFrontPower);
-        leftBack.setPower(-leftBackPower);
-        rightBack.setPower(-rightBackPower);
+        piracyWii.leftFront.setPower(-leftFrontPower);
+        piracyWii.rightFront.setPower(rightFrontPower);
+        piracyWii.leftBack.setPower(-leftBackPower);
+        piracyWii.rightBack.setPower(-rightBackPower);
     }
 
     /**

@@ -31,7 +31,11 @@ public class RoboTeleop extends OpMode {
             piracyWii.armDown();
             telemetry.addData("target in down: ", piracyWii.arm.getTargetPosition());
             telemetry.addData("current in down: ", piracyWii.arm.getCurrentPosition());
-        } else {
+        } else if(gamepad2.right_trigger > 0.1){
+            piracyWii.armPower(0.5);
+        } else if(gamepad2.right_bumper){
+            piracyWii.armPower(-0.75);
+        }else {
             piracyWii.arm.setPower(0);
             telemetry.addData("target in zero: ", piracyWii.arm.getTargetPosition());
             telemetry.addData("current in zero: ", piracyWii.arm.getCurrentPosition());
