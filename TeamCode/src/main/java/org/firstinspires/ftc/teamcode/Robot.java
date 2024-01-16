@@ -162,7 +162,6 @@ public class Robot {
         arm.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
     }
     public void armPower(double power){
-
         arm.setPower(power);
     }
     public void rotateAustralia(){
