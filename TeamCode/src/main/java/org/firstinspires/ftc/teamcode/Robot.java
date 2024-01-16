@@ -137,7 +137,7 @@ public class Robot {
     public void launchDrone(){
         drone.setPosition(.5);
     }
-    public void dontlaunchDrone(){
+    public void dontLaunchDrone(){
         drone.setPosition(.1);
     }
     public void openClawl(){
@@ -150,7 +150,7 @@ public class Robot {
         clawr.setPosition(.7);
     }
     public void closeClawr() {
-        clawr.setPosition(.3);
+        clawr.setPosition(.6);
     }
     public void armUp(){
         arm.setTargetPosition(-500);

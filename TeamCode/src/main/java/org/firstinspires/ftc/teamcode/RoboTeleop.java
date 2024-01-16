@@ -2,6 +2,11 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.ServoImplEx;
 
 @TeleOp()
 public class RoboTeleop extends OpMode {
@@ -52,14 +57,19 @@ public class RoboTeleop extends OpMode {
                piracyWii.rotateTysensPersonality();
         }else{
             //flat on field
-                piracyWii.rotateAlaska();
+            piracyWii.rotateAlaska();
         }
         if (gamepad2.triangle){
-                piracyWii.launchDrone();
+            piracyWii.launchDrone();
         }else {
-               piracyWii.dontlaunchDrone();
+            piracyWii.dontLaunchDrone();
         }
-
         telemetry.update();
-        }
+    }
+
+    @Override
+    public void stop(){
+        piracyWii.drive(0, Robot.directions.FORWARD, 0);
+        piracyWii.armPower(0);
+    }
 }
