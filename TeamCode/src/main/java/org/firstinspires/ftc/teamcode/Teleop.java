@@ -167,13 +167,13 @@ public class Teleop extends OpMode {
 
         if(gamepad2.left_trigger>.1) {
             //down below field
-            rotate.setPosition(0.1);
+            rotate.setPosition(0.5);
         }else if(gamepad2.left_bumper){
             //up above field
-            rotate.setPosition(.3);
+            rotate.setPosition(.9);
         }else{
             //flat on field
-            rotate.setPosition(0.2);
+            rotate.setPosition(0.6);
         }
         if (gamepad2.triangle){
             drone.setPosition(.5);
