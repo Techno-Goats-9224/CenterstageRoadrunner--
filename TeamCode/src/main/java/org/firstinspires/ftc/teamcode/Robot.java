@@ -124,7 +124,7 @@ public class Robot {
     public void turn(double degrees, double power) {
         heading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
 
-        while (((Math.abs(degrees - heading)) > 3)) {
+        while (((Math.abs(degrees - heading)) > 3) /*&& opModeIsActive()*/) {
             heading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
             desiredDirection = (degrees - heading) / (Math.abs(degrees - heading));
 
