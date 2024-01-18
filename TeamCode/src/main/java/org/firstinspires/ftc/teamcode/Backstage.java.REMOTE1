@@ -107,11 +107,9 @@ public class Backstage extends LinearOpMode {
     //to rotate counterclockwise (increasing imu) RB should be the only negative power
     //positive degrees is clockwise
     public void turn(double degrees, directions dir, double power) {
-        heading = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
-        runtime.reset();
-
+        heading = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).secondAngle;
         while (((Math.abs(degrees - heading)) > 3) && opModeIsActive()) {
-            heading = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
+            heading = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).secondAngle;
             desiredDirection = (degrees - heading) / (Math.abs(degrees - heading));
 
             leftFront.setPower(-desiredDirection * power);
@@ -262,21 +260,21 @@ public class Backstage extends LinearOpMode {
         }
 
         //Robot needs to drive and move forward like 24in ish
-        drive(32, directions.FORWARD, 0.25);
+        drive(30, directions.FORWARD, 0.25);
 
         //If Drop pixel at left: turn left 90 degrees then open claw then turn right to get back on track.
             if (position == 'L'){
                 turn(90, directions.LEFT, 0.25);
-                drive(1.5, directions.FORWARD, 0.25);
+                drive(2.5, directions.FORWARD, 0.25);
                 clawr.setPosition(0.7);
                 drive(-3, directions.FORWARD, 0.25);
             }
             else if (position == 'C'){
                 // Drop pixel at center: drive past then turn around 180 degrees and then drop pixel and then turn another 180 degrees.
-                drive(-1, directions.FORWARD, 0.25);
+                drive(0, directions.FORWARD, 0.25);
                 //open
                 clawr.setPosition(0.7);
-                drive(-4, directions.FORWARD, 0.25);
+                drive(-3, directions.FORWARD, 0.25);
             }
             else if(position== 'R'){
                 //Then turn right 90 degrees drop pixel at right
