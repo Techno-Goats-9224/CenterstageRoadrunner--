@@ -13,9 +13,15 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDir
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
+import org.firstinspires.ftc.robotcore.external.matrices.MatrixF;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
+import org.firstinspires.ftc.vision.apriltag.AprilTagMetadata;
+import org.firstinspires.ftc.vision.apriltag.AprilTagPoseFtc;
+import org.firstinspires.ftc.vision.apriltag.AprilTagPoseRaw;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
+import org.opencv.core.Point;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -113,7 +119,10 @@ public class SampleRobotAutoDriveToAprilTagOmni extends LinearOpMode
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // When run, this OpMode should start both motors driving forward. So adjust these two lines based on your first test drive.
         // Note: The settings here assume direct drive on left and right wheels.  Gear Reduction or 90 Deg drives may require direction flips
-        rightBack.setDirection(DcMotor.Direction.REVERSE);
+        rightBack.setDirection(DcMotor.Direction.FORWARD);
+        leftFront.setDirection(DcMotor.Direction.REVERSE);
+        leftBack.setDirection(DcMotor.Direction.REVERSE);
+
 
         if (USE_WEBCAM)
             setManualExposure(1, 255);  // Use low exposure time to reduce motion blur
@@ -126,7 +135,6 @@ public class SampleRobotAutoDriveToAprilTagOmni extends LinearOpMode
 
         //Then april tag will direct robot to backdrop
         targetFound = false;
-        desiredTag = aprilTag.getDetections().get(0);
         double rangeError;
         while (opModeIsActive()) {
             // Step through the list of detected tags and look for a matching tag
@@ -172,7 +180,8 @@ public class SampleRobotAutoDriveToAprilTagOmni extends LinearOpMode
 
                 //show telemetry for 5 seconds before moving anywhere
                 runtime.reset();
-                while(runtime.seconds() < 5){
+                while(runtime.seconds() < 5) {
+                    telemetry.addData("robot", "shouldn't be moving");
                     telemetry.addData("Auto", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", -drive, -strafe, turn);
                     telemetry.addData("Found", "ID %d (%s)", desiredTag.id, desiredTag.metadata.name);
                     telemetry.addData("Range", "%5.1f inches", desiredTag.ftcPose.range);
@@ -180,7 +189,6 @@ public class SampleRobotAutoDriveToAprilTagOmni extends LinearOpMode
                     telemetry.addData("Yaw", "%3.0f degrees", desiredTag.ftcPose.yaw);
                     telemetry.update();
                 }
-                break;
             } else {
                 if (red == true) {
                     //drive left
@@ -200,9 +208,10 @@ public class SampleRobotAutoDriveToAprilTagOmni extends LinearOpMode
                 telemetry.update();
             }
             // Apply desired axes motions to the drivetrain.
-            moveRobot(-drive, -strafe, turn);
+            moveRobot(-drive, strafe, turn);
 
-            while(desiredTag.ftcPose.range > DESIRED_DISTANCE){
+            while(desiredTag != null && desiredTag.ftcPose.range > DESIRED_DISTANCE && opModeIsActive()){
+                telemetry.addData("robot", "should be moving");
                 telemetry.addData("range", desiredTag.ftcPose.range);
                 telemetry.addData("front left power", leftFront.getPower());
                 telemetry.addData("front right power", rightFront.getPower());
@@ -211,10 +220,10 @@ public class SampleRobotAutoDriveToAprilTagOmni extends LinearOpMode
                 telemetry.update();
             }
 
-            /*leftFront.setPower(0);
+            leftFront.setPower(0);
             rightFront.setPower(0);
             leftBack.setPower(0);
-            rightBack.setPower(0);*/
+            rightBack.setPower(0);
         }
     }
 
@@ -230,10 +239,10 @@ public class SampleRobotAutoDriveToAprilTagOmni extends LinearOpMode
      */
     public void moveRobot(double x, double y, double yaw) {
         // Calculate wheel powers.
-        double leftFrontPower    =  x +y +yaw;
-        double rightFrontPower   =  -x +y +yaw;
-        double leftBackPower     =  x -y +yaw;
-        double rightBackPower    =  x +y -yaw;
+        double leftFrontPower    =  x +y +yaw; //-.52
+        double rightFrontPower   =  -x +y +yaw; //.98
+        double leftBackPower     =  x -y +yaw; //-1.04
+        double rightBackPower    =  x +y -yaw; //-.46
 
         // Normalize wheel powers to be less than 1.0
         double max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));

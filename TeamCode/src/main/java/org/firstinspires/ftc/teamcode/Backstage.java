@@ -2,6 +2,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -106,9 +107,11 @@ public class Backstage extends LinearOpMode {
     //to rotate counterclockwise (increasing imu) RB should be the only negative power
     //positive degrees is clockwise
     public void turn(double degrees, directions dir, double power) {
-        heading = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).secondAngle;
+        heading = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
+        runtime.reset();
+
         while (((Math.abs(degrees - heading)) > 3) && opModeIsActive()) {
-            heading = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).secondAngle;
+            heading = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
             desiredDirection = (degrees - heading) / (Math.abs(degrees - heading));
 
             leftFront.setPower(-desiredDirection * power);
@@ -160,17 +163,18 @@ public class Backstage extends LinearOpMode {
         arm = hardwareMap.get(DcMotorEx.class,"arm");
         clawl = hardwareMap.get(ServoImplEx.class,"clawl");
         clawr = hardwareMap.get(ServoImplEx.class,"clawr");
-        imu = hardwareMap.get(IMU.class, "imu");
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
         rotate = hardwareMap.get(Servo.class, "rotate");
 
-        RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.UP;
-        RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample OpMode
+        parameters.loggingEnabled      = true;
+        parameters.loggingTag          = "IMU";
+        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
 
-        RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
-
-        // Now initialize the IMU with this mounting orientation
-        // Note: if you choose two conflicting directions, this initialization will cause a code exception.
-        imu.initialize(new IMU.Parameters(orientationOnRobot));
+        imu.initialize(parameters);
 
 
         leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -255,21 +259,21 @@ public class Backstage extends LinearOpMode {
         }
 
         //Robot needs to drive and move forward like 24in ish
-        drive(30, directions.FORWARD, 0.25);
+        drive(32, directions.FORWARD, 0.25);
 
         //If Drop pixel at left: turn left 90 degrees then open claw then turn right to get back on track.
             if (position == 'L'){
                 turn(90, directions.LEFT, 0.25);
-                drive(2.5, directions.FORWARD, 0.25);
+                drive(1.5, directions.FORWARD, 0.25);
                 clawr.setPosition(0.7);
                 drive(-3, directions.FORWARD, 0.25);
             }
             else if (position == 'C'){
                 // Drop pixel at center: drive past then turn around 180 degrees and then drop pixel and then turn another 180 degrees.
-                drive(0, directions.FORWARD, 0.25);
+                drive(-1, directions.FORWARD, 0.25);
                 //open
                 clawr.setPosition(0.7);
-                drive(-3, directions.FORWARD, 0.25);
+                drive(-4, directions.FORWARD, 0.25);
             }
             else if(position== 'R'){
                 //Then turn right 90 degrees drop pixel at right
