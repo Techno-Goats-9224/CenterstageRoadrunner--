@@ -31,7 +31,7 @@ public class Backstage extends LinearOpMode {
     private ServoImplEx clawl;
     private ServoImplEx clawr;
     private DcMotorEx arm;
-    private IMU imu;
+    private BNO055IMU imu;
     private Servo rotate;
     private enum directions{
         FORWARD,
@@ -106,10 +106,9 @@ public class Backstage extends LinearOpMode {
     //to rotate counterclockwise (increasing imu) RB should be the only negative power
     //positive degrees is clockwise
     public void turn(double degrees, directions dir, double power) {
-        heading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
-
+        heading = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).secondAngle;
         while (((Math.abs(degrees - heading)) > 3) && opModeIsActive()) {
-            heading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+            heading = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).secondAngle;
             desiredDirection = (degrees - heading) / (Math.abs(degrees - heading));
 
             leftFront.setPower(-desiredDirection * power);
