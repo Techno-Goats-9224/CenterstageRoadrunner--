@@ -19,6 +19,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 
 public class Robot {
+    Telemetry fakeTelemetry;
+
     public DcMotorEx rightBack;
     public DcMotorEx leftFront;
     public DcMotor rightFront;
@@ -36,7 +38,9 @@ public class Robot {
         SIDE
     }
 
-    public boolean init(HardwareMap hardwareMap) {
+    public boolean init(HardwareMap hardwareMap, Telemetry telemetry) {
+        fakeTelemetry = telemetry;
+
         drone = hardwareMap.get(Servo.class,"drone");
         leftBack = hardwareMap.get(DcMotorEx.class, "leftBack");
         rightBack = hardwareMap.get(DcMotorEx.class, "rightBack");
@@ -137,6 +141,33 @@ public class Robot {
             leftBack.setPower(-desiredDirection * power);
             rightFront.setPower(-desiredDirection * power);
             rightBack.setPower(desiredDirection * power);
+        }
+    }
+
+    public char pixyLook(boolean red){
+        byte[] pixyBytes1 = pixy.readShort(0x51, 5);
+        fakeTelemetry.addData("number of Signature 1", pixyBytes1[0]);
+        fakeTelemetry.addData("x position of largest block of sig 1", pixyBytes1[1]);
+        byte[] pixyBytes2 = pixy.readShort(0x52, 2);
+        fakeTelemetry.addData("number of Signature 2", pixyBytes2[0]);
+        fakeTelemetry.addData("x position of largest block of sig 2", pixyBytes2[1]);
+        fakeTelemetry.update();
+        if (red == true) {
+            if (pixyBytes1[1] < 90 && pixyBytes1[1] != 0) {
+                return 'C';
+            } else if (pixyBytes1[1] > 90) {
+                return 'L';
+            } else {
+                return 'R';
+            }
+        }else {
+            if (pixyBytes2[1] > 0) {
+                return 'L';
+            } else if (pixyBytes2[1] < 0) {
+                return 'C';
+            } else {
+                return 'R';
+            }
         }
     }
     public void launchDrone(){

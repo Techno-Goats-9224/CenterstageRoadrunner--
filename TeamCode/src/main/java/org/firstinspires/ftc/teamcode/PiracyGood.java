@@ -109,14 +109,11 @@ public class PiracyGood extends LinearOpMode {
         // Initialize the Apriltag Detection process
         initAprilTag();
 
-        piracyWii.init(hardwareMap);
+        piracyWii.init(hardwareMap, telemetry);
         piracyWii.closeClawl();
         piracyWii.closeClawr();
         if (USE_WEBCAM)
             setManualExposure(1, 255);  // Use low exposure time to reduce motion blur
-
-        pixy = hardwareMap.get(Pixy.class, "pixy"); // need this
-
 
         while (gamepad1.left_bumper) {
             telemetry.addData("x or square: ", "blue");
@@ -139,33 +136,9 @@ public class PiracyGood extends LinearOpMode {
         //Pixy look for team prop
         runtime.reset();
         while (runtime.seconds() < 1 && opModeIsActive()) {
-            byte[] pixyBytes1 = pixy.readShort(0x51, 5);
-            telemetry.addData("number of Signature 1", pixyBytes1[0]);
-            telemetry.addData("x position of largest block of sig 1", pixyBytes1[1]);
-            byte[] pixyBytes2 = pixy.readShort(0x52, 2);
-            telemetry.addData("number of Signature 2", pixyBytes2[0]);
-            telemetry.addData("x position of largest block of sig 2", pixyBytes2[1]);
-            telemetry.update();
-            if (red == true) {
-                if (pixyBytes1[1] < 90 && pixyBytes1[1] != 0) {
-                    position = 'C';
-                } else if (pixyBytes1[1] > 90) {
-                    position = 'L';
-                } else if (pixyBytes1[0] == 0) {
-                    position = 'R';
-                }
-            }
-            if (red == false) {
-                if (pixyBytes2[1] > 0) {
-                    position = 'L';
-                } else if (pixyBytes2[1] < 0) {
-                    position = 'C';
-                } else if (pixyBytes2[0] == 0) {
-                    position = 'R';
-                }
-            }
-        } //close pixy detection time-based while loop
-
+            piracyWii.pixyLook(red);
+        }
+        
         //Robot needs to drive and move forward like 24in ish
         piracyWii.drive(34, Robot.directions.FORWARD, 0.25);
 

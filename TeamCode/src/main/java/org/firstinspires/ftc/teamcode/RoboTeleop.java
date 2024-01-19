@@ -16,7 +16,7 @@ public class RoboTeleop extends OpMode {
     Telemetry telemetry;
     @Override
     public void init() {
-        piracyWii.init(hardwareMap);
+        piracyWii.init(hardwareMap, telemetry);
         piracyWii.closeClawl();
         piracyWii.closeClawr();
         telemetry.addData("Status: ", "Initialized");
