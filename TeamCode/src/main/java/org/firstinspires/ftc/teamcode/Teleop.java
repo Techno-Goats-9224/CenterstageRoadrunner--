@@ -174,7 +174,7 @@ public class Teleop extends OpMode {
             rotate.setPosition(.9);
         }else{
             //flat on field
-            rotate.setPosition(0.7);
+            rotate.setPosition(0.5);
         }
         if (gamepad2.triangle){
             drone.setPosition(0.5);
