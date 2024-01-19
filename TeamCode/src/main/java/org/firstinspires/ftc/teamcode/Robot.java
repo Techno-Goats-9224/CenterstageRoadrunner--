@@ -182,6 +182,31 @@ public class Robot {
         rotate.setPosition(.9);
     }
 
+    public void telemetry(Telemetry telemetry){
+        telemetry.addData("front left power", leftFront.getPower());
+        telemetry.addData("front right power", rightFront.getPower());
+        telemetry.addData("back left power", leftBack.getPower());
+        telemetry.addData("back right power", rightBack.getPower());
+
+        telemetry.addData("left claw servo position", clawl.getPosition());
+        telemetry.addData("right claw servo position", clawr.getPosition());
+        telemetry.addData("drone servo position", drone.getPosition());
+        telemetry.addData("Front Left Encoder (perp) ticks", leftFront.getCurrentPosition());
+        telemetry.addData("Negative Back Right Encoder (para) ticks", -rightBack.getCurrentPosition());
+        telemetry.addData("Front Left Encoder (perp) inches", encoderTicksToInches(leftFront.getCurrentPosition()));
+        telemetry.addData("Negative Back Right Encoder (para) inches", encoderTicksToInches(-rightBack.getCurrentPosition()));
+        telemetry.addData("imu first",imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).firstAngle);
+        telemetry.addData("imu second", imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).secondAngle);
+        telemetry.addData("imu third", imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).thirdAngle);
+        telemetry.addData("arm encoder", arm.getCurrentPosition());
+        byte[] pixyBytes1 = pixy.readShort(0x51, 5); // need this
+        telemetry.addData("number of Signature 1", pixyBytes1[0]); // need this
+        telemetry.addData("x position of largest block of sig 1", pixyBytes1[1]); // need this
+        byte[] pixyBytes2 = pixy.readShort(0x52, 2); // need this
+        telemetry.addData("number of Signature 2", pixyBytes2[0]); // need this
+        telemetry.addData("x position of largest block of sig 2", pixyBytes2[1]); // need this
+        telemetry.update();
+    }
     public void stop(){
         leftFront.setPower(0);
         leftBack.setPower(0);

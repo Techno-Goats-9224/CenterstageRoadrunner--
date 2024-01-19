@@ -8,9 +8,12 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+
 @TeleOp()
 public class RoboTeleop extends OpMode {
     Robot piracyWii = new Robot();
+    Telemetry telemetry;
     @Override
     public void init() {
         piracyWii.init(hardwareMap);
@@ -22,6 +25,15 @@ public class RoboTeleop extends OpMode {
 
     @Override
     public void loop() {
+        //gm0.org driving code
+        double ly = gamepad1.left_stick_y * 0.8;
+        double lx = -gamepad1.left_stick_x * 0.8;
+        double rx = -gamepad1.right_stick_x * 0.8;
+        piracyWii.leftFront.setPower(ly + lx + rx);
+        piracyWii.leftBack.setPower(ly - lx + rx);
+        piracyWii.rightFront.setPower(-ly + lx + rx);
+        piracyWii.rightBack.setPower(ly + lx - rx);
+
         if(gamepad2.dpad_up){
            piracyWii.armUp();
             telemetry.addData("target in up: ", piracyWii.arm.getTargetPosition());
@@ -68,12 +80,12 @@ public class RoboTeleop extends OpMode {
         }else {
             piracyWii.dontLaunchDrone();
         }
+        piracyWii.telemetry(this.telemetry);
         telemetry.update();
     }
 
     @Override
     public void stop(){
-        piracyWii.drive(0, Robot.directions.FORWARD, 0);
-        piracyWii.armPower(0);
+        piracyWii.stop();
     }
 }
