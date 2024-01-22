@@ -1,12 +1,14 @@
-
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.PwmControl;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
@@ -104,10 +106,11 @@ public class Backstage extends LinearOpMode {
     //to rotate counterclockwise (increasing imu) RB should be the only negative power
     //positive degrees is clockwise
     public void turn(double degrees, directions dir, double power) {
-        heading = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).secondAngle;
+        heading = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
+        runtime.reset();
 
         while (((Math.abs(degrees - heading)) > 3) && opModeIsActive()) {
-            heading = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).secondAngle;
+            heading = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
             desiredDirection = (degrees - heading) / (Math.abs(degrees - heading));
 
             leftFront.setPower(-desiredDirection * power);
@@ -116,7 +119,7 @@ public class Backstage extends LinearOpMode {
             rightBack.setPower(desiredDirection * power);
 
             telemetry.addData("degrees:", degrees);
-            telemetry.addData("heading", imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).secondAngle);
+            telemetry.addData("heading", heading);
             telemetry.addData("desired direction", desiredDirection);
             telemetry.addData("offset from position:", degrees - heading);
             telemetry.update();
@@ -163,10 +166,18 @@ public class Backstage extends LinearOpMode {
         rotate = hardwareMap.get(Servo.class, "rotate");
 
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.loggingEnabled = true;
-        parameters.loggingTag     = "IMU";
-        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample OpMode
+        parameters.loggingEnabled      = true;
+        parameters.loggingTag          = "IMU";
+        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+
+        // Retrieve and initialize the IMU. We expect the IMU to be attached to an I2C port
+        // on a Core Device Interface Module, configured to be a sensor of type "AdaFruit IMU",
+        // and named "imu".
         imu.initialize(parameters);
+
 
         leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -191,8 +202,8 @@ public class Backstage extends LinearOpMode {
 
         pixy = hardwareMap.get(Pixy.class, "pixy"); // need this
 
-
-        while(gamepad1.left_bumper) {
+        //voodoo
+        while(gamepad1.left_bumper && !isStopRequested()) {
             telemetry.addData("x or square: ", "blue");
             telemetry.addData("b or circle: ", "red");
             telemetry.update();
@@ -208,15 +219,18 @@ public class Backstage extends LinearOpMode {
         telemetry.update();
 
         // Wait for driver to press start
-
         waitForStart();
 
+        //Pixy look for team prop
+        //int byte1Avg = pixy.readAvg(0x51, 5, 1, telemetry);
+        //int byte2Avg = pixy.readAvg(0x52, 5, 1, telemetry);
+        //runtime.reset();
+        //while(runtime.seconds() < 5 && opModeIsActive()) {}
         byte[] pixyBytes1 = pixy.readShort(0x51, 5); // need this
         int byte1Avg = 0;
         byte[] pixyBytes2 = pixy.readShort(0x52, 2); // need this
         int byte2Avg = 0;
-        runtime.reset();
-        while (runtime.seconds()<25 && opModeIsActive()) {
+        for (int i = 0; i < 20; i++) {
             pixyBytes1 = pixy.readShort(0x51, 5); // need this
             byte1Avg = byte1Avg + pixyBytes1[1];
             telemetry.addData("number of Signature 1", pixyBytes1[0]); // need this
@@ -231,7 +245,7 @@ public class Backstage extends LinearOpMode {
                     position = 'C';
                 } else if (byte1Avg > 0) {
                     position = 'L';
-                } else if (pixyBytes1[0] == 0) {
+                } else {
                     position = 'R';
                 }
             }
@@ -240,36 +254,33 @@ public class Backstage extends LinearOpMode {
                     position = 'L';
                 } else if (byte2Avg < 0){
                     position = 'C';
-                } else if (pixyBytes2[0] == 0) {
+                } else {
                     position = 'R';
                 }
             }
         }
 
-            //Pixy look for team prop
         //Robot needs to drive and move forward like 24in ish
-
-        drive(30, directions.FORWARD, 0.25);
+        drive(32, directions.FORWARD, 0.25);
 
         //If Drop pixel at left: turn left 90 degrees then open claw then turn right to get back on track.
             if (position == 'L'){
-
                 turn(90, directions.LEFT, 0.25);
-                drive(3, directions.FORWARD, 0.25);
+                drive(1.5, directions.FORWARD, 0.25);
                 clawr.setPosition(0.7);
                 drive(-3, directions.FORWARD, 0.25);
             }
             else if (position == 'C'){
                 // Drop pixel at center: drive past then turn around 180 degrees and then drop pixel and then turn another 180 degrees.
-                drive(2, directions.FORWARD, 0.25);
+                drive(-1, directions.FORWARD, 0.25);
                 //open
                 clawr.setPosition(0.7);
-                drive(-3, directions.FORWARD, 0.25);
+                drive(-4, directions.FORWARD, 0.25);
             }
             else if(position== 'R'){
                 //Then turn right 90 degrees drop pixel at right
                 turn(-90, directions.RIGHT, .25);
-                drive(1, directions.FORWARD, .25);
+                drive(1.5, directions.FORWARD, .25);
                 clawr.setPosition(0.7);
                 drive(-3, directions.FORWARD, .25);
             }
