@@ -140,15 +140,15 @@ public class PiracyGood extends LinearOpMode {
         }
         
         //Robot needs to drive and move forward like 24in ish
-        piracyWii.drive(34, Robot.directions.FORWARD, 0.25);
+        piracyWii.drive(32, Robot.directions.FORWARD, 0.25);
 
         //If Drop pixel at left: turn left 90 degrees then open claw then turn right to get back on track.
         if (position == 'L') {
             piracyWii.turn(90, 0.25);
-            piracyWii.drive(3, Robot.directions.FORWARD, 0.25);
+            piracyWii.drive(1.5, Robot.directions.FORWARD, 0.25);
             // claw open
             piracyWii.openClawr();
-            piracyWii.drive(-3, Robot.directions.FORWARD, 0.25);
+            piracyWii.drive(-1.5, Robot.directions.FORWARD, 0.25);
             piracyWii.turn(0, 0.25);
             //Drive the remaining 48in
             piracyWii.drive(16, Robot.directions.FORWARD, 0.25);
@@ -158,16 +158,16 @@ public class PiracyGood extends LinearOpMode {
             piracyWii.turn(175, .25);
             //open
             piracyWii.openClawr();
-            piracyWii.drive(-4, Robot.directions.FORWARD, 0.25);
+            piracyWii.drive(-6, Robot.directions.FORWARD, 0.25);
         } else if (position == 'R') {
             //Then turn right 90 degrees drop pixel at right
             piracyWii.turn(-90,.25);
-            piracyWii.drive(3, Robot.directions.FORWARD, .25);
+            piracyWii.drive(1.5, Robot.directions.FORWARD, .25);
             piracyWii.openClawr();
-            piracyWii.drive (-3, Robot.directions.FORWARD, .25);
+            piracyWii.drive (-1.5, Robot.directions.FORWARD, .25);
             piracyWii.turn(0,.25);
             //Drive the remaining 48in
-            piracyWii.drive(14, Robot.directions.FORWARD, 0.25);
+            piracyWii.drive(16, Robot.directions.FORWARD, 0.25);
         }
         if (red == true) {
             //Then turn 90 degrees to the right after the 72in
@@ -188,21 +188,32 @@ public class PiracyGood extends LinearOpMode {
         desiredTag = null;
         if (red == true && position == 'L') {
             DESIRED_TAG_ID = 4;
-        } else if (red == true && position == 'R') {
-            DESIRED_TAG_ID = 6;
         } else if (red == true && position == 'C') {
             DESIRED_TAG_ID = 5;
+        } else if (red == true && position == 'R') {
+            DESIRED_TAG_ID = 6;
         }
-        while (opModeIsActive()) {
+        if (red == false && position == 'L') {
+            DESIRED_TAG_ID = 1;
+        } else if (red == false && position == 'C') {
+            DESIRED_TAG_ID = 2;
+        } else if (red == false && position == 'R') {
+            DESIRED_TAG_ID = 3;
+        }
+        
+        //drive and look for tag
+        while (desiredTag == null && opModeIsActive()) {
+            desiredTag  = null;
+
             // Step through the list of detected tags and look for a matching tag
             List<AprilTagDetection> currentDetections = aprilTag.getDetections();
             for (AprilTagDetection detection : currentDetections) {
                 // Look to see if we have size info on this tag.
                 if (detection.metadata != null) {
                     //  Check to see if we want to track towards this tag.
-                    if ((DESIRED_TAG_ID < 0) || (detection.id == DESIRED_TAG_ID)) {
+                    if ((desiredTagID < 0) || (detection.id == desiredTagID)) {
                         // Yes, we want to use this tag.
-                        targetFound = false;
+                        targetFound = true;
                         desiredTag = detection;
                         break;  // don't look any further.
                     } else {
@@ -214,39 +225,92 @@ public class PiracyGood extends LinearOpMode {
                     telemetry.addData("Unknown", "Tag ID %d is not in TagLibrary", detection.id);
                 }
             }
-            //Mitchell not just kinda weird he is weird
-            // If Left Bumper is being pressed, AND we have found the desired target, Drive to target Automatically .
+            if (red == true) {
+                //drive left - but backward so it seems right
+                leftFront.setPower(0.25);
+                leftBack.setPower(-0.25);
+                rightFront.setPower(-0.25);
+                rightBack.setPower(0.25);
+            } else {
+                //drive right - but backward so it seems right
+                leftFront.setPower(-0.25);
+                leftBack.setPower(0.25);
+                rightFront.setPower(0.25);
+                rightBack.setPower(-0.25);
+            }
+            telemetry.addData("no tag found","drive left");
+            telemetry.update();
+
+            //the sample had this, so i left it. idk why
+            runtime.reset();
+            while(runtime.milliseconds() < 10 && opModeIsActive()){}
+        }
+        //drive to tag while looking at it
+        while (desiredTag != null && desiredTag.ftcPose.range - DESIRED_DISTANCE > 0 && opModeIsActive())
+        {
+            targetFound = false;
+            desiredTag  = null;
+
+            // Step through the list of detected tags and look for a matching tag
+            List<AprilTagDetection> currentDetections = aprilTag.getDetections();
+            for (AprilTagDetection detection : currentDetections) {
+                // Look to see if we have size info on this tag.
+                if (detection.metadata != null) {
+                    //  Check to see if we want to track towards this tag.
+                    if ((desiredTagID < 0) || (detection.id == desiredTagID)) {
+                        // Yes, we want to use this tag.
+                        targetFound = true;
+                        desiredTag = detection;
+                        break;  // don't look any further.
+                    } else {
+                        // This tag is in the library, but we do not want to track it right now.
+                        telemetry.addData("Skipping", "Tag ID %d is not desired", detection.id);
+                    }
+                } else {
+                    // This tag is NOT in the library, so we don't have enough information to track to it.
+                    telemetry.addData("Unknown", "Tag ID %d is not in TagLibrary", detection.id);
+                }
+            }
+            // If Left Bumper is being pressed - nah, AND we have found the desired target, Drive to target Automatically .
             if (targetFound) {
+
                 // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
-                double rangeError = (desiredTag.ftcPose.range - DESIRED_DISTANCE);
-                double headingError = desiredTag.ftcPose.bearing;
-                double yawError = desiredTag.ftcPose.yaw;
+                double  rangeError      = (desiredTag.ftcPose.range - DESIRED_DISTANCE);
+                double  headingError    = desiredTag.ftcPose.bearing;
+                double  yawError        = desiredTag.ftcPose.yaw;
 
                 // Use the speed and turn "gains" to calculate how we want the robot to move.
-                drive = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
-                turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
+                drive  = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
+                turn   = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN) ;
                 strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
 
-                telemetry.addData("Auto", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", -drive, -strafe, turn);
-                telemetry.addData("Found", "ID %d (%s)", desiredTag.id, desiredTag.metadata.name);
-                telemetry.addData("Range", "%5.1f inches", desiredTag.ftcPose.range);
-                telemetry.addData("Bearing", "%3.0f degrees", desiredTag.ftcPose.bearing);
-                telemetry.addData("Yaw", "%3.0f degrees", desiredTag.ftcPose.yaw);
-                break;
+                telemetry.addData("Auto","Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
             } else {
                 if (red == true) {
-                    piracyWii.drive(-2, Robot.directions.SIDE, .25);
+                    //drive left - but backward so it seems right
+                    leftFront.setPower(0.2);
+                    leftBack.setPower(-0.2);
+                    rightFront.setPower(-0.2);
+                    rightBack.setPower(0.2);
                 } else {
-                    piracyWii.drive(2, Robot.directions.SIDE, .25);
+                    //drive right - but backward so it seems right
+                    leftFront.setPower(-0.2);
+                    leftBack.setPower(0.2);
+                    rightFront.setPower(0.2);
+                    rightBack.setPower(-0.2);
                 }
-                telemetry.addData("\n>", "no target found\n");
-                telemetry.addData("Manual", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", -drive, -strafe, turn);
+                telemetry.addData("no tag found","drive left");
             }
             telemetry.update();
-        }
-        // Apply desired axes motions to the drivetrain.
-        moveRobot(-drive, -strafe, turn);
 
+            // Apply desired axes motions to the drivetrain.
+            moveRobot(-drive, strafe, turn);
+            
+            //the sample had this, so i left it. idk why
+            runtime.reset();
+            while(runtime.milliseconds() < 10 && opModeIsActive()){}
+        }
+        //TODO: add arm movement and parking and stuff
         piracyWii.stop();
 
         // Transfer the current pose to PoseStorage so we can use it in TeleOp
