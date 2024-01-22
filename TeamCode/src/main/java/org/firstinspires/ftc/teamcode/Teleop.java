@@ -31,7 +31,7 @@ public class Teleop extends OpMode {
     private ServoImplEx clawl;
     private ServoImplEx clawr;
     private Servo drone;
-    private Servo rotate;
+    private ServoImplEx rotate;
     private BNO055IMU imu;
     private Pixy pixy;
     @Override
@@ -46,7 +46,7 @@ public class Teleop extends OpMode {
         leftFront = hardwareMap.get(DcMotorEx.class,"leftFront");
         rightFront = hardwareMap.get(DcMotorEx.class,"rightFront");
         drone = hardwareMap.get(Servo.class,"drone");
-        rotate = hardwareMap.get(Servo.class, "rotate");
+        rotate = hardwareMap.get(ServoImplEx.class, "rotate");
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         pixy = hardwareMap.get(Pixy.class, "pixy");
 
@@ -76,6 +76,7 @@ public class Teleop extends OpMode {
 
         clawl.setPwmRange(new PwmControl.PwmRange(500, 2500));
         clawr.setPwmRange(new PwmControl.PwmRange(500, 2500));
+        //rotate.setPwmRange(new PwmControl.PwmRange(500, 2500));
         clawl.setDirection(Servo.Direction.REVERSE);
         clawr.setDirection(Servo.Direction.REVERSE);
         rotate.setDirection(Servo.Direction.REVERSE);
@@ -94,23 +95,19 @@ public class Teleop extends OpMode {
     public void loop() {
         if (gamepad2.dpad_up) {
             //outtake
-            arm.setTargetPosition(2000);
+            /*arm.setTargetPosition(300);
             arm.setPower(1);
-            arm.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-            /*
-            arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                arm.setPower(0);
-                if (1500>arm.getCurrentPosition()&& arm.getCurrentPosition()>0) {
-                    arm.setPower(-1);
-
-                } else if(1500<arm.getCurrentPosition() && arm.getCurrentPosition()<2000) {
-                    arm.setPower(-.5);
-                }
-                if (arm.getCurrentPosition()> 2000){
-                    arm.setPower(0);
-                }
-
+            arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
              */
+            arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            if (1500>arm.getCurrentPosition()&& arm.getCurrentPosition()>0) {
+                arm.setPower(-1);
+            } else if(1500<arm.getCurrentPosition() && arm.getCurrentPosition()<2000) {
+                arm.setPower(-.5);
+            }else if (arm.getCurrentPosition()> 2000){
+                arm.setPower(0);
+            }
+
         }else if(gamepad2.dpad_down){
             //intake
             arm.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
@@ -158,35 +155,36 @@ public class Teleop extends OpMode {
             clawl.setPosition(0.6);
         }else if(gamepad2.circle) {
             //open
-            clawr.setPosition(.9);
+            clawr.setPosition(.7);
         }else if (gamepad2.cross){
             //open
             clawl.setPosition(0.6);
-            clawr.setPosition(.7);
+            clawr.setPosition(0.7);
         }else {
             //close
             clawl.setPosition(0.75);
-            clawr.setPosition(.6);
+            clawr.setPosition(0.6);
         }
 
-        if(gamepad2.left_trigger>.1) {
+        if(gamepad2.left_trigger > 0.1) {
             //down below field
-            rotate.setPosition(0.1);
+            rotate.setPosition(0.3);
         }else if(gamepad2.left_bumper){
             //up above field
-            rotate.setPosition(.3);
+            rotate.setPosition(1);
         }else{
             //flat on field
-            rotate.setPosition(0.2);
+            rotate.setPosition(0.5);
         }
         if (gamepad2.triangle){
-            drone.setPosition(.5);
+            drone.setPosition(0.5);
         }else{
             drone.setPosition(1);
             //1 is when not pushed and .5 is when pushed
             // 1 is holding rubberband .5 is out
         }
 
+        //driving code from gm0.org
         double ly = gamepad1.left_stick_y * 0.8;
         double lx = -gamepad1.left_stick_x * 0.8;
         double rx = -gamepad1.right_stick_x * 0.8;
@@ -195,6 +193,36 @@ public class Teleop extends OpMode {
         leftBack.setPower(ly - lx + rx);
         rightFront.setPower(-ly + lx + rx);
         rightBack.setPower(ly + lx - rx);
+
+        /*
+        //field centric code from gm0.org
+        double y = -gamepad1.left_stick_y;
+        double x = gamepad1.left_stick_x;
+        double rx = gamepad1.right_stick_x;
+
+
+        double botHeading = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.RADIANS).secondAngle;
+
+        // Rotate the movement direction counter to the bot's rotation
+        double rotX = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
+        double rotY = x * Math.sin(-botHeading) + y * Math.cos(-botHeading);
+
+        rotX = rotX * 1.1;  // Counteract imperfect strafing
+
+        // Denominator is the largest motor power (absolute value) or 1
+        // This ensures all the powers maintain the same ratio,
+        // but only if at least one is out of the range [-1, 1]
+        double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rx), 1);
+        double frontLeftPower = (rotY + rotX + rx) / denominator;
+        double backLeftPower = (rotY - rotX + rx) / denominator;
+        double frontRightPower = (rotY - rotX - rx) / denominator;
+        double backRightPower = (rotY + rotX - rx) / denominator;
+
+        leftFront.setPower(frontLeftPower);
+        leftBack.setPower(backLeftPower);
+        rightFront.setPower(frontRightPower);
+        rightBack.setPower(backRightPower);
+         */
 
         telemetry.addData("front left power", leftFront.getPower());
         telemetry.addData("front right power", rightFront.getPower());
@@ -208,9 +236,7 @@ public class Teleop extends OpMode {
         telemetry.addData("Negative Back Right Encoder (para) ticks", -rightBack.getCurrentPosition());
         telemetry.addData("Front Left Encoder (perp) inches", encoderTicksToInches(leftFront.getCurrentPosition()));
         telemetry.addData("Negative Back Right Encoder (para) inches", encoderTicksToInches(-rightBack.getCurrentPosition()));
-        telemetry.addData("imu first",imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).firstAngle);
-        telemetry.addData("imu second", imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).secondAngle);
-        telemetry.addData("imu third", imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).thirdAngle);
+        telemetry.addData("imu yaw",imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX,AngleUnit.DEGREES).firstAngle);
         telemetry.addData("arm encoder", arm.getCurrentPosition());
         byte[] pixyBytes1 = pixy.readShort(0x51, 5); // need this
         telemetry.addData("number of Signature 1", pixyBytes1[0]); // need this
