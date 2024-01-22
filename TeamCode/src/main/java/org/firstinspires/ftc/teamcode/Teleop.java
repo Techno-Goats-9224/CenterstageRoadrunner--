@@ -65,7 +65,6 @@ public class Teleop extends OpMode {
         arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
-        rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
         leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
         leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
 
@@ -95,18 +94,18 @@ public class Teleop extends OpMode {
     public void loop() {
         if (gamepad2.dpad_up) {
             //outtake
-            /*arm.setTargetPosition(300);
+           /* arm.setTargetPosition(300);
             arm.setPower(1);
             arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-             */
+*/
             arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            if (1500>arm.getCurrentPosition()&& arm.getCurrentPosition()>0) {
+         if (1500>arm.getCurrentPosition()&& arm.getCurrentPosition()>0) {
                 arm.setPower(-1);
             } else if(1500<arm.getCurrentPosition() && arm.getCurrentPosition()<2000) {
                 arm.setPower(-.5);
             }else if (arm.getCurrentPosition()> 2000){
-                arm.setPower(0);
-            }
+             arm.setPower(0);
+             }
 
         }else if(gamepad2.dpad_down){
             //intake

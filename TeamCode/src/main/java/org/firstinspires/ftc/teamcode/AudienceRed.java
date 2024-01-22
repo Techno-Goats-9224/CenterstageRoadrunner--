@@ -43,14 +43,14 @@ public class AudienceRed extends LinearOpMode {
     final double STRAFE_GAIN =  0.02 ;   //  Strafe Speed Control "Gain".  eg: Ramp up to 50% power at a 25 degree Yaw error.   (0.50 / 25.0)
     final double TURN_GAIN   =  0.01  ;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
 
-    final double MAX_AUTO_SPEED = 0.75;   //  Clip the approach speed to this max value (adjust for your robot)
-    final double MAX_AUTO_STRAFE= 0.75;   //  Clip the approach speed to this max value (adjust for your robot)
+    final double MAX_AUTO_SPEED = 0.3;   //  Clip the approach speed to this max value (adjust for your robot)
+    final double MAX_AUTO_STRAFE= 0.3;   //  Clip the approach speed to this max value (adjust for your robot)
     final double MAX_AUTO_TURN  = 0.3;   //  Clip the turn speed to this max value (adjust for your robot)
 
 
 
     private static final boolean USE_WEBCAM = true;  // Set true to use a webcam, or false for a phone camera
-    private static int DESIRED_TAG_ID = -1;     // Choose the tag you want to approach or set to -1 for ANY tag.
+    private static int desiredTagID = -1;     // Choose the tag you want to approach or set to -1 for ANY tag.
     private VisionPortal visionPortal;               // Used to manage the video source.
     private AprilTagProcessor aprilTag;              // Used for managing the AprilTag detection process.
     private AprilTagDetection desiredTag = null;     // Used to hold the data for a detected AprilTag
@@ -323,26 +323,26 @@ public class AudienceRed extends LinearOpMode {
         drive(-70, directions.FORWARD, 0.25);
         //turn to see tags
         if (red == true) {
-            turn(-80, directions.RIGHT, .25);
+            turn(90, directions.RIGHT, .25);
         } else {
-            turn(80, directions.RIGHT, .25);
+            turn(-90, directions.RIGHT, .25);
         }
         //Then april tag will direct robot to backdrop
         targetFound = false;
         desiredTag = null;
         if (red == true && position == 'L') {
-            DESIRED_TAG_ID = 4;
+            desiredTagID = 4;
         } else if (red == true && position == 'C') {
-            DESIRED_TAG_ID = 5;
+            desiredTagID = 5;
         } else if (red == true && position == 'R') {
-            DESIRED_TAG_ID = 6;
+            desiredTagID = 6;
         }
         if (red == false && position == 'L') {
-            DESIRED_TAG_ID = 1;
+            desiredTagID = 1;
         } else if (red == false && position == 'C') {
-            DESIRED_TAG_ID = 2;
+            desiredTagID = 2;
         } else if (red == false && position == 'R') {
-            DESIRED_TAG_ID = 3;
+            desiredTagID = 3;
         }
         
         //drive and look for tag
@@ -354,6 +354,10 @@ public class AudienceRed extends LinearOpMode {
             for (AprilTagDetection detection : currentDetections) {
                 // Look to see if we have size info on this tag.
                 if (detection.metadata != null) {
+                    telemetry.addLine(String.format("\n==== (ID %d) %s", detection.id, detection.metadata.name));
+                    telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (inch)", detection.ftcPose.x, detection.ftcPose.y, detection.ftcPose.z));
+                    telemetry.addLine(String.format("PRY %6.1f %6.1f %6.1f  (deg)", detection.ftcPose.pitch, detection.ftcPose.roll, detection.ftcPose.yaw));
+                    telemetry.addLine(String.format("RBE %6.1f %6.1f %6.1f  (inch, deg, deg)", detection.ftcPose.range, detection.ftcPose.bearing, detection.ftcPose.elevation));
                     //  Check to see if we want to track towards this tag.
                     if ((desiredTagID < 0) || (detection.id == desiredTagID)) {
                         // Yes, we want to use this tag.
@@ -371,16 +375,16 @@ public class AudienceRed extends LinearOpMode {
             }
             if (red == true) {
                 //drive left - but backward so it seems right
-                leftFront.setPower(0.25);
-                leftBack.setPower(-0.25);
-                rightFront.setPower(-0.25);
-                rightBack.setPower(0.25);
-            } else {
-                //drive right - but backward so it seems right
                 leftFront.setPower(-0.25);
                 leftBack.setPower(0.25);
-                rightFront.setPower(0.25);
+                rightFront.setPower(-0.25);
                 rightBack.setPower(-0.25);
+            } else {
+                //drive right - but backward so it seems right
+                leftFront.setPower(0.25);
+                leftBack.setPower(-0.25);
+                rightFront.setPower(0.25);
+                rightBack.setPower(0.25);
             }
             telemetry.addData("no tag found","drive left");
             telemetry.update();
@@ -400,6 +404,10 @@ public class AudienceRed extends LinearOpMode {
             for (AprilTagDetection detection : currentDetections) {
                 // Look to see if we have size info on this tag.
                 if (detection.metadata != null) {
+                    telemetry.addLine(String.format("\n==== (ID %d) %s", detection.id, detection.metadata.name));
+                    telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (inch)", detection.ftcPose.x, detection.ftcPose.y, detection.ftcPose.z));
+                    telemetry.addLine(String.format("PRY %6.1f %6.1f %6.1f  (deg)", detection.ftcPose.pitch, detection.ftcPose.roll, detection.ftcPose.yaw));
+                    telemetry.addLine(String.format("RBE %6.1f %6.1f %6.1f  (inch, deg, deg)", detection.ftcPose.range, detection.ftcPose.bearing, detection.ftcPose.elevation));
                     //  Check to see if we want to track towards this tag.
                     if ((desiredTagID < 0) || (detection.id == desiredTagID)) {
                         // Yes, we want to use this tag.
@@ -432,16 +440,16 @@ public class AudienceRed extends LinearOpMode {
             } else {
                 if (red == true) {
                     //drive left - but backward so it seems right
-                    leftFront.setPower(0.2);
-                    leftBack.setPower(-0.2);
-                    rightFront.setPower(-0.2);
-                    rightBack.setPower(0.2);
+                    leftFront.setPower(-0.25);
+                    leftBack.setPower(0.2);
+                    rightFront.setPower(-0.25);
+                    rightBack.setPower(-0.2);
                 } else {
                     //drive right - but backward so it seems right
-                    leftFront.setPower(-0.2);
-                    leftBack.setPower(0.2);
+                    leftFront.setPower(0.2);
+                    leftBack.setPower(-0.25);
                     rightFront.setPower(0.2);
-                    rightBack.setPower(-0.2);
+                    rightBack.setPower(0.25);
                 }
                 telemetry.addData("no tag found","drive left");
             }
@@ -455,6 +463,15 @@ public class AudienceRed extends LinearOpMode {
             while(runtime.milliseconds() < 10 && opModeIsActive()){}
         }
         //TODO: add arm movement and parking and stuff
+
+        arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        if (2000>arm.getCurrentPosition()&& arm.getCurrentPosition()>0) {
+            arm.setPower(-.5);
+
+        }else if (arm.getCurrentPosition()> 2000){
+            arm.setPower(0);
+        }
+
         leftFront.setPower(0);
         rightFront.setPower(0);
         leftBack.setPower(0);
@@ -502,6 +519,7 @@ private void initAprilTag() {
         MitchellKindaWeirdAprilTagProcessor.setDrawTagOutline(true);  // Default: true, when tag size was provided (thus eligible for pose estimation).
         MitchellKindaWeirdAprilTagProcessor.setDrawAxes(true);        // Default: false.
         MitchellKindaWeirdAprilTagProcessor.setDrawCubeProjection(true);        // Default: false.
+        MitchellKindaWeirdAprilTagProcessor.setLensIntrinsics(1980.8, 1980.8, 892.1, -118.449);
         aprilTag = MitchellKindaWeirdAprilTagProcessor.build();
         // Adjust Image Decimation to trade-off detection-range for detection-rate.
         // eg: Some typical detection data using a Logitech C920 WebCam
@@ -511,6 +529,7 @@ private void initAprilTag() {
         // Decimation = 3 ..  Detect 5" Tag from 10 feet away at 30 Frames Per Second
         // Note: Decimation can be changed on-the-fly to adapt during a match.
         aprilTag.setDecimation(2);
+
 
         // Create the vision portal by using a builder.
         if (USE_WEBCAM) {

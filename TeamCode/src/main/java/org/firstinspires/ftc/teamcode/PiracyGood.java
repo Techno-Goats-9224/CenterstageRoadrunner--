@@ -78,7 +78,7 @@ public class PiracyGood extends LinearOpMode {
 
 
     private static final boolean USE_WEBCAM = true;  // Set true to use a webcam, or false for a phone camera
-    private static int DESIRED_TAG_ID = -1;     // Choose the tag you want to approach or set to -1 for ANY tag.
+    private static int desiredTagID = -1;     // Choose the tag you want to approach or set to -1 for ANY tag.
     private VisionPortal visionPortal;               // Used to manage the video source.
     private AprilTagProcessor aprilTag;              // Used for managing the AprilTag detection process.
     private AprilTagDetection desiredTag = null;     // Used to hold the data for a detected AprilTag
@@ -187,18 +187,18 @@ public class PiracyGood extends LinearOpMode {
         targetFound = false;
         desiredTag = null;
         if (red == true && position == 'L') {
-            DESIRED_TAG_ID = 4;
+            desiredTagID = 4;
         } else if (red == true && position == 'C') {
-            DESIRED_TAG_ID = 5;
+            desiredTagID = 5;
         } else if (red == true && position == 'R') {
-            DESIRED_TAG_ID = 6;
+            desiredTagID = 6;
         }
         if (red == false && position == 'L') {
-            DESIRED_TAG_ID = 1;
+            desiredTagID = 1;
         } else if (red == false && position == 'C') {
-            DESIRED_TAG_ID = 2;
+            desiredTagID = 2;
         } else if (red == false && position == 'R') {
-            DESIRED_TAG_ID = 3;
+            desiredTagID = 3;
         }
         
         //drive and look for tag
@@ -227,16 +227,16 @@ public class PiracyGood extends LinearOpMode {
             }
             if (red == true) {
                 //drive left - but backward so it seems right
-                leftFront.setPower(0.25);
-                leftBack.setPower(-0.25);
-                rightFront.setPower(-0.25);
-                rightBack.setPower(0.25);
+                piracyWii.leftFront.setPower(0.25);
+                piracyWii.leftBack.setPower(-0.25);
+                piracyWii.rightFront.setPower(-0.25);
+                piracyWii.rightBack.setPower(0.25);
             } else {
                 //drive right - but backward so it seems right
-                leftFront.setPower(-0.25);
-                leftBack.setPower(0.25);
-                rightFront.setPower(0.25);
-                rightBack.setPower(-0.25);
+                piracyWii.leftFront.setPower(-0.25);
+                piracyWii.leftBack.setPower(0.25);
+                piracyWii.rightFront.setPower(0.25);
+                piracyWii.rightBack.setPower(-0.25);
             }
             telemetry.addData("no tag found","drive left");
             telemetry.update();
@@ -288,16 +288,16 @@ public class PiracyGood extends LinearOpMode {
             } else {
                 if (red == true) {
                     //drive left - but backward so it seems right
-                    leftFront.setPower(0.2);
-                    leftBack.setPower(-0.2);
-                    rightFront.setPower(-0.2);
-                    rightBack.setPower(0.2);
+                    piracyWii.leftFront.setPower(0.2);
+                    piracyWii.leftBack.setPower(-0.2);
+                    piracyWii.rightFront.setPower(-0.2);
+                    piracyWii.rightBack.setPower(0.2);
                 } else {
-                    //drive right - but backward so it seems right
-                    leftFront.setPower(-0.2);
-                    leftBack.setPower(0.2);
-                    rightFront.setPower(0.2);
-                    rightBack.setPower(-0.2);
+                    //drive right - but backward so it seems left
+                    piracyWii.leftFront.setPower(-0.2);
+                    piracyWii.leftBack.setPower(0.2);
+                    piracyWii.rightFront.setPower(0.2);
+                    piracyWii.rightBack.setPower(-0.2);
                 }
                 telemetry.addData("no tag found","drive left");
             }

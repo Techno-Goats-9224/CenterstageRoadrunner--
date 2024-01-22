@@ -131,10 +131,10 @@ public class Robot {
     double heading;
     double desiredDirection;
     public void turn(double degrees, double power) {
-        heading = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).secondAngle;
+        heading = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
 
         while (((Math.abs(degrees - heading)) > 3) /*&& opModeIsActive()*/) {
-            heading = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).secondAngle;
+            heading = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
             desiredDirection = (degrees - heading) / (Math.abs(degrees - heading));
 
             leftFront.setPower(-desiredDirection * power);
