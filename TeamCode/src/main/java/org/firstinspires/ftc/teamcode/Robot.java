@@ -189,12 +189,12 @@ public class Robot {
         clawr.setPosition(.6);
     }
     public void armUp(){
-        arm.setTargetPosition(500);
+        arm.setTargetPosition(4000);
         arm.setPower(1);
         arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
     public void armDown(){
-        arm.setTargetPosition(0);
+        arm.setTargetPosition(20);
         arm.setPower(0.5);
         arm.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
     }

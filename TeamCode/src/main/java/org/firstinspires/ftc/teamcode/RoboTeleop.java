@@ -19,6 +19,7 @@ public class RoboTeleop extends OpMode {
         piracyWii.init(hardwareMap, telemetry);
         piracyWii.closeClawl();
         piracyWii.closeClawr();
+        piracyWii.rotateTysensPersonality();
         telemetry.addData("Status: ", "Initialized");
         telemetry.update();
     }

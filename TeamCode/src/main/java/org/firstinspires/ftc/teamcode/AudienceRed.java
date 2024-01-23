@@ -212,7 +212,6 @@ public class AudienceRed extends LinearOpMode {
         rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
 
         arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         clawl.setPwmRange(new PwmControl.PwmRange(500, 2500));
@@ -462,16 +461,33 @@ public class AudienceRed extends LinearOpMode {
             runtime.reset();
             while(runtime.milliseconds() < 10 && opModeIsActive()){}
         }
-        //TODO: add arm movement and parking and stuff
+        leftFront.setPower(0);
+        rightFront.setPower(0);
+        leftBack.setPower(0);
+        rightBack.setPower(0);
 
-        arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        if (2000>arm.getCurrentPosition()&& arm.getCurrentPosition()>0) {
-            arm.setPower(-.5);
+        //arm up
+        arm.setTargetPosition(4000);
+        arm.setPower(1);
+        arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        }else if (arm.getCurrentPosition()> 2000){
-            arm.setPower(0);
-        }
+        //up above field
+        rotate.setPosition(1);
+        runtime.reset();
+        while(runtime.seconds() < 2){}
+        //open
+        clawl.setPosition(.6);
+        runtime.reset();
+        while(runtime.seconds() < 1){}
 
+        //arm down
+        arm.setTargetPosition(20);
+        arm.setPower(1);
+        arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        //TODO:add drive to side to park
+
+        
         leftFront.setPower(0);
         rightFront.setPower(0);
         leftBack.setPower(0);

@@ -61,7 +61,6 @@ public class Teleop extends OpMode {
         imu.initialize(parameters);
 
         arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -92,54 +91,52 @@ public class Teleop extends OpMode {
     public void loop() {
         if (gamepad2.dpad_up) {
             //outtake
-           /* arm.setTargetPosition(300);
+            arm.setTargetPosition(4000);
             arm.setPower(1);
             arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-*/
-            arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-         if (1500>arm.getCurrentPosition()&& arm.getCurrentPosition()>0) {
+
+            /*arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            if (1500>arm.getCurrentPosition()&& arm.getCurrentPosition()>0) {
                 arm.setPower(-1);
             } else if(1500<arm.getCurrentPosition() && arm.getCurrentPosition()<2000) {
                 arm.setPower(-.5);
             }else if (arm.getCurrentPosition()> 2000){
-             arm.setPower(0);
-             }
+                arm.setPower(0);
+            }*/
 
         }else if(gamepad2.dpad_down){
             //intake
-            arm.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-            /*arm.setTargetPosition(0);
-            arm.setPower(1);
-            arm.setTargetPosition(0);
+            //arm.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+            arm.setTargetPosition(20);
+            arm.setPower(0.5);
             arm.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-             */
+             /*
             if(arm.getCurrentPosition() > 100) {
                 arm.setPower(0.75);
             } else{
                 arm.setPower(0);
             }
+            */
         } else if(gamepad2.dpad_right){
             //transport
-            //arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            //arm.setTargetPosition(-2500);
-            //arm.setPower(-1);
-            //arm.setTargetPosition(-2500);
-            //arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            if(arm.getCurrentPosition() < 1200) {
+            arm.setTargetPosition(400);
+            arm.setPower(1);
+            arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            /*if(arm.getCurrentPosition() < 1200) {
                 arm.setPower(-1);
             } else if(arm.getCurrentPosition() > 1500){
                 arm.setPower(0.75);
             } else{
                 arm.setPower(0);
-            }
+            }*/
         }else if(gamepad2.right_bumper){
-            //manual down
-            arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            arm.setPower(1);
-        } else if (gamepad2.right_trigger > 0.1) {
             //manual up
             arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             arm.setPower(-1);
+        } else if (gamepad2.right_trigger > 0.1) {
+            //manual down
+            arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            arm.setPower(1);
         } else {
             arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             arm.setPower(0);
