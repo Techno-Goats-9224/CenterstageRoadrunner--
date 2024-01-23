@@ -136,7 +136,7 @@ public class PiracyGood extends LinearOpMode {
         //Pixy look for team prop
         runtime.reset();
         while (runtime.seconds() < 1 && opModeIsActive()) {
-            piracyWii.pixyLook(red);
+            position = piracyWii.pixyLook(red);
         }
         
         //Robot needs to drive and move forward like 24in ish

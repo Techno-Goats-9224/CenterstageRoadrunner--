@@ -13,12 +13,13 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 @TeleOp()
 public class RoboTeleop extends OpMode {
     Robot piracyWii = new Robot();
-    Telemetry telemetry;
+
     @Override
     public void init() {
         piracyWii.init(hardwareMap, telemetry);
         piracyWii.closeClawl();
         piracyWii.closeClawr();
+        piracyWii.rotateTysensPersonality();
         telemetry.addData("Status: ", "Initialized");
         telemetry.update();
     }
@@ -36,8 +37,8 @@ public class RoboTeleop extends OpMode {
 
         if(gamepad2.dpad_up){
            piracyWii.armUp();
-            telemetry.addData("target in up: ", piracyWii.arm.getTargetPosition());
-            telemetry.addData("current in up: ", piracyWii.arm.getCurrentPosition());
+           telemetry.addData("target in up: ", piracyWii.arm.getTargetPosition());
+           telemetry.addData("current in up: ", piracyWii.arm.getCurrentPosition());
         }
         else if(gamepad2.dpad_down){
             piracyWii.armDown();

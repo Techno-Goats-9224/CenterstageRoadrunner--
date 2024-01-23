@@ -169,10 +169,10 @@ public class Teleop extends OpMode {
             clawr.setPosition(.6);
         }
 
-        if(gamepad2.left_trigger>.1) {
+        if(gamepad2.left_bumper) {
             //down below field
             rotate.setPosition(0.1);
-        }else if(gamepad2.left_bumper){
+        }else if(gamepad2.left_trigger > 0.1){
             //up above field
             rotate.setPosition(.3);
         }else{
