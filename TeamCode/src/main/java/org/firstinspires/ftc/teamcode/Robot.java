@@ -174,7 +174,7 @@ public class Robot {
         drone.setPosition(.5);
     }
     public void dontLaunchDrone(){
-        drone.setPosition(.1);
+        drone.setPosition(1);
     }
     public void openClawl(){
         clawl.setPosition(.6);
@@ -189,7 +189,7 @@ public class Robot {
         clawr.setPosition(.6);
     }
     public void armUp(){
-        arm.setTargetPosition(-500);
+        arm.setTargetPosition(500);
         arm.setPower(1);
         arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
@@ -207,10 +207,10 @@ public class Robot {
     }
     public void rotateTysensPersonality(){
         //Mid
-        rotate.setPosition(.6);
+        rotate.setPosition(.7);
     }public void rotateAlaska(){
         //up place
-        rotate.setPosition(.9);
+        rotate.setPosition(1);
     }
 
     public void telemetry(Telemetry telemetry){
