@@ -64,9 +64,7 @@ public class Teleop extends OpMode {
         arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
-        leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
-        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
 
         leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -135,11 +133,11 @@ public class Teleop extends OpMode {
                 arm.setPower(0);
             }
         }else if(gamepad2.right_bumper){
-            //manual up
+            //manual down
             arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             arm.setPower(1);
         } else if (gamepad2.right_trigger > 0.1) {
-            //manual down
+            //manual up
             arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             arm.setPower(-1);
         } else {
@@ -166,14 +164,14 @@ public class Teleop extends OpMode {
         }
 
         if(gamepad2.left_trigger > 0.1) {
-            //down below field
-            rotate.setPosition(0.3);
+            //down below field (actually closer to flat)
+            rotate.setPosition(0.5);
         }else if(gamepad2.left_bumper){
             //up above field
             rotate.setPosition(1);
         }else{
-            //flat on field
-            rotate.setPosition(0.5);
+            //flat on field (actually closer to above)
+            rotate.setPosition(0.7);
         }
         if (gamepad2.triangle){
             drone.setPosition(0.5);
@@ -184,9 +182,9 @@ public class Teleop extends OpMode {
         }
 
         //driving code from gm0.org
-        double ly = gamepad1.left_stick_y * 0.8;
-        double lx = -gamepad1.left_stick_x * 0.8;
-        double rx = -gamepad1.right_stick_x * 0.8;
+        double ly = -gamepad1.left_stick_y * 0.8;
+        double lx = gamepad1.left_stick_x * 0.8;
+        double rx = gamepad1.right_stick_x * 0.8;
 
         leftFront.setPower(ly + lx + rx);
         leftBack.setPower(ly - lx + rx);
