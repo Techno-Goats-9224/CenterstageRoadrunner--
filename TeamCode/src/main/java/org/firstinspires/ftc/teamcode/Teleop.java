@@ -72,7 +72,7 @@ public class Teleop extends OpMode {
 
         clawl.setPwmRange(new PwmControl.PwmRange(500, 2500));
         clawr.setPwmRange(new PwmControl.PwmRange(500, 2500));
-        //rotate.setPwmRange(new PwmControl.PwmRange(500, 2500));
+        rotate.setPwmRange(new PwmControl.PwmRange(500, 2500));
         clawl.setDirection(Servo.Direction.REVERSE);
         clawr.setDirection(Servo.Direction.REVERSE);
         rotate.setDirection(Servo.Direction.REVERSE);
@@ -146,29 +146,29 @@ public class Teleop extends OpMode {
         }
         if(gamepad2.square) {
             //open
-            clawl.setPosition(0.6);
+            clawl.setPosition(0.5);
         }else if(gamepad2.circle) {
             //open
             clawr.setPosition(.7);
         }else if (gamepad2.cross){
             //open
-            clawl.setPosition(0.6);
+            clawl.setPosition(0.5);
             clawr.setPosition(0.7);
         }else {
             //close
-            clawl.setPosition(0.75);
+            clawl.setPosition(0.65);
             clawr.setPosition(0.6);
         }
 
         if(gamepad2.left_trigger > 0.1) {
-            //down below field (actually closer to flat)
-            rotate.setPosition(0.5);
+            //up above field (actually closer to flat)
+            rotate.setPosition(0.2);
         }else if(gamepad2.left_bumper){
-            //up above field
-            rotate.setPosition(1);
+            //down below field
+            rotate.setPosition(.7);
         }else{
             //flat on field (actually closer to above)
-            rotate.setPosition(0.7);
+            rotate.setPosition(0.5);
         }
         if (gamepad2.triangle){
             drone.setPosition(0.5);

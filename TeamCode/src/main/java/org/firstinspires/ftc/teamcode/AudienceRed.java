@@ -88,7 +88,7 @@ public class AudienceRed extends LinearOpMode {
     double xPos_in;
     double yPos_in;
     double heading;
-    boolean red = true;
+    boolean red = false;
     double desiredDirection;
     //for forward: all four motors need to be negative
     public void drive(double inches, directions dir, double power) {
@@ -219,10 +219,10 @@ public class AudienceRed extends LinearOpMode {
         clawl.setDirection(Servo.Direction.REVERSE);
         clawr.setDirection(Servo.Direction.REVERSE);
         rotate.setDirection(Servo.Direction.REVERSE);
-        clawl.setPosition(.75);
+        clawl.setPosition(0.65);
         //close
         clawr.setPosition(0.6);
-        rotate.setPosition(0.3);
+        rotate.setPosition(0.5);
 
         if (USE_WEBCAM)
             setManualExposure(1, 255);  // Use low exposure time to reduce motion blur
@@ -290,6 +290,7 @@ public class AudienceRed extends LinearOpMode {
         if (position == 'L') {
             turn(90, directions.LEFT, 0.25);
             drive(2.5, directions.FORWARD, 0.25);
+            //open
             clawr.setPosition(0.7);
             drive(-2.5, directions.FORWARD, 0.25);
             turn(0, directions.RIGHT, 0.25);
@@ -297,15 +298,16 @@ public class AudienceRed extends LinearOpMode {
             drive(20, directions.FORWARD, 0.25);
         } else if (position == 'C') {
             // Drop pixel at center: drive past then turn around 180 degrees and then drop pixel and then turn another 180 degrees.
-            drive(16, directions.FORWARD, 0.25);
+            drive(14, directions.FORWARD, 0.25);
             turn(175, directions.LEFT, .25);
             //open
-            clawr.setPosition(0.9);
-            drive(-4, directions.FORWARD, 0.25);
+            clawr.setPosition(0.7);
+            drive(-6, directions.FORWARD, 0.25);
         } else if (position == 'R') {
             //Then turn right 90 degrees drop pixel at right
             turn(-90, directions.RIGHT, .25);
             drive(1.5, directions.FORWARD, .25);
+            //open
             clawr.setPosition(0.7);
             drive(-1.5, directions.FORWARD, .25);
             turn(0, directions.LEFT, .25);
@@ -319,7 +321,7 @@ public class AudienceRed extends LinearOpMode {
             turn(-90, directions.SIDE, 0.25);
         }
         //After that drive forward 96in underneath the stage door
-        drive(-70, directions.FORWARD, 0.25);
+        drive(-74, directions.FORWARD, 0.25);
         //turn to see tags
         if (red == true) {
             turn(90, directions.RIGHT, .25);
@@ -461,13 +463,16 @@ public class AudienceRed extends LinearOpMode {
             runtime.reset();
             while(runtime.milliseconds() < 10 && opModeIsActive()){}
         }
+        //end of aprilTag
+        drive(-12, directions.SIDE, 0.25);
+
         leftFront.setPower(0);
         rightFront.setPower(0);
         leftBack.setPower(0);
         rightBack.setPower(0);
 
         //arm up
-        arm.setTargetPosition(4000);
+        arm.setTargetPosition(2500);
         arm.setPower(1);
         arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
@@ -476,7 +481,7 @@ public class AudienceRed extends LinearOpMode {
         runtime.reset();
         while(runtime.seconds() < 2){}
         //open
-        clawl.setPosition(.6);
+        clawl.setPosition(0.5);
         runtime.reset();
         while(runtime.seconds() < 1){}
 
@@ -485,9 +490,12 @@ public class AudienceRed extends LinearOpMode {
         arm.setPower(1);
         arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        //TODO:add drive to side to park
+        if(red == true){
+            drive(12, directions.SIDE, 0.25);
+        } else if (red == false) {
+            drive(-12, directions.SIDE, 0.25);
+        }
 
-        
         leftFront.setPower(0);
         rightFront.setPower(0);
         leftBack.setPower(0);
