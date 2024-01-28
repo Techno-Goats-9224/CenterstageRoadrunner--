@@ -219,10 +219,10 @@ public class AudienceRed extends LinearOpMode {
         clawl.setDirection(Servo.Direction.REVERSE);
         clawr.setDirection(Servo.Direction.REVERSE);
         rotate.setDirection(Servo.Direction.REVERSE);
-        clawl.setPosition(0.65);
         //close
+        clawl.setPosition(0.7);
         clawr.setPosition(0.6);
-        rotate.setPosition(0.5);
+        rotate.setPosition(0.8);
 
         if (USE_WEBCAM)
             setManualExposure(1, 255);  // Use low exposure time to reduce motion blur
@@ -230,7 +230,7 @@ public class AudienceRed extends LinearOpMode {
         pixy = hardwareMap.get(Pixy.class, "pixy"); // need this
 
 
-        while (gamepad1.left_bumper) {
+        while (gamepad1.left_bumper && isStopRequested() == false) {
             telemetry.addData("x or square: ", "blue");
             telemetry.addData("b or circle: ", "red");
             telemetry.update();
@@ -258,6 +258,11 @@ public class AudienceRed extends LinearOpMode {
             byte1Avg = byte1Avg + pixyBytes1[1];
             telemetry.addData("number of Signature 1", pixyBytes1[0]); // need this
             telemetry.addData("x position of largest block of sig 1", pixyBytes1[1]); // need this
+            pixyBytes2 = pixy.readShort(0x52, 2);
+            byte2Avg = byte2Avg + pixyBytes2[1];
+            telemetry.addData("number of Signature 2", pixyBytes2[0]); // need this
+            telemetry.addData("x position of largest block of sig 2", pixyBytes2[1]); // need this
+            telemetry.update();
             pixyBytes2 = pixy.readShort(0x52, 2);
             byte2Avg = byte2Avg + pixyBytes2[1];
             telemetry.addData("number of Signature 2", pixyBytes2[0]); // need this
@@ -320,8 +325,19 @@ public class AudienceRed extends LinearOpMode {
         } else if (red == false) {
             turn(-90, directions.SIDE, 0.25);
         }
+       // runtime.reset();
+        //while (runtime.seconds()<5){
+        //drive(0, directions.FORWARD, 0);
+        //}
         //After that drive forward 96in underneath the stage door
-        drive(-74, directions.FORWARD, 0.25);
+        //drive(-74, directions.FORWARD, 0.25); //this is the tags version
+        drive(-94, directions.FORWARD, 0.5); //this is screw tags version
+        //open
+        clawl.setPosition(0.6);
+        runtime.reset();
+        while(runtime.seconds() < 1 && opModeIsActive()){}
+        drive(-2, directions.FORWARD,.25);
+        /* //screw tags
         //turn to see tags
         if (red == true) {
             turn(90, directions.RIGHT, .25);
@@ -345,9 +361,10 @@ public class AudienceRed extends LinearOpMode {
         } else if (red == false && position == 'R') {
             desiredTagID = 3;
         }
-        
+
         //drive and look for tag
         while (desiredTag == null && opModeIsActive()) {
+            telemetry.addData("desired id", desiredTagID);
             desiredTag  = null;
 
             // Step through the list of detected tags and look for a matching tag
@@ -475,26 +492,40 @@ public class AudienceRed extends LinearOpMode {
         arm.setTargetPosition(2500);
         arm.setPower(1);
         arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        while(arm.isBusy() == true && opModeIsActive()){
+            telemetry.addData("arm encoder", arm.getCurrentPosition());
+            telemetry.update();
+        }
 
         //up above field
         rotate.setPosition(1);
         runtime.reset();
-        while(runtime.seconds() < 2){}
+        while(runtime.seconds() < 2 && opModeIsActive()){}
         //open
-        clawl.setPosition(0.5);
+        clawl.setPosition(0.6);
         runtime.reset();
-        while(runtime.seconds() < 1){}
+        while(runtime.seconds() < 1 && opModeIsActive()){}
 
         //arm down
         arm.setTargetPosition(20);
         arm.setPower(1);
         arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        while(arm.isBusy() == true && opModeIsActive()){
+            telemetry.addData("arm encoder", arm.getCurrentPosition());
+            telemetry.update();
+        }
 
         if(red == true){
+            telemetry.addData("driving", "side after arm");
+            telemetry.update();
             drive(12, directions.SIDE, 0.25);
+
         } else if (red == false) {
+            telemetry.addData("driving", "side after arm");
+            telemetry.update();
             drive(-12, directions.SIDE, 0.25);
         }
+        */ //screw tags
 
         leftFront.setPower(0);
         rightFront.setPower(0);

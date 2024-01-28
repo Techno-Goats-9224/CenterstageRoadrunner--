@@ -146,29 +146,29 @@ public class Teleop extends OpMode {
         }
         if(gamepad2.square) {
             //open
-            clawl.setPosition(0.5);
+            clawl.setPosition(0.6);
         }else if(gamepad2.circle) {
             //open
             clawr.setPosition(.7);
         }else if (gamepad2.cross){
             //open
-            clawl.setPosition(0.5);
+            clawl.setPosition(0.6);
             clawr.setPosition(0.7);
         }else {
             //close
-            clawl.setPosition(0.65);
+            clawl.setPosition(0.7);
             clawr.setPosition(0.6);
         }
 
         if(gamepad2.left_trigger > 0.1) {
             //up above field (actually closer to flat)
-            rotate.setPosition(0.2);
+            rotate.setPosition(0.4);
         }else if(gamepad2.left_bumper){
             //down below field
-            rotate.setPosition(.7);
+            rotate.setPosition(.9);
         }else{
             //flat on field (actually closer to above)
-            rotate.setPosition(0.5);
+            rotate.setPosition(0.7);
         }
         if (gamepad2.triangle){
             drone.setPosition(0.5);

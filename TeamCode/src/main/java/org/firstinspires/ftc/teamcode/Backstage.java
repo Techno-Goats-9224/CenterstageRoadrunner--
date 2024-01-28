@@ -195,10 +195,10 @@ public class Backstage extends LinearOpMode {
         clawl.setDirection(Servo.Direction.REVERSE);
         clawr.setDirection(Servo.Direction.REVERSE);
         rotate.setDirection(Servo.Direction.REVERSE);
-        clawl.setPosition(.75);
         //close
+        clawl.setPosition(0.7);
         clawr.setPosition(0.6);
-        rotate.setPosition(0.3);
+        rotate.setPosition(0.8);
 
         pixy = hardwareMap.get(Pixy.class, "pixy"); // need this
 
@@ -230,7 +230,9 @@ public class Backstage extends LinearOpMode {
         int byte1Avg = 0;
         byte[] pixyBytes2 = pixy.readShort(0x52, 2); // need this
         int byte2Avg = 0;
-        for (int i = 0; i < 20; i++) {
+        byte[] pixyBytes6 = pixy.readShort(0x56, 2);
+        int byte6Avg = 0;
+        for (int i = 1; i < 21; i++) {
             pixyBytes1 = pixy.readShort(0x51, 5); // need this
             byte1Avg = byte1Avg + pixyBytes1[1];
             telemetry.addData("number of Signature 1", pixyBytes1[0]); // need this
@@ -239,26 +241,32 @@ public class Backstage extends LinearOpMode {
             byte2Avg = byte2Avg + pixyBytes2[1];
             telemetry.addData("number of Signature 2", pixyBytes2[0]); // need this
             telemetry.addData("x position of largest block of sig 2", pixyBytes2[1]); // need this
+            pixyBytes6 = pixy.readShort(0x56, 2);
+            byte6Avg = byte6Avg + pixyBytes6[1];
+            telemetry.addData("number of Signature 6", pixyBytes6[0]); // need this
+            telemetry.addData("x position of largest block of sig 6", pixyBytes6[1]); // need this
             telemetry.update();
             if(red == true){
-                if (byte1Avg < 0) {
+                if (byte1Avg / i < 0) {
                     position = 'C';
-                } else if (byte1Avg > 0) {
+                } else if (byte1Avg / i > 0) {
                     position = 'L';
                 } else {
                     position = 'R';
                 }
             }
             if(red == false){
-                if(byte2Avg > 0 ){
+                if(byte2Avg / i > 0 || byte6Avg / i  > 0){
                     position = 'L';
-                } else if (byte2Avg < 0){
+                } else if (byte2Avg / i < 0 || byte6Avg / i < 0){
                     position = 'C';
                 } else {
                     position = 'R';
                 }
             }
         }
+        runtime.reset();
+        while(runtime.seconds() < 5 && opModeIsActive()) {}
 
         //Robot needs to drive and move forward like 24in ish
         drive(32, directions.FORWARD, 0.25);
