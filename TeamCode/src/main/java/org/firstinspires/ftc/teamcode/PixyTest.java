@@ -3,8 +3,6 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.I2cAddr;
-import com.qualcomm.robotcore.hardware.I2cDeviceSynch;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 
@@ -22,7 +20,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
      */
 @TeleOp
 @Disabled
-public class PixyMess extends OpMode {
+public class PixyTest extends OpMode {
     /*public enum Register
     {
         LARGEST_BLOCK_ALL(0x50),

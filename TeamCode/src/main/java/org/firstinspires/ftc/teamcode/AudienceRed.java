@@ -185,6 +185,8 @@ public class AudienceRed extends LinearOpMode {
         double strafe = 0;        // Desired strafe power/speed (-1 to +1)
         double turn = 0;        // Desired turning power/speed (-1 to +1)
 
+        pixy = hardwareMap.get(Pixy.class, "pixy"); // need this
+
         // Initialize the Apriltag Detection process
         initAprilTag();
 
@@ -226,9 +228,6 @@ public class AudienceRed extends LinearOpMode {
 
         if (USE_WEBCAM)
             setManualExposure(1, 255);  // Use low exposure time to reduce motion blur
-
-        pixy = hardwareMap.get(Pixy.class, "pixy"); // need this
-
 
         while (gamepad1.left_bumper && isStopRequested() == false) {
             telemetry.addData("x or square: ", "blue");
@@ -303,11 +302,11 @@ public class AudienceRed extends LinearOpMode {
             drive(20, directions.FORWARD, 0.25);
         } else if (position == 'C') {
             // Drop pixel at center: drive past then turn around 180 degrees and then drop pixel and then turn another 180 degrees.
-            drive(14, directions.FORWARD, 0.25);
+            drive(16, directions.FORWARD, 0.25);
             turn(175, directions.LEFT, .25);
             //open
             clawr.setPosition(0.7);
-            drive(-6, directions.FORWARD, 0.25);
+            drive(-4, directions.FORWARD, 0.25);
         } else if (position == 'R') {
             //Then turn right 90 degrees drop pixel at right
             turn(-90, directions.RIGHT, .25);
@@ -321,23 +320,27 @@ public class AudienceRed extends LinearOpMode {
         }
         if (red == true) {
             //Then turn 90 degrees to the right after the 72in
-            turn(90, directions.SIDE, 0.25);
+            turn(90, directions.SIDE, .25); //tags version
+            //turn(-90, directions.SIDE, 0.25); //screw tags version
         } else if (red == false) {
-            turn(-90, directions.SIDE, 0.25);
+            turn(-90, directions.SIDE, 0.25); //tags version
+            //turn(90, directions.SIDE, .25); //screw tags version
         }
        // runtime.reset();
         //while (runtime.seconds()<5){
         //drive(0, directions.FORWARD, 0);
         //}
         //After that drive forward 96in underneath the stage door
-        //drive(-74, directions.FORWARD, 0.25); //this is the tags version
-        drive(-94, directions.FORWARD, 0.5); //this is screw tags version
+        drive(-74, directions.FORWARD, 0.25); //this is the tags version
+        /*drive(83, directions.FORWARD, 0.5); //this is screw tags version
         //open
-        clawl.setPosition(0.6);
+        //clawl.setPosition(0.6);
         runtime.reset();
-        while(runtime.seconds() < 1 && opModeIsActive()){}
-        drive(-2, directions.FORWARD,.25);
-        /* //screw tags
+        while(runtime.seconds() < 1 && opModeIsActive()){
+            drive(0, directions.FORWARD, 0);
+        }
+        drive(-2, directions.FORWARD,.25);*/
+        //screw tags start comment goes here
         //turn to see tags
         if (red == true) {
             turn(90, directions.RIGHT, .25);
@@ -414,8 +417,8 @@ public class AudienceRed extends LinearOpMode {
         //drive to tag while looking at it
         while (desiredTag != null && desiredTag.ftcPose.range - DESIRED_DISTANCE > 0 && opModeIsActive())
         {
-            targetFound = false;
-            desiredTag  = null;
+            //targetFound = false;
+            //desiredTag  = null;
 
             // Step through the list of detected tags and look for a matching tag
             List<AprilTagDetection> currentDetections = aprilTag.getDetections();
@@ -525,7 +528,7 @@ public class AudienceRed extends LinearOpMode {
             telemetry.update();
             drive(-12, directions.SIDE, 0.25);
         }
-        */ //screw tags
+         //screw tags end comment goes here
 
         leftFront.setPower(0);
         rightFront.setPower(0);
