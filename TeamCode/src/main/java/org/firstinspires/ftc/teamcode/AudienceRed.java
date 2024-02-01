@@ -227,7 +227,7 @@ public class AudienceRed extends LinearOpMode {
         rotate.setPosition(0.8);
 
         if (USE_WEBCAM)
-            setManualExposure(1, 255);  // Use low exposure time to reduce motion blur
+            setManualExposure(6, 255);  // Use low exposure time to reduce motion blur
 
         while (gamepad1.left_bumper && isStopRequested() == false) {
             telemetry.addData("x or square: ", "blue");
@@ -344,8 +344,14 @@ public class AudienceRed extends LinearOpMode {
         //turn to see tags
         if (red == true) {
             turn(90, directions.RIGHT, .25);
+            drive(12, directions.SIDE, .25);
         } else {
             turn(-90, directions.RIGHT, .25);
+            drive(-12, directions.SIDE, .25);
+        }
+        runtime.reset();
+        while(runtime.seconds() < 3){
+            drive(0, directions.FORWARD, 0);
         }
         //Then april tag will direct robot to backdrop
         targetFound = false;
@@ -577,7 +583,7 @@ private void initAprilTag() {
         MitchellKindaWeirdAprilTagProcessor.setDrawTagOutline(true);  // Default: true, when tag size was provided (thus eligible for pose estimation).
         MitchellKindaWeirdAprilTagProcessor.setDrawAxes(true);        // Default: false.
         MitchellKindaWeirdAprilTagProcessor.setDrawCubeProjection(true);        // Default: false.
-        MitchellKindaWeirdAprilTagProcessor.setLensIntrinsics(1980.8, 1980.8, 892.1, -118.449);
+        MitchellKindaWeirdAprilTagProcessor.setLensIntrinsics(1980.8, 1980.8, 892.1, -118.449); //weird calibration numbers go here (fx, fy, cx, cy)
         aprilTag = MitchellKindaWeirdAprilTagProcessor.build();
         // Adjust Image Decimation to trade-off detection-range for detection-rate.
         // eg: Some typical detection data using a Logitech C920 WebCam
