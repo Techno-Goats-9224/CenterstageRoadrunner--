@@ -188,7 +188,7 @@ public class AudienceRed extends LinearOpMode {
         pixy = hardwareMap.get(Pixy.class, "pixy"); // need this
 
         // Initialize the Apriltag Detection process
-        initAprilTag();
+       // initAprilTag();
 
         leftBack = hardwareMap.get(DcMotorEx.class, "leftBack");
         rightBack = hardwareMap.get(DcMotorEx.class, "rightBack");
@@ -340,7 +340,7 @@ public class AudienceRed extends LinearOpMode {
         if (red == true) {
             //Then turn 90 degrees to the right after the 72in
             //turn(90, directions.SIDE, .25); //tags version
-            turn(-90, directions.SIDE, 0.25); //screw tags version
+            turn(-90, directions.SIDE, 0.25); //screw tags version original
         } else if (red == false) {
             //turn(-90, directions.SIDE, 0.25); //tags version
             turn(90, directions.SIDE, .25); //screw tags version
@@ -654,7 +654,7 @@ private void    setManualExposure(int exposureMS, int gain){
         telemetry.addData("Camera","Ready");
         telemetry.update();
         }
-
+        //this is stupid
         // Set camera controls unless we are stopping.
         if(!isStopRequested())
         {
