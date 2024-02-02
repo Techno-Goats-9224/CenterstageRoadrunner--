@@ -26,7 +26,7 @@ package org.firstinspires.ftc.teamcode;
  */
 
 @TeleOp(name = "Utility: Camera Frame Capture", group = "Utility")
-@Disabled
+//@Disabled
 public class UtilityCameraFrameCapture extends LinearOpMode
 {
     /*
@@ -34,8 +34,8 @@ public class UtilityCameraFrameCapture extends LinearOpMode
      */
     final boolean USING_WEBCAM = true;
     //final BuiltinCameraDirection INTERNAL_CAM_DIR = BuiltinCameraDirection.BACK;
-    final int RESOLUTION_WIDTH = 1280;
-    final int RESOLUTION_HEIGHT = 720;
+    final int RESOLUTION_WIDTH = 1920;
+    final int RESOLUTION_HEIGHT = 1080;
 
     // Internal state
     boolean lastX;

@@ -252,6 +252,14 @@ public class AudienceRed extends LinearOpMode {
         int byte1Avg = 0;
         byte[] pixyBytes2 = pixy.readShort(0x52, 2); // need this
         int byte2Avg = 0;
+        byte[] pixyBytes3 = pixy.readShort(0x53, 2); // need this
+        int byte3Avg = 0;
+        byte[] pixyBytes4 = pixy.readShort(0x54, 5); // need this
+        int byte4Avg = 0;
+        byte[] pixyBytes5 = pixy.readShort(0x55, 2); // need this
+        int byte5Avg = 0;
+        byte[] pixyBytes6 = pixy.readShort(0x56, 2); // need this
+        int byte6Avg = 0;
         for (int i = 0; i < 20; i++) {
             pixyBytes1 = pixy.readShort(0x51, 5); // need this
             byte1Avg = byte1Avg + pixyBytes1[1];
@@ -261,11 +269,22 @@ public class AudienceRed extends LinearOpMode {
             byte2Avg = byte2Avg + pixyBytes2[1];
             telemetry.addData("number of Signature 2", pixyBytes2[0]); // need this
             telemetry.addData("x position of largest block of sig 2", pixyBytes2[1]); // need this
-            telemetry.update();
-            pixyBytes2 = pixy.readShort(0x52, 2);
-            byte2Avg = byte2Avg + pixyBytes2[1];
-            telemetry.addData("number of Signature 2", pixyBytes2[0]); // need this
-            telemetry.addData("x position of largest block of sig 2", pixyBytes2[1]); // need this
+            pixyBytes3 = pixy.readShort(0x53, 2);
+            byte3Avg = byte3Avg + pixyBytes3[1];
+            telemetry.addData("number of Signature 3", pixyBytes3[0]); // need this
+            telemetry.addData("x position of largest block of sig 3", pixyBytes3[1]); // need this
+            pixyBytes4 = pixy.readShort(0x54, 5); // need this
+            byte4Avg = byte4Avg + pixyBytes4[1];
+            telemetry.addData("number of Signature 4", pixyBytes4[0]); // need this
+            telemetry.addData("x position of largest block of sig 4", pixyBytes4[1]); // need this
+            pixyBytes5 = pixy.readShort(0x55, 2);
+            byte5Avg = byte5Avg + pixyBytes5[1];
+            telemetry.addData("number of Signature 5", pixyBytes5[0]); // need this
+            telemetry.addData("x position of largest block of sig 5", pixyBytes5[1]); // need this
+            pixyBytes6 = pixy.readShort(0x56, 2);
+            byte6Avg = byte6Avg + pixyBytes6[1];
+            telemetry.addData("number of Signature 6", pixyBytes6[0]); // need this
+            telemetry.addData("x position of largest block of sig 6", pixyBytes6[1]); // need this
             telemetry.update();
             if (red == true) {
                 if (byte1Avg < 0) {
@@ -320,27 +339,28 @@ public class AudienceRed extends LinearOpMode {
         }
         if (red == true) {
             //Then turn 90 degrees to the right after the 72in
-            turn(90, directions.SIDE, .25); //tags version
-            //turn(-90, directions.SIDE, 0.25); //screw tags version
+            //turn(90, directions.SIDE, .25); //tags version
+            turn(-90, directions.SIDE, 0.25); //screw tags version
         } else if (red == false) {
-            turn(-90, directions.SIDE, 0.25); //tags version
-            //turn(90, directions.SIDE, .25); //screw tags version
+            //turn(-90, directions.SIDE, 0.25); //tags version
+            turn(90, directions.SIDE, .25); //screw tags version
         }
-       // runtime.reset();
-        //while (runtime.seconds()<5){
-        //drive(0, directions.FORWARD, 0);
-        //}
-        //After that drive forward 96in underneath the stage door
-        drive(-74, directions.FORWARD, 0.25); //this is the tags version
-        /*drive(83, directions.FORWARD, 0.5); //this is screw tags version
-        //open
-        //clawl.setPosition(0.6);
         runtime.reset();
-        while(runtime.seconds() < 1 && opModeIsActive()){
+        while (runtime.seconds()<5){
             drive(0, directions.FORWARD, 0);
         }
-        drive(-2, directions.FORWARD,.25);*/
-        //screw tags start comment goes here
+        //After that drive forward 96in underneath the stage door
+        //drive(-70, directions.FORWARD, 0.25); //this is the tags version
+        drive(83, directions.FORWARD, 0.5); //this is screw tags version
+        //open
+        clawl.setPosition(0.6); //this is screw tags
+        runtime.reset();
+        while(runtime.seconds() < 1 && opModeIsActive()){
+            telemetry.addData("robot", "dont move");
+            drive(0, directions.FORWARD, 0);
+        }
+        drive(-2, directions.FORWARD,.25); //this is screw tags
+        /*//screw tags start comment goes here
         //turn to see tags
         if (red == true) {
             turn(90, directions.RIGHT, .25);
@@ -502,6 +522,8 @@ public class AudienceRed extends LinearOpMode {
         arm.setPower(1);
         arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         while(arm.isBusy() == true && opModeIsActive()){
+            rightFront.setPower(0);
+            leftFront.setPower(0);
             telemetry.addData("arm encoder", arm.getCurrentPosition());
             telemetry.update();
         }
@@ -534,7 +556,7 @@ public class AudienceRed extends LinearOpMode {
             telemetry.update();
             drive(-12, directions.SIDE, 0.25);
         }
-         //screw tags end comment goes here
+         *///screw tags end comment goes here
 
         leftFront.setPower(0);
         rightFront.setPower(0);
@@ -583,8 +605,10 @@ private void initAprilTag() {
         MitchellKindaWeirdAprilTagProcessor.setDrawTagOutline(true);  // Default: true, when tag size was provided (thus eligible for pose estimation).
         MitchellKindaWeirdAprilTagProcessor.setDrawAxes(true);        // Default: false.
         MitchellKindaWeirdAprilTagProcessor.setDrawCubeProjection(true);        // Default: false.
-        MitchellKindaWeirdAprilTagProcessor.setLensIntrinsics(1980.8, 1980.8, 892.1, -118.449); //weird calibration numbers go here (fx, fy, cx, cy)
-        aprilTag = MitchellKindaWeirdAprilTagProcessor.build();
+        MitchellKindaWeirdAprilTagProcessor.setLensIntrinsics(1170.09, 1170.09, 944.944, 574.055); //weird calibration numbers go here (fx, fy, cx, cy)---------------------------
+
+
+            aprilTag = MitchellKindaWeirdAprilTagProcessor.build();
         // Adjust Image Decimation to trade-off detection-range for detection-rate.
         // eg: Some typical detection data using a Logitech C920 WebCam
         // Decimation = 1 ..  Detect 2" Tag from 10 feet away at 10 Frames per second

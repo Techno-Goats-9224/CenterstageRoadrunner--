@@ -179,10 +179,20 @@ public class Teleop extends OpMode {
         }
 
         //driving code from gm0.org
-        double ly = -gamepad1.left_stick_y * 0.8;
-        double lx = gamepad1.left_stick_x * 0.8;
-        double rx = gamepad1.right_stick_x * 0.8;
+        double ly;
+        double lx;
+        double rx;
 
+        if(gamepad1.right_bumper==true) {
+            ly = -gamepad1.left_stick_y * 0.5;
+            lx = gamepad1.left_stick_x * 0.5;
+            rx = gamepad1.right_stick_x * 0.5;
+        }
+        else {
+                ly = -gamepad1.left_stick_y;
+             lx = gamepad1.left_stick_x;
+             rx = gamepad1.right_stick_x;
+        }
         leftFront.setPower(ly + lx + rx);
         leftBack.setPower(ly - lx + rx);
         rightFront.setPower(-ly + lx + rx);
