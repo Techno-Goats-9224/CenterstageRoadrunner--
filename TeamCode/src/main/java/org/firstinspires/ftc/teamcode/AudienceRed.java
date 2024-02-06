@@ -265,26 +265,35 @@ public class AudienceRed extends LinearOpMode {
             byte1Avg = byte1Avg + pixyBytes1[1];
             telemetry.addData("number of Signature 1", pixyBytes1[0]); // need this
             telemetry.addData("x position of largest block of sig 1", pixyBytes1[1]); // need this
+
             pixyBytes2 = pixy.readShort(0x52, 2);
             byte2Avg = byte2Avg + pixyBytes2[1];
             telemetry.addData("number of Signature 2", pixyBytes2[0]); // need this
             telemetry.addData("x position of largest block of sig 2", pixyBytes2[1]); // need this
+
+
             pixyBytes3 = pixy.readShort(0x53, 2);
             byte3Avg = byte3Avg + pixyBytes3[1];
             telemetry.addData("number of Signature 3", pixyBytes3[0]); // need this
             telemetry.addData("x position of largest block of sig 3", pixyBytes3[1]); // need this
+
+
             pixyBytes4 = pixy.readShort(0x54, 5); // need this
             byte4Avg = byte4Avg + pixyBytes4[1];
             telemetry.addData("number of Signature 4", pixyBytes4[0]); // need this
             telemetry.addData("x position of largest block of sig 4", pixyBytes4[1]); // need this
+
             pixyBytes5 = pixy.readShort(0x55, 2);
             byte5Avg = byte5Avg + pixyBytes5[1];
             telemetry.addData("number of Signature 5", pixyBytes5[0]); // need this
             telemetry.addData("x position of largest block of sig 5", pixyBytes5[1]); // need this
+
+
             pixyBytes6 = pixy.readShort(0x56, 2);
             byte6Avg = byte6Avg + pixyBytes6[1];
             telemetry.addData("number of Signature 6", pixyBytes6[0]); // need this
             telemetry.addData("x position of largest block of sig 6", pixyBytes6[1]); // need this
+
             telemetry.update();
             if (red == true) {
                 if (byte1Avg < 0) {
