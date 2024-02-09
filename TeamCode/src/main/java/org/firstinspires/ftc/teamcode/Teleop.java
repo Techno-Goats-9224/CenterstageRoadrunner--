@@ -156,7 +156,8 @@ public class Teleop extends OpMode {
             clawr.setPosition(0.7);
         }else {
             //close
-            clawl.setPosition(0.7);
+            //left should be 0.7 for pixels
+            clawl.setPosition(0.8);
             clawr.setPosition(0.6);
         }
 
