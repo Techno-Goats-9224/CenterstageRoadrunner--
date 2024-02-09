@@ -95,7 +95,7 @@ public class PiracyGood extends LinearOpMode {
     char position;
     ElapsedTime runtime = new ElapsedTime();
     private Pixy pixy; // need this
-    boolean red = true;
+    boolean red = false;
     double desiredDirection;
     //for forward: all four motors need to be negative
 
@@ -151,7 +151,7 @@ public class PiracyGood extends LinearOpMode {
             piracyWii.drive(-1.5, Robot.directions.FORWARD, 0.25);
             piracyWii.turn(0, 0.25);
             //Drive the remaining 48in
-            piracyWii.drive(16, Robot.directions.FORWARD, 0.25);
+            piracyWii.drive(40, Robot.directions.FORWARD, 0.25);
         } else if (position == 'C') {
             // Drop pixel at center: drive past then turn around 180 degrees and then drop pixel and then turn another 180 degrees.
             piracyWii.drive(12, Robot.directions.FORWARD, 0.25);
@@ -183,6 +183,15 @@ public class PiracyGood extends LinearOpMode {
         } else {
             piracyWii.turn(-10,.25);
         }
+        //Piracy is very good
+        //Top 5 reasons piracy is very good
+        // 1. better than paying for to expensive retro games
+        // 2. piracy is a great way to get into the classics
+        // 3. Old games are really fun and benificial for people with no life(not me other people trust)
+        // 4. if people are emulating on a device everything can be in one device instead of to many old consoles
+        // 5. Much better experience than before on the old screens of consoles instead now on backlit better quality screens of the future
+
+        // piracy is good very correct statement I literally couldn't express how true this is!
         //Then april tag will direct robot to backdrop
         targetFound = false;
         desiredTag = null;

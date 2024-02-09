@@ -72,7 +72,6 @@ public class Robot {
         leftFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
 
         arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -112,7 +111,7 @@ public class Robot {
                 leftFront.setPower(-desiredDirection * power);
                 leftBack.setPower(-desiredDirection * power);
                 rightFront.setPower(desiredDirection * power);
-                rightBack.setPower(-desiredDirection * power);
+                rightBack.setPower(desiredDirection * power);
             }
         }
         //positive inches is left
@@ -121,15 +120,16 @@ public class Robot {
                 yPos_in = encoderTicksToInches(leftFront.getCurrentPosition());
                 desiredDirection = (yPos_in - (inches + lastPerpEncoder_in)) / (Math.abs(yPos_in - (inches + lastPerpEncoder_in)));
 
-                leftFront.setPower(desiredDirection * power);
-                leftBack.setPower(-desiredDirection * power);
-                rightFront.setPower(desiredDirection * power);
+                leftFront.setPower(-desiredDirection * power);
+                leftBack.setPower(desiredDirection * power);
+                rightFront.setPower(-desiredDirection * power);
                 rightBack.setPower(desiredDirection * power);
             }
         }
     }
     double heading;
     double desiredDirection;
+    //clockwise is positive
     public void turn(double degrees, double power) {
         heading = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
 
@@ -137,9 +137,9 @@ public class Robot {
             heading = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
             desiredDirection = (degrees - heading) / (Math.abs(degrees - heading));
 
-            leftFront.setPower(-desiredDirection * power);
-            leftBack.setPower(-desiredDirection * power);
-            rightFront.setPower(-desiredDirection * power);
+            leftFront.setPower(desiredDirection * power);
+            leftBack.setPower(desiredDirection * power);
+            rightFront.setPower(desiredDirection * power);
             rightBack.setPower(desiredDirection * power);
         }
     }
