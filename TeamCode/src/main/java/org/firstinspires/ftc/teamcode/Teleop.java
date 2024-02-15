@@ -104,7 +104,7 @@ public class Teleop extends OpMode {
                 arm.setPower(0);
             }*/
 
-        }else if(gamepad2.dpad_down){
+        } else if (gamepad2.dpad_down) {
             //intake
             //arm.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
             arm.setTargetPosition(20);
@@ -117,7 +117,7 @@ public class Teleop extends OpMode {
                 arm.setPower(0);
             }
             */
-        } else if(gamepad2.dpad_right){
+        } else if (gamepad2.dpad_right) {
             //transport
             arm.setTargetPosition(400);
             arm.setPower(1);
@@ -129,7 +129,7 @@ public class Teleop extends OpMode {
             } else{
                 arm.setPower(0);
             }*/
-        }else if(gamepad2.right_bumper){
+        } else if (gamepad2.right_bumper) {
             //manual up
             arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             arm.setPower(-1);
@@ -141,39 +141,38 @@ public class Teleop extends OpMode {
             arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             arm.setPower(0);
         }
-        if(gamepad1.cross){
+        if (gamepad1.cross) {
             arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         }
-        if(gamepad2.square) {
+        if (gamepad2.square) {
             //open
             clawl.setPosition(0.6);
-        }else if(gamepad2.circle) {
+        } else if (gamepad2.circle) {
             //open
             clawr.setPosition(.7);
-        }else if (gamepad2.cross){
+        } else if (gamepad2.cross) {
             //open
             clawl.setPosition(0.6);
             clawr.setPosition(0.7);
-        }else {
+        } else {
             //close
-            //left should be 0.7 for pixels
-            clawl.setPosition(0.8);
+            clawl.setPosition(0.7);
             clawr.setPosition(0.6);
         }
 
-        if(gamepad2.left_trigger > 0.1) {
+        if (gamepad2.left_trigger > 0.1) {
             //up above field (actually closer to flat)
             rotate.setPosition(0.4);
-        }else if(gamepad2.left_bumper){
+        } else if (gamepad2.left_bumper) {
             //down below field
             rotate.setPosition(.9);
-        }else{
+        } else {
             //flat on field (actually closer to above)
-            rotate.setPosition(0.7);
+            rotate.setPosition(0.8);
         }
-        if (gamepad2.triangle){
+        if (gamepad2.triangle) {
             drone.setPosition(0.5);
-        }else{
+        } else {
             drone.setPosition(1);
             //1 is when not pushed and .5 is when pushed
             // 1 is holding rubberband .5 is out
@@ -184,16 +183,19 @@ public class Teleop extends OpMode {
         double lx;
         double rx;
 
-        if(gamepad1.right_bumper==true) {
+        /*if(gamepad1.right_bumper==true) {
             ly = -gamepad1.left_stick_y * 0.5;
             lx = gamepad1.left_stick_x * 0.5;
             rx = gamepad1.right_stick_x * 0.5;
         }
         else {
-                ly = -gamepad1.left_stick_y;
-             lx = gamepad1.left_stick_x;
-             rx = gamepad1.right_stick_x;
-        }
+
+         */
+            ly = -gamepad1.left_stick_y;
+            lx = gamepad1.left_stick_x;
+            rx = gamepad1.right_stick_x;
+
+        //}
         leftFront.setPower(ly + lx + rx);
         leftBack.setPower(ly - lx + rx);
         rightFront.setPower(-ly + lx + rx);

@@ -5,44 +5,14 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-
-/**
-     * This file contains an minimal example of a Linear "OpMode". An OpMode is a 'program' that runs in either
-     * the autonomous or the teleop period of an FTC match. The names of OpModes appear on the menu
-     * of the FTC Driver Station. When a selection is made from the menu, the corresponding OpMode
-     * class is instantiated on the Robot Controller and executed.
-     *
-     * This particular OpMode just executes a basic Tank Drive Teleop for a two wheeled robot
-     * It includes all the skeletal structure that all linear OpModes contain.
-     *
-     * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
-     * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
-     */
 @TeleOp
-@Disabled
 public class PixyTest extends OpMode {
-    /*public enum Register
-    {
-        LARGEST_BLOCK_ALL(0x50),
-        SIG_1(0x51),
-        SIG_2(0x52),
-        SIG_3(0x53),
-        SIG_4(0x54),
-        SIG_5(0x55),
-        SIG_6(0x56),
-        SIG_7(0x57);
-
-        public int bVal;
-
-        Register(int bVal)
-        {
-            this.bVal = bVal;
-        }
-    }*/
     ElapsedTime runtime = new ElapsedTime();
     private Pixy pixy; // need this
 
-    int starterStack = 0;
+    int position = 0;
+    boolean red = false;
+
     @Override
     public void init() {
         pixy = hardwareMap.get(Pixy.class, "pixy"); // need this
@@ -58,39 +28,80 @@ public class PixyTest extends OpMode {
     }
     @Override
     public void start() {
-
     }
 
     @Override
     public void loop() {
-        //for(Pixy.Register reg : Pixy.Register.values()){
-        /*for(int reg = 80; reg < 88; reg++){
-            byte[] data = pixy.readShort(reg, 8);
-            for(int j = 0; j < 8; j++) {
-                telemetry.addData(reg + " " + j, data[j]);
-            }
-        }*/
+        //Pixy look for team prop
         byte[] pixyBytes1 = pixy.readShort(0x51, 5); // need this
-        telemetry.addData("number of Signature 1", pixyBytes1[0]); // need this
-        telemetry.addData("x position of largest block of sig 1", pixyBytes1[1]); // need this
+        int byte1Avg = 0;
         byte[] pixyBytes2 = pixy.readShort(0x52, 2); // need this
-        telemetry.addData("number of Signature 2", pixyBytes2[0]); // need this
-        telemetry.addData("x position of largest block of sig 2", pixyBytes2[1]); // need this
-        telemetry.update();
+        int byte2Avg = 0;
+        byte[] pixyBytes3 = pixy.readShort(0x53, 2); // need this
+        int byte3Avg = 0;
+        byte[] pixyBytes4 = pixy.readShort(0x54, 5); // need this
+        int byte4Avg = 0;
+        byte[] pixyBytes5 = pixy.readShort(0x55, 2); // need this
+        int byte5Avg = 0;
+        byte[] pixyBytes6 = pixy.readShort(0x56, 2); // need this
+        int byte6Avg = 0;
+        for (int i = 0; i < 20; i++) {
+            pixyBytes1 = pixy.readShort(1); // need this
+            byte1Avg = byte1Avg + pixyBytes1[1];
+            telemetry.addData("number of Signature 1", pixyBytes1[0]); // need this
+            telemetry.addData("x position of largest block of sig 1", pixyBytes1[1]); // need this
+
+            pixyBytes2 = pixy.readShort(2);
+            byte2Avg = byte2Avg + pixyBytes2[1];
+            telemetry.addData("number of Signature 2", pixyBytes2[0]); // need this
+            telemetry.addData("x position of largest block of sig 2", pixyBytes2[1]); // need this
+
+
+            pixyBytes3 = pixy.readShort(3);
+            byte3Avg = byte3Avg + pixyBytes3[1];
+            telemetry.addData("number of Signature 3", pixyBytes3[0]); // need this
+            telemetry.addData("x position of largest block of sig 3", pixyBytes3[1]); // need this
+
+
+            pixyBytes4 = pixy.readShort(4); // need this
+            byte4Avg = byte4Avg + pixyBytes4[1];
+            telemetry.addData("number of Signature 4", pixyBytes4[0]); // need this
+            telemetry.addData("x position of largest block of sig 4", pixyBytes4[1]); // need this
+
+            pixyBytes5 = pixy.readShort(5);
+            byte5Avg = byte5Avg + pixyBytes5[1];
+            telemetry.addData("number of Signature 5", pixyBytes5[0]); // need this
+            telemetry.addData("x position of largest block of sig 5", pixyBytes5[1]); // need this
+
+
+            pixyBytes6 = pixy.readShort(6);
+            byte6Avg = byte6Avg + pixyBytes6[1];
+            telemetry.addData("number of Signature 6", pixyBytes6[0]); // need this
+            telemetry.addData("x position of largest block of sig 6", pixyBytes6[1]); // need this
+
+            telemetry.update();
+            if (red == true) {
+                if (byte1Avg < 0) {
+                    position = 'C';
+                } else if (byte1Avg > 0) {
+                    position = 'L';
+                } else {
+                    position = 'R';
+                }
+            }
+            if (red == false) {
+                if (byte2Avg > 0) {
+                    position = 'L';
+                } else if (byte2Avg < 0) {
+                    position = 'C';
+                } else {
+                    position = 'R';
+                }
+            }
+        } //close pixy detection for loop
+
     }
     @Override
     public void stop() {
-    }
-
-    public int avgHeight(){
-        runtime.reset();
-        int height = 0;
-        int loops = 0;
-        while(runtime.seconds() < 5) {
-            byte[] pixyBytes = pixy.readShort(0x51, 5);
-            height = height + pixyBytes[1];
-            loops++;
-        }
-        return height/loops;
     }
 }

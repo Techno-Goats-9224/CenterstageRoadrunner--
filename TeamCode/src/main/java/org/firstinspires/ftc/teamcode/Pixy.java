@@ -55,4 +55,30 @@ public class Pixy extends I2cDeviceSynchDevice<I2cDeviceSynch> {
     {
         return deviceClient.read(queryAddress, bytesToRead);
     }
+    protected byte[] readShort(int signature)
+    {
+        int queryAddress = Integer.parseInt("0x5") + signature;
+        if(signature == 1){
+            queryAddress = 0x51;
+        }
+        if(signature == 2){
+            queryAddress = 0x52;
+        }
+        if(signature == 3){
+            queryAddress = 0x53;
+        }
+        if(signature == 4){
+            queryAddress = 0x54;
+        }
+        if(signature == 5){
+            queryAddress = 0x55;
+        }
+        if(signature == 6){
+            queryAddress = 0x56;
+        }
+        if(signature == 7){
+            queryAddress = 0x57;
+        }
+        return deviceClient.read(queryAddress, 6);
+    }
 }
